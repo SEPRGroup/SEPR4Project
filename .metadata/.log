@@ -20,3 +20,12 @@ user global configuration and to define the default location to store repositori
 not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
 EGit might behave differently since they see different configuration options.
 This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.jdt.core 4 0 2014-02-25 11:48:41.387
+!MESSAGE Invalid ZIP archive: ext/junit-4.11.jar [in BTC]
+
+!ENTRY org.eclipse.jdt.core 4 0 2014-02-25 11:49:02.041
+!MESSAGE Invalid ZIP archive: ext/junit-4.11.jar [in BTC]
+
+!ENTRY org.eclipse.jdt.core 4 0 2014-02-25 11:50:06.866
+!MESSAGE Invalid ZIP archive: ext/junit-4.11.jar [in BTC]
