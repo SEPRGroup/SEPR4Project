@@ -2,6 +2,7 @@ package cls;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
 
 import scn.Demo;
 import lib.RandomNumber;
@@ -52,6 +53,9 @@ public class Aircraft {
 	
 	private java.util.ArrayList<Aircraft> planes_too_near = new java.util.ArrayList<Aircraft>(); // Holds a list of planes currently in violation of separation rules with this plane
 	
+	private int 
+		current_altitude, interval_altitude, // will increase to the current altitude  
+		min_altitude = 10000, max_altitude = 30000; 
 	/**
 	 * Static ints for use where altitude state is to be changed.
 	 */
@@ -214,8 +218,10 @@ public class Aircraft {
 		if (origin_point.getLocation() == Demo.airport.getLocation()) {
 			position = position.add(new Vector(-100, -70, 0)); // Start at departures
 		}
-		int altitude_offset = RandomNumber.randInclusiveInt(0, 1) == 0 ? 28000 : 30000;
-		position = position.add(new Vector(0, 0, altitude_offset));
+		
+		Random rand = new Random();
+		current_altitude = min_altitude + (rand.nextInt((max_altitude - min_altitude)/1000))* 1000;
+		position = position.add(new Vector(0, 0, current_altitude));
 
 		// Calculate initial velocity (direction)
 		current_target = flight_plan.getRoute()[0].getLocation();
@@ -353,12 +359,12 @@ public class Aircraft {
 		} else {
 			switch (altitude_state) {
 			case -1:
-				fall();
+				fall();				
 				break;
 			case 0:
 				break;
 			case 1:
-				climb();
+				climb();				
 				break;
 			}
 		}
@@ -632,24 +638,39 @@ public class Aircraft {
 		turnTowardsTarget(0);
 	}
 
+	// Both climb and fall work in the same way:
+	// the interval_altitude will be 1000 opposite to the direction
+	// of the altitude direction. Once the interval_altitude reaches the same
+	// value as the current_altitude then the plane will cease climbing/falling
+		
 	private void climb() {
-		if (position.getZ() < 30000 && altitude_state == ALTITUDE_CLIMB)
+		interval_altitude = (int)position.getZ() - 1000;
+		if ((int)position.getZ() >= max_altitude){
+			position = new Vector(position.getX(), position.getY(), max_altitude);	
+		}else if (interval_altitude < current_altitude && altitude_state == ALTITUDE_CLIMB){
 			setAltitude(altitude_change_speed);
-		if (position.getZ() >= 30000) {
+		}else if(interval_altitude >= current_altitude){
 			setAltitude(0);
 			altitude_state = ALTITUDE_LEVEL;
-			position = new Vector(position.getX(), position.getY(), 30000);
+			current_altitude = (int)position.getZ();
 		}
+		
+		
 	}
 
 	private void fall() {
-		if (position.getZ() > 28000 && altitude_state == ALTITUDE_FALL)
-			setAltitude(-altitude_change_speed);
-		if (position.getZ() <= 28000) {
-			setAltitude(0);
-			altitude_state = ALTITUDE_LEVEL;
-			position = new Vector(position.getX(), position.getY(), 28000);
+		interval_altitude = (int)position.getZ() + 1000;	
+		if ((int)position.getZ() <= min_altitude){
+			position = new Vector(position.getX(), position.getY(), min_altitude);
+		}else if(interval_altitude > current_altitude && altitude_state == ALTITUDE_FALL){
+				setAltitude(-altitude_change_speed);
+		}else if(interval_altitude <= current_altitude){
+				setAltitude(0);
+				altitude_state = ALTITUDE_LEVEL;
+				current_altitude = (int)position.getZ();
 		}
+		
+		
 	}
 
 	public void land() {
