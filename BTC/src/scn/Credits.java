@@ -71,13 +71,14 @@ public class Credits extends Scene {
 	/**
 	 * Update the credits's scroll position
 	 * Speed up the credits movement if keys are pressed
+	 * Close the credits if they have finished scrolling
 	 */
 	public void update(double time_difference) {
 		boolean hurried = input.isKeyDown(input.KEY_SPACE) || input.isMouseDown(input.MOUSE_LEFT);
 		speed = hurried ? 4f : 1f;
 		scroll_position += SCROLL_SPEED * time_difference * speed;
-		if (scroll_position > 1100) 
-			scroll_position = -window.height();
+		if (scroll_position > 1800)
+			main.closeScene();
 	}
 
 	/**
@@ -125,6 +126,25 @@ public class Credits extends Scene {
 		graphics.printCentred("Liam Mullane", 0, currentHeight, 2, window.width()/3);
 		graphics.printCentred("Matt Munro", window.width()/3, currentHeight, 2, window.width()/3);
 		graphics.printCentred("Liam Wellacott", 2 * window.width()/3, currentHeight, 2, window.width()/3);
+		
+		currentHeight += gap * 2;
+		
+		graphics.printCentred("Perfected by", 0, currentHeight, 2, window.width());
+		graphics.printCentred("____________", 0, currentHeight + 8, 2, window.width());
+		graphics.printCentred("___________", 4, currentHeight + 8, 2, window.width());
+		currentHeight += gap;
+		graphics.printCentred("Team PSA:", 0, currentHeight, 2, window.width());
+		currentHeight += gap;
+		
+		graphics.printCentred("Jake Digweed", 0, currentHeight, 2, window.width()/3);
+		graphics.printCentred("Charlie Ford", window.width()/3, currentHeight, 2, window.width()/3);
+		graphics.printCentred("Matthew Hands", 2 * window.width()/3, currentHeight, 2, window.width()/3);
+		currentHeight += gap;
+		graphics.printCentred("Stephen Jenkins", 0, currentHeight, 2, window.width()/3);
+		graphics.printCentred("Zivile Lisauskaite", window.width()/3, currentHeight, 2, window.width()/3);
+		graphics.printCentred("Karl Sonley", 2 * window.width()/3, currentHeight, 2, window.width()/3);
+		currentHeight += gap;
+		graphics.printCentred("Pat Squires", window.width()/3, currentHeight, 2, window.width()/3);
 		
 		currentHeight += gap * 2;
 
