@@ -37,27 +37,55 @@ public abstract class window {
 			setSize(width, height);
 			setTitle(title);
 			Display.create();
+			Display.setLocation(192, 10);
 			_closed = false;
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 			_closed = true;
 		}
+
 	}
 	
 	/** 
 	 * Allows for changing the size of the window.
-	 * <p>It does this by creating a new DisplayMode with a specified
-	 * width and height, and sets the Display's DisplayMode to 
+	 * <p>It does this by creating a new DisplayMode with no more than the
+	 * specified width and height, and sets the Display's DisplayMode to 
 	 * that new DisplayMode.</p>
-	 * @param width the new width for the window.
-	 * @param height the new height for the window.
+	 * @param width the new target width for the window.
+	 * @param height the new target height for the window.
 	 */
 	public static void setSize(int width, int height) {
+		System.out.println("Target: " +width +", " +height);
+		
+		//get preset screen size
+		int nw = Display.getDesktopDisplayMode().getWidth();
+		int nh = Display.getDesktopDisplayMode().getHeight();
+		System.out.println("Native: " +nw +", " +nh);
+
 		try {
-			Display.setDisplayMode(new DisplayMode(width, height));
-			Display.setLocation(192, 10);
-			_width = width;
-			_height = height;
+			//derive biggest supported size limited by
+				//native size, allowing for menus			
+			double scale = 0, maxScale = 0;
+			for (DisplayMode d: Display.getAvailableDisplayModes()){
+				//System.out.println(d.toString());
+				int w = d.getWidth(), h = d.getHeight();
+				scale = Math.min((double)w/width, (double)h/height);
+				if (scale > maxScale &&
+						(width*scale)<=(nw-100) && (height*scale)<=(nh-100))
+				{
+					maxScale = scale;
+				}
+			}
+			System.out.println("Derive: scale @ " +maxScale);
+			
+			//cap scale to within target and apply
+			scale = Math.min(maxScale, 1);
+			_width = (int)Math.floor(scale*width);
+			_height = (int)Math.floor(scale*height);
+
+			System.out.println("Attempt: " +_width +", " +_height);
+			Display.setDisplayMode(new DisplayMode(_width, _height));
+
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}

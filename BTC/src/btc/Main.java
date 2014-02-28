@@ -23,8 +23,8 @@ public class Main implements input.EventHandler {
 	}
 	
 	final private String TITLE = "Bear Traffic Controller: MQV Edition";
-	final private int WIDTH = 1280;
-	final private int HEIGHT = 960;
+	final private int TARGET_WIDTH = 1280;
+	final private int TARGET_HEIGHT = 960;
 	final private String[] ICON_FILENAMES = {
 		"gfx" + File.separator + "icon16.png",
 		"gfx" + File.separator + "icon32.png",
@@ -57,7 +57,7 @@ public class Main implements input.EventHandler {
 	 * Creates window, initialises jog classes and sets starting values to variables.
 	 */
 	private void start() {
-		window.initialise(TITLE, WIDTH, HEIGHT);
+		window.initialise(TITLE, TARGET_WIDTH, TARGET_HEIGHT);
 		window.setIcon(ICON_FILENAMES);
 		graphics.initialise();
 		graphics.Font font = graphics.newBitmapFont("gfx" + File.separator + "font.png", "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz1234567890.,_-!?()[]><#~:;/\\^'\"{}£$@@@@@@@@");
