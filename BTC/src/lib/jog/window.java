@@ -19,11 +19,12 @@ import org.newdawn.slick.util.ResourceLoader;
  * @author IMP1
  */
 public abstract class window {
-	
+
 	final private static int FPS = 60;
-	
+
 	private static int _width;
 	private static int _height;
+	private static double _scale;
 	private static boolean _closed;
 	
 	/**
@@ -82,6 +83,7 @@ public abstract class window {
 			scale = Math.min(maxScale, 1);
 			_width = (int)Math.floor(scale*width);
 			_height = (int)Math.floor(scale*height);
+			_scale = scale;
 
 			System.out.println("Attempt: " +_width +", " +_height);
 			Display.setDisplayMode(new DisplayMode(_width, _height));
@@ -106,6 +108,15 @@ public abstract class window {
 	public static int height() {
 		return _height;
 	}
+	
+	/**
+	 * Allows access to the scale of the window.
+	 * @return the scale of the window relative to the last target set.
+	 */
+	public static double scale() {
+		return _scale;
+	}
+	
 	
 	/**
 	 * Allows access to the closed status of the window.
