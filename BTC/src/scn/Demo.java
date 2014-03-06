@@ -501,8 +501,9 @@ public class Demo extends Scene {
 	public void draw() {
 		graphics.setColour(graphics.green);
 		graphics.rectangle(false, airspace_view_offset_x, airspace_view_offset_y, window.width() - 32, window.height() - 176);
-		
+
 		graphics.setViewport(airspace_view_offset_x, airspace_view_offset_y, window.width() - 32, window.height() - 176);
+		
 		graphics.setColour(255, 255, 255, 48);
 		graphics.draw(background, 0, 0);
 		graphics.setColour(255, 255, 255, 48);
@@ -563,13 +564,15 @@ public class Demo extends Scene {
 			selected_aircraft.drawModifiedPath(selected_path_point, input.mouseX() - airspace_view_offset_x, input.mouseY() - airspace_view_offset_y);
 		}
 		
-		graphics.setViewport();
+		//draw transfer waypoint labels
 		graphics.setColour(graphics.green);
-		graphics.print(location_waypoints[0].getName(), location_waypoints[0].getLocation().getX() + airspace_view_offset_x + 9, location_waypoints[0].getLocation().getY() + airspace_view_offset_y - 6);
-		graphics.print(location_waypoints[1].getName(), location_waypoints[1].getLocation().getX() + airspace_view_offset_x + 9, location_waypoints[1].getLocation().getY() + airspace_view_offset_y - 6);
-		graphics.print(location_waypoints[2].getName(), location_waypoints[2].getLocation().getX() + airspace_view_offset_x - 141, location_waypoints[2].getLocation().getY() + airspace_view_offset_y - 6);
-		graphics.print(location_waypoints[3].getName(), location_waypoints[3].getLocation().getX() + airspace_view_offset_x - 91, location_waypoints[3].getLocation().getY() + airspace_view_offset_y - 6);
-		graphics.print(location_waypoints[4].getName(), location_waypoints[4].getLocation().getX() + airspace_view_offset_x - 20, location_waypoints[4].getLocation().getY() + airspace_view_offset_y + 25);
+		graphics.print(location_waypoints[0].getName(), location_waypoints[0].getLocation().getX() + 9, location_waypoints[0].getLocation().getY() - 6);
+		graphics.print(location_waypoints[1].getName(), location_waypoints[1].getLocation().getX() + 9, location_waypoints[1].getLocation().getY() - 6);
+		graphics.print(location_waypoints[2].getName(), location_waypoints[2].getLocation().getX() - 141, location_waypoints[2].getLocation().getY() - 6);
+		graphics.print(location_waypoints[3].getName(), location_waypoints[3].getLocation().getX() - 91, location_waypoints[3].getLocation().getY() - 6);
+		graphics.print(location_waypoints[4].getName(), location_waypoints[4].getLocation().getX() - 20, location_waypoints[4].getLocation().getY() + 25);
+		
+		graphics.setViewport();
 
 	}
 	
