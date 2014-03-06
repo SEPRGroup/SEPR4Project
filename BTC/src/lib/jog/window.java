@@ -72,7 +72,7 @@ public abstract class window {
 				int w = d.getWidth(), h = d.getHeight();
 				scale = Math.min((double)w/width, (double)h/height);
 				if (scale > maxScale &&
-						(width*scale)<=(nw-100) && (height*scale)<=(nh-100))
+						(width*scale)<=(nw-80) && (height*scale)<=(nh-80))
 				{
 					maxScale = scale;
 				}

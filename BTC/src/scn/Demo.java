@@ -1,5 +1,6 @@
 package scn;
 
+import java.awt.Rectangle;
 import java.io.File;
 
 import lib.RandomNumber;
@@ -20,26 +21,22 @@ public class Demo extends Scene {
 	public final static int airspace_view_offset_x = 16;
 	public final static int airspace_view_offset_y = 48;
 	
-	// Position of things drawn to window   
-	private final int PLANE_INFO_X = 16;
-	private final int PLANE_INFO_Y = window.height() - 120;
-	private final int PLANE_INFO_WIDTH = window.width()/4 - 16;
-	private final int PLANE_INFO_HEIGHT = 112;
+	// Position of things drawn to window  
+	private static final Rectangle PLANE_INFO = 
+			new Rectangle (16, window.height()-120, 
+			               (window.width()-56)/4, 112 );
 	
-	private final int ALTIMETER_X = PLANE_INFO_X + PLANE_INFO_WIDTH + 8;
-	private final int ALTIMETER_Y = window.height() - 120;
-	private final int ALTIMETER_WIDTH = 244;
-	private final int ALTIMETER_HEIGHT = 112;
+	private static final Rectangle ALTIMETER = 
+			new Rectangle (24 +(window.width()-56)/4, window.height() -120, 
+			               (window.width()-56)/5, 112 );
 	
-	private final int AIRPORT_CONTROL_X = ALTIMETER_X + ALTIMETER_WIDTH + 8;
-	private final int AIRPORT_CONTROL_Y = window.height() - 120;
-	private final int AIRPORT_CONTROL_WIDTH = 244;
-	private final int AIRPORT_CONTROL_HEIGHT = 112;
+	private static final Rectangle AIRPORT_CONTROL = 
+			new Rectangle (32 +((window.width()-56)*9/20), window.height() -120, 
+			               (window.width()-56)/5, 112 );
 	
-	private final int ORDERSBOX_X = AIRPORT_CONTROL_X + AIRPORT_CONTROL_WIDTH + 8;
-	private final static int ORDERSBOX_Y = window.height() - 120;
-	private final int ORDERSBOX_WIDTH = window.width() - (ORDERSBOX_X + 16);
-	private final static int ORDERSBOX_HEIGHT = 112;
+	private static final Rectangle ORDERS_BOX = 
+			new Rectangle (40 +((window.width()-56)*13/20), window.height() -120, 
+			               (window.width()-56)*7/20, 112 );
 	
 	private cls.Score score; 	
 	private boolean shown_aircraft_waiting_message = false;
@@ -112,9 +109,9 @@ public class Demo extends Scene {
 	public static Waypoint[] location_waypoints = new Waypoint[] {
 		// A set of Waypoints which are origin / destination points 
 		new Waypoint(8, 8, true, "North West Top Leftonia"), // top left
-		new Waypoint(8, window.height() - ORDERSBOX_HEIGHT - 72, true, "100 Acre Woods"), // bottom left
+		new Waypoint(8, window.height() - ORDERS_BOX.height - 72, true, "100 Acre Woods"), // bottom left
 		new Waypoint(window.width() - 40, 8, true, "City of Rightson"), // top right
-		new Waypoint(window.width() - 40, window.height() - ORDERSBOX_HEIGHT - 72, true, "South Sea"), // bottom right
+		new Waypoint(window.width() - 40, window.height() - ORDERS_BOX.height - 72, true, "South Sea"), // bottom right
 		airport
 	};
 
@@ -230,7 +227,7 @@ public class Demo extends Scene {
 		background = graphics.newImage("gfx" + File.separator + "background_base.png");
 		music = audio.newMusic("sfx" + File.separator + "Gypsy_Shoegazer.ogg");
 		music.play();
-		orders_box = new cls.OrdersBox(ORDERSBOX_X, ORDERSBOX_Y, ORDERSBOX_WIDTH, ORDERSBOX_HEIGHT, 6);
+		orders_box = new cls.OrdersBox(ORDERS_BOX.x, ORDERS_BOX.y, ORDERS_BOX.width, ORDERS_BOX.height, 6);
 		aircraft_in_airspace = new java.util.ArrayList<Aircraft>();
 		recently_departed_aircraft = new java.util.ArrayList<Aircraft>();
 		aircraft_image = graphics.newImage("gfx" + File.separator + "plane.png");
@@ -252,8 +249,8 @@ public class Demo extends Scene {
 		selected_path_point = -1;
 		
 		manual_override_button = new lib.ButtonText(" Take Control", manual, (window.width() - 128) / 2, 32, 128, 64, 8, 4);
-		altimeter = new cls.Altimeter(ALTIMETER_X, ALTIMETER_Y, ALTIMETER_WIDTH, ALTIMETER_HEIGHT, orders_box);
-		airport_control_box = new AirportControlBox(AIRPORT_CONTROL_X, AIRPORT_CONTROL_Y, AIRPORT_CONTROL_WIDTH, AIRPORT_CONTROL_HEIGHT, airport);
+		altimeter = new cls.Altimeter(ALTIMETER.x, ALTIMETER.y, ALTIMETER.width, ALTIMETER.height, orders_box);
+		airport_control_box = new AirportControlBox(AIRPORT_CONTROL.x, AIRPORT_CONTROL.y, AIRPORT_CONTROL.width, AIRPORT_CONTROL.height, airport);
 		deselectAircraft();
 	}
 	
@@ -581,24 +578,24 @@ public class Demo extends Scene {
 	 */
 	private void drawPlaneInfo() {
 		graphics.setColour(graphics.green);
-		graphics.rectangle(false, PLANE_INFO_X, PLANE_INFO_Y, PLANE_INFO_WIDTH, PLANE_INFO_HEIGHT);
+		graphics.rectangle(false, PLANE_INFO.x, PLANE_INFO.y, PLANE_INFO.width, PLANE_INFO.height);
 		if (selected_aircraft != null) {
-			graphics.setViewport(PLANE_INFO_X, PLANE_INFO_Y, PLANE_INFO_WIDTH, PLANE_INFO_HEIGHT);
-			graphics.printCentred(selected_aircraft.getName(), 0, 5, 2, PLANE_INFO_WIDTH);
+			graphics.setViewport(PLANE_INFO.x, PLANE_INFO.y, PLANE_INFO.width, PLANE_INFO.height);
+			graphics.printCentred(selected_aircraft.getName(), 0, 5, 2, PLANE_INFO.width);
 			// Altitude
 			String altitude = String.format("%.0f", selected_aircraft.getPosition().getZ()) + "£";
 			graphics.print("Altitude:", 10, 40);
-			graphics.print(altitude, PLANE_INFO_WIDTH - 10 - altitude.length()*8, 40);
+			graphics.print(altitude, PLANE_INFO.width - 10 - altitude.length()*8, 40);
 			// Speed
 			String speed = String.format("%.2f", selected_aircraft.getSpeed() * 1.687810) + "$";
 			graphics.print("Speed:", 10, 55);
-			graphics.print(speed, PLANE_INFO_WIDTH - 10 - speed.length()*8, 55);
+			graphics.print(speed, PLANE_INFO.width - 10 - speed.length()*8, 55);
 			// Origin
 			graphics.print("Origin:", 10, 70);
-			graphics.print(selected_aircraft.getFlightPlan().getOriginName(), PLANE_INFO_WIDTH - 10 - selected_aircraft.getFlightPlan().getOriginName().length()*8, 70);
+			graphics.print(selected_aircraft.getFlightPlan().getOriginName(), PLANE_INFO.width - 10 - selected_aircraft.getFlightPlan().getOriginName().length()*8, 70);
 			// Destination
 			graphics.print("Destination:", 10, 85);
-			graphics.print(selected_aircraft.getFlightPlan().getDestinationName(), PLANE_INFO_WIDTH - 10 - selected_aircraft.getFlightPlan().getDestinationName().length()*8, 85);
+			graphics.print(selected_aircraft.getFlightPlan().getDestinationName(), PLANE_INFO.width - 10 - selected_aircraft.getFlightPlan().getDestinationName().length()*8, 85);
 			graphics.setViewport();
 		}
 	}
