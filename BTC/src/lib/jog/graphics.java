@@ -544,6 +544,36 @@ public abstract class graphics {
 	}
 	
 	/**
+	 * Draws the texture image at the specified coordinates at specified scale
+	 * @param drawable the image to be drawn.
+	 * @param x the horizontal pixel to draw at.
+	 * @param y the vertical pixel to draw at.
+	 * @param scale the scale at which to draw the image
+	 */
+	static public void draw(Image drawable, double x, double y, double scale) {
+		y = window.height() - y;
+		double w = drawable.width() *scale;
+		double h = -drawable.height() *scale;
+
+		glEnable(GL_TEXTURE_2D);
+		drawable.texture.bind();
+		glPushMatrix();
+		glTranslated(x, y, 0);
+		glBegin(GL_QUADS);
+			glTexCoord2d(0, 0);
+			glVertex2d(0, 0);
+			glTexCoord2d(1, 0);
+			glVertex2d(w, 0);
+			glTexCoord2d(1, 1);
+			glVertex2d(w, h);
+			glTexCoord2d(0, 1);
+			glVertex2d(0, h);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_TEXTURE_2D);
+	}
+	
+	/**
 	 * Draws the texture image at the specified coordinates.
 	 * @param drawable the image to be drawn.
 	 * @param quad the quad of the image to be drawn.
