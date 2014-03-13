@@ -49,45 +49,64 @@ public class Title extends Scene {
 		angle = 0;
 		
 		buttons = new lib.ButtonText[4];
-		// Demo Button
-		lib.ButtonText.Action demo = new lib.ButtonText.Action() {
-			@Override
-			public void action() {
-				main.setScene(new DifficultySelect(main, DifficultySelect.CREATE_DEMO));
-			}
-		};
-		buttons[0] = new lib.ButtonText("Play Full Game", demo, window.height(), window.height()/2 + 96, window.width() - window.height(), 24, 8, 6);
-	
-		// Credits Button
-		lib.ButtonText.Action credits = new lib.ButtonText.Action() {
-			@Override
-			public void action() {
-				main.setScene(new Credits(main));
+		{// Demo Button
+			lib.ButtonText.Action demo = new lib.ButtonText.Action() {
+				@Override
+				public void action() {
+					main.setScene(new DifficultySelect(main, DifficultySelect.CREATE_DEMO));
 				}
 			};
-		buttons[1] = new lib.ButtonText("Credits", credits, window.height(), window.height()/2 + 126, window.width() - window.height(), 24, 8, 6);
-		// Help Button
-		lib.ButtonText.Action help = new lib.ButtonText.Action() {
-			@Override
-			public void action() {
-				try {
-					Desktop.getDesktop().open(new File(HELP_FILE_PATH));
-				} catch (IOException e) {
-					e.printStackTrace();
+			buttons[0] = new lib.ButtonText("Play Demo", demo, 
+					window.height(), window.height()/2 + 96,
+					window.width() - window.height(), 24,
+					8, 6);
+		}
+	
+		{// Credits Button
+			lib.ButtonText.Action credits = new lib.ButtonText.Action() {
+				@Override
+				public void action() {
+					main.setScene(new Credits(main));
 				}
-			}
-		};
-		buttons[2] = new lib.ButtonText("Help        (Opens user manual PDF)", help, window.height(), window.height()/2 + 156, window.width() - window.height(), 24, 8, 6);
-		// Exit Button
-				lib.ButtonText.Action exit = new lib.ButtonText.Action() {
-					@Override
-					public void action() {
-						main.quit();
+			};
+			buttons[1] = new lib.ButtonText("Credits", credits,
+					window.height(), window.height()/2 + 126, 
+					window.width() - window.height(), 24,
+					8, 6);
+		}
+		
+		{// Help Button
+			lib.ButtonText.Action help = new lib.ButtonText.Action() {
+				@Override
+				public void action() {
+					try {
+						Desktop.getDesktop().open(new File(HELP_FILE_PATH));
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
-				};
-		buttons[3] = new lib.ButtonText("Exit", exit, window.height(), window.height()/2 + 186, window.width() - window.height(), 24, 8, 6);
+				}
+			};
+			buttons[2] = new lib.ButtonText("Help        (Opens user manual PDF)", help,
+					window.height(), window.height()/2 + 156,
+					window.width() - window.height(), 24, 
+					8, 6);
+		}
+		
+		{// Exit Button
+			lib.ButtonText.Action exit = new lib.ButtonText.Action() {
+				@Override
+				public void action() {
+					main.quit();
+				}
+			};
+			buttons[3] = new lib.ButtonText("Exit", exit,
+					window.height(), window.height()/2 + 186,
+					window.width() - window.height(), 24,
+					8, 6);
+		}
 	}
 
+	
 	/**
 	 * Updates all objects in the title scene
 	 * Called by Main class
@@ -115,8 +134,7 @@ public class Title extends Scene {
 			if (button.isMouseOver(mx, my)) {
 				button.act();
 			}
-		}
-		
+		}	
 	}
 
 	@Override
@@ -179,7 +197,7 @@ public class Title extends Scene {
 			graphics.print(title.substring(i, i+1), 74*4.5 + i * 14, 344, 1.8);
 		}
 		// Subtitle
-		String subtitle = "MQV Edition";
+		String subtitle = "PSA Edition";
 		a = radarAngle + (Math.PI * 4 / 5);
 		for (int i = 0; i < subtitle.length(); i++) {
 			a -= Math.PI / 32;
@@ -207,6 +225,7 @@ public class Title extends Scene {
 		graphics.line(window.height(), 48, window.width() - 16, 48);
 		graphics.print("Created by: Team FLR", window.height() + 8, 56);
 		graphics.print("Improved by: Team MQV", window.height() + 8, 68);
+		graphics.print("Perfected by: Team PSA", window.height() + 8, 80);
 		
 		// Draw Buttons
 		for (lib.ButtonText button : buttons) 
