@@ -25,7 +25,20 @@ public class AircraftTest {
 	@Test
 	public void testGetPosition() {
 		Vector resultPosition = test_aircraft.getPosition();
-		assertTrue("x >= -128 and xy <= 27, y = 0, z = 28,000 or z = 30,000", ((0 == resultPosition.getY()) && (128 >= resultPosition.getX()) && (-128 <= resultPosition.getX()) && ((28000 == resultPosition.getZ()) || (30000 == resultPosition.getZ()))));
+		boolean correctPosition = false;
+		// Altitude can be between 10000 and 30000 with an 1000 interval
+		for (int i = 10; i<30; i++){
+			 
+			if ((resultPosition.getZ() == i * 1000) &&
+					resultPosition.getY() == 0 &&
+					resultPosition.getX() >= -128) {
+				 correctPosition = true;
+			}
+		}
+		
+		
+		
+		assertTrue(correctPosition);
 	}
 	
 	@Test
