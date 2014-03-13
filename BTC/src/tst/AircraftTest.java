@@ -34,9 +34,7 @@ public class AircraftTest {
 					resultPosition.getX() >= -128) {
 				 correctPosition = true;
 			}
-		}
-		
-		
+		}		
 		
 		assertTrue(correctPosition);
 	}
