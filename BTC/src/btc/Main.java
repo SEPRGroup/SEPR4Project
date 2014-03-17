@@ -46,9 +46,11 @@ public class Main implements input.EventHandler {
 	public Main() {
 		start();
 		while(!window.isClosed()) {
+			//System.out.println("FRAME START");
 			time_difference = getTimeSinceLastFrame();
 			update(time_difference);
 			draw();
+			//System.out.println("FRAME END");
 		}
 		quit();
 	}

@@ -150,6 +150,7 @@ public class Altimeter implements EventHandler {
 	 */
 	private void drawAltitudes() {
 		graphics.setColour(0, 128, 0, 32);
+		//System.out.println("set Altimeter");
 		graphics.setViewport((int)positionX, (int)positionY, (int)width, (int)height);
 		int midX = (int)(width / 2);
 		int midY = (int)(height / 2);
@@ -162,6 +163,7 @@ public class Altimeter implements EventHandler {
 			graphics.print(String.valueOf(alt), midX + 72, y);
 			graphics.print(String.valueOf(alt), midX - 72 - 40, y);
 		}
+		//System.out.println("restore Altimeter");
 		graphics.setViewport();
 		graphics.setColour(graphics.green);
 	}
