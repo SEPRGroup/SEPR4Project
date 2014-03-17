@@ -122,16 +122,17 @@ public class Demo extends Scene {
 		/* All waypoints in the airspace, including location Way Points*/
 	
 		// Airspace waypoints
-		new Waypoint(125, 70, false),
-		new Waypoint(700, 100, false),
-		new Waypoint(1040, 80, false),
-		new Waypoint(500, 200, false),
-		new Waypoint(1050, 400, false),
-		new Waypoint(250, 400, false),
-		new Waypoint(200, 635, false),
-		new Waypoint(500, 655, false),
-		new Waypoint(800, 750, false),
-		new Waypoint(1000, 750, false),
+		new Waypoint(0.10*window.width(), 0.07*window.height(), false),
+		new Waypoint(0.55*window.width(), 0.1*window.height(), false),
+		new Waypoint(0.81*window.width(), 0.08*window.height(), false),
+		new Waypoint(0.39*window.width(), 0.21*window.height(), false),
+		new Waypoint(0.82*window.width(), 0.42*window.height(), false),
+		new Waypoint(0.20*window.width(), 0.42*window.height(), false),
+		new Waypoint(0.16*window.width(), 0.66*window.height(), false),
+		new Waypoint(0.39*window.width(), 0.68*window.height(), false),
+		new Waypoint(0.63*window.width(), 0.78*window.height(), false),
+		new Waypoint(0.78*window.width(), 0.78*window.height(), false),
+
 		// Destination/origin waypoints - present in this list for pathfinding.
 		location_waypoints[0],
 		location_waypoints[1],
@@ -225,6 +226,7 @@ public class Demo extends Scene {
 	@Override
 	public void start() {
 		background = graphics.newImage("gfx" + File.separator + "background_base.png");
+		
 		music = audio.newMusic("sfx" + File.separator + "Gypsy_Shoegazer.ogg");
 		music.play();
 		orders_box = new cls.OrdersBox(ORDERS_BOX.x, ORDERS_BOX.y, ORDERS_BOX.width, ORDERS_BOX.height, 6);
@@ -505,11 +507,12 @@ public class Demo extends Scene {
 		graphics.setViewport(airspace_view_offset_x, airspace_view_offset_y, window.width() - 32, window.height() - 176);
 		
 		graphics.setColour(255, 255, 255, 48);
-		graphics.draw(background, 0, 0);
+		graphics.draw(background, 0, 0, window.scale());	//{!} NOT accounting for fixed border size
 		graphics.setColour(255, 255, 255, 48);
 		airport.draw();
 		drawMap();	
 		graphics.setViewport();
+		
 		
 		if (selected_aircraft != null && selected_aircraft.isManuallyControlled()) {
 			selected_aircraft.drawCompass();
