@@ -81,8 +81,7 @@ public class FlightPlan {
 					(wp.getLocation().equals(destination.getLocation()) || !wp.isEntryAndExit()))
 			remaining_waypoints.add(wp);
 		}
-		
-		
+				
 		// Initialise the origin as the first point in the route.
 		// SelectedWaypoints.add(origin);
 		// To track our position as we generate the route. Initialise to the start of the route
@@ -131,14 +130,9 @@ public class FlightPlan {
 				
 				// remove a waypoint that has already been selected
 				remaining_waypoints.remove(cheapest);
-			}
-			
-			
-			
+			}		
 		} // End while
-		
-		
-		
+				
 		// Create a Waypoint[] to hold the new route
 		Waypoint[] route = new Waypoint[selected_waypoints.size()];
 		// Fill route with the selected waypoints
