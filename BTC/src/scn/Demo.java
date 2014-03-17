@@ -504,13 +504,16 @@ public class Demo extends Scene {
 		graphics.setColour(graphics.green);
 		graphics.rectangle(false, airspace_view_offset_x, airspace_view_offset_y, window.width() - 32, window.height() - 176);
 
-		graphics.setViewport(airspace_view_offset_x, airspace_view_offset_y, window.width() - 32, window.height() - 176);
+		//System.out.println("set Demo");
+		graphics.setViewport(airspace_view_offset_x, airspace_view_offset_y, window.width() - 32 -1, window.height() - 176 -1);
 		
-		graphics.setColour(255, 255, 255, 48);
+		graphics.setColour(255, 255, 255, 96);
 		graphics.draw(background, 0, 0, window.scale());	//{!} NOT accounting for fixed border size
-		graphics.setColour(255, 255, 255, 48);
+		graphics.setColour(255, 255, 255, 96);
 		airport.draw();
-		drawMap();	
+		drawMap();
+		
+		//System.out.println("restore Demo");
 		graphics.setViewport();
 		
 		
@@ -574,8 +577,6 @@ public class Demo extends Scene {
 		graphics.print(location_waypoints[2].getName(), location_waypoints[2].getLocation().getX() - 141, location_waypoints[2].getLocation().getY() - 6);
 		graphics.print(location_waypoints[3].getName(), location_waypoints[3].getLocation().getX() - 91, location_waypoints[3].getLocation().getY() - 6);
 		graphics.print(location_waypoints[4].getName(), location_waypoints[4].getLocation().getX() - 20, location_waypoints[4].getLocation().getY() + 25);
-		
-		graphics.setViewport();
 
 	}
 	
@@ -586,6 +587,7 @@ public class Demo extends Scene {
 		graphics.setColour(graphics.green);
 		graphics.rectangle(false, PLANE_INFO.x, PLANE_INFO.y, PLANE_INFO.width, PLANE_INFO.height);
 		if (selected_aircraft != null) {
+			//System.out.println("set Demo.planeInfo");
 			graphics.setViewport(PLANE_INFO.x, PLANE_INFO.y, PLANE_INFO.width, PLANE_INFO.height);
 			graphics.printCentred(selected_aircraft.getName(), 0, 5, 2, PLANE_INFO.width);
 			// Altitude
@@ -602,6 +604,7 @@ public class Demo extends Scene {
 			// Destination
 			graphics.print("Destination:", 10, 85);
 			graphics.print(selected_aircraft.getFlightPlan().getDestinationName(), PLANE_INFO.width - 10 - selected_aircraft.getFlightPlan().getDestinationName().length()*8, 85);
+			//System.out.println("restore Demo.planeInfo");
 			graphics.setViewport();
 		}
 	}

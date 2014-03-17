@@ -2,6 +2,7 @@ package lib.jog;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Stack;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -324,7 +325,7 @@ public abstract class graphics {
 	
 	private static Font current_font;
 	private static Color current_colour;
-	private static boolean viewport_enabled;
+	private static Stack<Viewport> views;
 	
 	/**
 	 * Intialises OpenGL with the appropriate matrix modes and orthographic dimensions. 
@@ -336,7 +337,8 @@ public abstract class graphics {
 		glMatrixMode(GL_MODELVIEW);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		viewport_enabled = false;
+		views = new Stack<Viewport>();
+		setViewport(0,0, window.width(),window.height());
 	}
 
 	/**
@@ -394,21 +396,29 @@ public abstract class graphics {
 	 * @param height the height of the new viewport, in pixels.
 	 */
 	static public void setViewport(int x, int y, int width, int height) {
+		Viewport v = new Viewport(String.valueOf(views.size()), x,y, width, height);
+		if (views.size() == 1) glEnable(GL_SCISSOR_TEST);
+		views.push(v);
+		//System.out.println("\tSET " +v.toString());
 		glPushMatrix();
 		glTranslated(x, -y, 0);
 		y = window.height() - y;
-		glEnable(GL_SCISSOR_TEST);		
 		glScissor(x, y - height, width, height);
-		viewport_enabled = true;
 	}
 	
 	/**
 	 * Sets the current viewport back to the default, that is, the window.
 	 */
 	static public void setViewport() {
-		glDisable(GL_SCISSOR_TEST);
+		views.pop();
+		//System.out.println("\tRESTORE " +v.toString());
 		glPopMatrix();
-		viewport_enabled = false;
+		if (views.size() == 1) 
+			glDisable(GL_SCISSOR_TEST);
+		else {
+			Viewport v = views.peek();
+			glScissor(v.x, v.y -v.height, v.width, v.height);
+		}
 	}
 
 	/**
@@ -552,13 +562,14 @@ public abstract class graphics {
 	 */
 	static public void draw(Image drawable, double x, double y, double scale) {
 		y = window.height() - y;
-		double w = drawable.width() *scale;
-		double h = -drawable.height() *scale;
+		double w = drawable.width();
+		double h = -drawable.height();
 
 		glEnable(GL_TEXTURE_2D);
 		drawable.texture.bind();
 		glPushMatrix();
 		glTranslated(x, y, 0);
+		glScaled(scale, scale, 1);
 		glBegin(GL_QUADS);
 			glTexCoord2d(0, 0);
 			glVertex2d(0, 0);
@@ -800,7 +811,7 @@ public abstract class graphics {
 			e.printStackTrace();
 		}
 		*/
-		if (viewport_enabled) setViewport();
+		//GL11.glDisable(GL_SCISSOR_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glColor3d(1, 1, 1);
 	}
