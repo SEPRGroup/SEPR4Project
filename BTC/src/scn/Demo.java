@@ -359,7 +359,6 @@ public class Demo extends Scene {
 	public static void takeOffSequence(Aircraft aircraft) {
 		aircraft_in_airspace.add(aircraft);
 		// Space to implement some animation features?
-		airport.is_active = false;
 	}
 
 	/**
