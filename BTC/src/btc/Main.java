@@ -22,7 +22,7 @@ public class Main implements input.EventHandler {
 		new Main();
 	}
 	
-	final private String TITLE = "Bear Traffic Controller: MQV Edition";
+	final private String TITLE = "Bear Traffic Controller: PSA Edition";
 	final private int TARGET_WIDTH = 1280;
 	final private int TARGET_HEIGHT = 960;
 	final private String[] ICON_FILENAMES = {
