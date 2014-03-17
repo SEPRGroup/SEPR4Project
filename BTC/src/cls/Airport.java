@@ -20,6 +20,9 @@ public class Airport extends Waypoint implements EventHandler {
 	private static double arrivals_width = 105;
 	private static double arrivals_height = 52;
 	
+	private static double runway_end_x_location = x_location + 120;
+	private static double runway_end_y_location = y_location - 65;
+	
 	private static double departures_x_location = x_location + 2;
 	private static double departures_y_location = y_location + 50;
 	private static double departures_width = 50;
@@ -100,7 +103,9 @@ public class Airport extends Waypoint implements EventHandler {
 			// Print number of aircraft waiting
 			graphics.setColour(255, 255, 255, 128);
 			graphics.print(Integer.toString(aircraft_waiting_to_land.size()), arrivals_x_location-airport.width()/2 + 50, arrivals_y_location-airport.height()/2 + 26);
-		}		
+		}	
+		graphics.setColour(255, 255, 255, 128);
+		graphics.print(Integer.toString(1), x_location+120, y_location-65);
 	}
 	
 	public double getLongestTimeInHangar(double currentTime) {
@@ -169,6 +174,9 @@ public class Airport extends Waypoint implements EventHandler {
 	
 	public int getHangarSize() {
 		return hangar_size;
+	}
+	public Vector getRunwayLocation(){
+		return new Vector(runway_end_x_location, runway_end_y_location, 0);
 	}
 
 	@Override

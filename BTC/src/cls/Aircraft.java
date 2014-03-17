@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import scn.Demo;
-import lib.RandomNumber;
 import lib.jog.audio;
 import lib.jog.graphics;
 import lib.jog.input;
@@ -57,7 +56,7 @@ public class Aircraft {
 	private java.util.ArrayList<Aircraft> planes_too_near = new java.util.ArrayList<Aircraft>(); // Holds a list of planes currently in violation of separation rules with this plane
 	
 	private int 
-		current_altitude, interval_altitude, // will increase to the current altitude  
+		last_altitude,// interval_altitude, // will increase to the current altitude  
 		min_altitude = 10000, max_altitude = 30000; 
 	/**
 	 * Static ints for use where altitude state is to be changed.
@@ -191,7 +190,7 @@ public class Aircraft {
 		manual_bearing_target = newHeading;
 	}
 	
-	private void setAltitude(int height) {
+	private void setClimbRate(int height) {
 		velocity.setZ(height);
 	}
 	
@@ -218,14 +217,18 @@ public class Aircraft {
 		creation_time = System.currentTimeMillis() / 1000; // System time when aircraft was created in seconds.
 		position = origin_point.getLocation();
 		
-		Random rand = new Random();
-		current_altitude = min_altitude + (rand.nextInt((max_altitude - min_altitude)/1000))* 1000;
-		position = position.add(new Vector(0, 0, current_altitude));
+		
 
 		if (origin_point.getLocation() == Demo.airport.getLocation()) {
 			position = position.add(new Vector(-80, -50, 0)); // Start at departures
 			position.setZ(0);
 		}
+		else {
+			Random rand = new Random();
+			last_altitude = min_altitude + (rand.nextInt((max_altitude - min_altitude)/1000))* 1000;
+			position = position.add(new Vector(0, 0, last_altitude));
+		}
+		
 		// Calculate initial velocity (direction)
 		current_target = flight_plan.getRoute()[0].getLocation();
 		if(origin_point.getName() == Demo.airport.getName()){
@@ -358,22 +361,40 @@ public class Aircraft {
 		
 		// Update altitude
 		if (is_landing) {
-			if (position.getZ() > 100) { 
-				position.setZ(position.getZ() - 2501 * time_difference); // Decrease altitude rapidly (2501/second), ~11 seconds to fully descend
+			if (position.getZ() > 500) { 
+				position.setZ(position.getZ() - altitude_change_speed * time_difference);
+				//position.setZ(position.getZ() - 2501 * time_difference); // Decrease altitude rapidly (2501/second), ~11 seconds to fully descend
 			} else { // Gone too low, land it now
-				Demo.airport.is_active = false;
-				has_finished = true;
+				//Demo.airport.is_active = false;
+				//has_finished = true;
+			}
+		} else if(is_takeoff){
+			if(velocity.magnitude() >= takeoff_velocity){
+				setAltitudeState(ALTITUDE_CLIMB);
+				climb();
 			}
 		} else {
 			switch (altitude_state) {
-			case -1:
+			case ALTITUDE_FALL:
 				fall();				
 				break;
-			case 0:
+			case ALTITUDE_LEVEL:
 				break;
-			case 1:
+			case ALTITUDE_CLIMB:
 				climb();				
 				break;
+			}
+			if(flight_plan.getOriginName() == Demo.airport.getName()){
+				if(position.getZ() < 10000){
+					setAltitudeState(ALTITUDE_CLIMB);
+					climb();
+				} else{
+					setAltitudeState(ALTITUDE_LEVEL);
+					climb();
+				}
+			}
+			if(position.getZ() >10000 && flight_plan.getOriginName() == Demo.airport.getName()){
+				System.out.println("");
 			}
 		}
 		
@@ -383,7 +404,8 @@ public class Aircraft {
 		
 		currently_turning_by = 0;
 		if(!is_takeoff){
-			// Update target		
+			
+			// Update target	
 			if (current_target.equals(flight_plan.getDestination()) && isAtDestination()) { // At finishing point
 				if (!is_waiting_to_land) { // Ready to land
 					has_finished = true;
@@ -396,23 +418,36 @@ public class Aircraft {
 				// Next target is the destination if you're at the end of the plan, otherwise it's the next waypoint
 				current_target = current_route_stage >= flight_plan.getRoute().length ? flight_plan.getDestination() : flight_plan.getRoute()[current_route_stage].getLocation();
 			}
-	
+			if(is_landing){
+				current_target = Demo.airport.getRunwayLocation();
+				current_target = current_target.add(new Vector(100,50,0));
+			}
 			// Update bearing
-			if (Math.abs(angleToTarget() - getBearing()) > 0.01) {
-				turnTowardsTarget(time_difference);
+			if(is_landing){
+				if(position.getZ() > 500){
+					turnTowardsTarget(time_difference);
+				}else{
+					//current_target = new Vector(Demo.airport.getLocation().getX()+,Demo.airport.getLocation().getX(),0);
+					turnTowardsTarget(time_difference);
+					
+					
+					//this.t
+				}
+				
+				
+			}else{
+				if (Math.abs(angleToTarget() - getBearing()) > 0.01) {
+					turnTowardsTarget(time_difference);
+				}
 			}
 		}else{
+			
 			//checks to move flight out of is_takeoff
 			if(velocity.magnitude() >= takeoff_velocity){
-				//System.out.println("take off success!");
-				//is_takeoff = false;
-				//this.is_manually_controlled = false;
-				setAltitudeState(ALTITUDE_CLIMB);
-				climb();
-				if(this.position.getZ()> 2000){
+				Demo.airport.is_active = false;
+				if(position.getZ()> 2000){
 					is_takeoff = false;
 					is_manually_controlled = false;
-					setAltitudeState(ALTITUDE_LEVEL);
 				}
 			}else{
 				double velocity_mag = velocity.magnitude();
@@ -476,7 +511,7 @@ public class Aircraft {
 		}
 		
 		double scale = 2*(position.getZ()/30000); // Planes with lower altitude are smaller
-		if (scale < 1){
+		if (scale < 1){ //caps the size of planes so they don't get infinitely small
 			scale = 1;
 		}
 		// Draw plane image
@@ -564,7 +599,7 @@ public class Aircraft {
 		Waypoint[] route = flight_plan.getRoute();
 		Vector destination = flight_plan.getDestination();
 		
-		if (current_target != destination) {
+		if (current_target != destination && !is_landing) {
 			// Draw line from plane to next waypoint
 			graphics.line(position.getX()-image.width()/2, position.getY()-image.height()/2, route[current_route_stage].getLocation().getX(), route[current_route_stage].getLocation().getY());
 		} else {
@@ -674,30 +709,36 @@ public class Aircraft {
 	// value as the current_altitude then the plane will cease climbing/falling
 		
 	private void climb() {
-		interval_altitude = (int)position.getZ() - 1000;
-		if ((int)position.getZ() >= max_altitude){
-			position = new Vector(position.getX(), position.getY(), max_altitude);	
-		}else if (interval_altitude < current_altitude && altitude_state == ALTITUDE_CLIMB){
-			setAltitude(altitude_change_speed);
-		}else if(interval_altitude >= current_altitude){
-			setAltitude(0);
+		
+		if ((int)position.getZ()  > max_altitude){
+			position.setZ(max_altitude);
+			setClimbRate(0);
 			altitude_state = ALTITUDE_LEVEL;
-			current_altitude = (int)position.getZ();
+		}else if ( (int)position.getZ() -1000 < last_altitude && altitude_state == ALTITUDE_CLIMB){
+			setClimbRate(altitude_change_speed);	//set velocity to climb
+		}else if( (int)position.getZ() - 1000 >= last_altitude){
+			setClimbRate(0);
+			altitude_state = ALTITUDE_LEVEL;
+			last_altitude += 1000;
+			position.setZ(last_altitude);
 		}
 		
 		
 	}
 
 	private void fall() {
-		interval_altitude = (int)position.getZ() + 1000;	
-		if ((int)position.getZ() <= min_altitude){
-			position = new Vector(position.getX(), position.getY(), min_altitude);
-		}else if(interval_altitude > current_altitude && altitude_state == ALTITUDE_FALL){
-				setAltitude(-altitude_change_speed);
-		}else if(interval_altitude <= current_altitude){
-				setAltitude(0);
+		if ((int)position.getZ() < min_altitude){ //if at the floor stop
+			position.setZ(min_altitude);
+			setClimbRate(0);
+			altitude_state = ALTITUDE_LEVEL;
+		}else if( (int)position.getZ() +1000 > last_altitude ){//&& altitude_state == ALTITUDE_FALL){
+
+				setClimbRate(-altitude_change_speed);	//set velocity to climb
+		}else if( (int)position.getZ() +1000 <= last_altitude){
+				setClimbRate(0);
 				altitude_state = ALTITUDE_LEVEL;
-				current_altitude = (int)position.getZ();
+				last_altitude -= 1000;
+				position.setZ(last_altitude);
 		}
 		
 		
@@ -715,8 +756,6 @@ public class Aircraft {
 		is_manually_controlled = true;
 		is_takeoff = true;
 		Demo.takeOffSequence(this);
-		//velocity
-		
 		creation_time = System.currentTimeMillis() / 1000; // Reset creation time
 	}
 
