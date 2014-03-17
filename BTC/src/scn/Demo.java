@@ -428,22 +428,23 @@ public class Demo extends Scene {
 		}
 		airport.update(this);
 		if (selected_aircraft != null) {
-			if (selected_aircraft.isManuallyControlled()) {
-				if (input.keyPressed(new int[]{input.KEY_LEFT, input.KEY_A})) {
-					selected_aircraft.turnLeft(time_difference);
-				} else if (input.keyPressed(new int[]{input.KEY_RIGHT, input.KEY_D})) {
-					selected_aircraft.turnRight(time_difference);
+			if(!selected_aircraft.is_takeoff()){
+				if (selected_aircraft.isManuallyControlled()) {
+					if (input.keyPressed(new int[]{input.KEY_LEFT, input.KEY_A})) {
+						selected_aircraft.turnLeft(time_difference);
+					} else if (input.keyPressed(new int[]{input.KEY_RIGHT, input.KEY_D})) {
+						selected_aircraft.turnRight(time_difference);
+					}
+				} else if (input.keyPressed(new int[]{input.KEY_LEFT, input.KEY_A, input.KEY_RIGHT, input.KEY_D})) {
+					toggleManualControl();
 				}
-			} else if (input.keyPressed(new int[]{input.KEY_LEFT, input.KEY_A, input.KEY_RIGHT, input.KEY_D})) {
-				toggleManualControl();
-			}
-			
-			if (input.keyPressed(new int[]{input.KEY_S, input.KEY_DOWN})) {
-				selected_aircraft.setAltitudeState(Aircraft.ALTITUDE_FALL);
-			} else if (input.keyPressed(new int[]{input.KEY_W, input.KEY_UP})) {
-				selected_aircraft.setAltitudeState(Aircraft.ALTITUDE_CLIMB);
-			}
 				
+				if (input.keyPressed(new int[]{input.KEY_S, input.KEY_DOWN})) {
+					selected_aircraft.setAltitudeState(Aircraft.ALTITUDE_FALL);
+				} else if (input.keyPressed(new int[]{input.KEY_W, input.KEY_UP})) {
+					selected_aircraft.setAltitudeState(Aircraft.ALTITUDE_CLIMB);
+				}
+			}	
 			if (selected_aircraft.isOutOfAirspaceBounds()) {
 				orders_box.addOrder(">>> " + selected_aircraft.getName() + " out of bounds, returning to route");
 				deselectAircraft();
@@ -517,7 +518,7 @@ public class Demo extends Scene {
 		graphics.setViewport();
 		
 		
-		if (selected_aircraft != null && selected_aircraft.isManuallyControlled()) {
+		if (selected_aircraft != null && selected_aircraft.isManuallyControlled() && !selected_aircraft.is_takeoff()) {
 			selected_aircraft.drawCompass();
 		}
 		

@@ -37,11 +37,14 @@ public class Aircraft {
 	private int altitude_change_speed; // The speed to climb or fall by. Depends on difficulty
 	private FlightPlan flight_plan;
 	private boolean is_landing = false;
+	private boolean is_takeoff = false;
 	
 	public Vector current_target; // The position the plane is currently flying towards (if not manually controlled).
 	private double manual_bearing_target = Double.NaN;
 	private int current_route_stage = 0;
 	private int altitude_state; // Whether the plane is climbing or falling
+	private int takeoff_velocity = 32;
+	
 
 	private double departure_time; // Used when calculating when a label representing the score a particular plane scored should disappear
 
@@ -215,19 +218,24 @@ public class Aircraft {
 		creation_time = System.currentTimeMillis() / 1000; // System time when aircraft was created in seconds.
 		position = origin_point.getLocation();
 		
-		if (origin_point.getLocation() == Demo.airport.getLocation()) {
-			position = position.add(new Vector(-100, -70, 0)); // Start at departures
-		}
-		
 		Random rand = new Random();
 		current_altitude = min_altitude + (rand.nextInt((max_altitude - min_altitude)/1000))* 1000;
 		position = position.add(new Vector(0, 0, current_altitude));
 
+		if (origin_point.getLocation() == Demo.airport.getLocation()) {
+			position = position.add(new Vector(-80, -50, 0)); // Start at departures
+			position.setZ(0);
+		}
 		// Calculate initial velocity (direction)
 		current_target = flight_plan.getRoute()[0].getLocation();
-		double x = current_target.getX() - position.getX();
-		double y = current_target.getY() - position.getY();
-		velocity = new Vector(x, y, 0).normalise().scaleBy(speed);
+		if(origin_point.getName() == Demo.airport.getName()){
+			velocity = new Vector(1, 0, 0);
+		}else{
+		 double x = current_target.getX() - position.getX();
+		 double y = current_target.getY() - position.getY();
+		 velocity = new Vector(x, y, 0).normalise().scaleBy(speed);
+		}
+		
 
 		is_waiting_to_land = flight_plan.getDestination().equals(Demo.airport.getLocation());
 
@@ -368,30 +376,49 @@ public class Aircraft {
 				break;
 			}
 		}
-
+		
 		// Update position
 		Vector dv = velocity.scaleBy(time_difference);
 		position = position.add(dv);
-
+		
 		currently_turning_by = 0;
-
-		// Update target		
-		if (current_target.equals(flight_plan.getDestination()) && isAtDestination()) { // At finishing point
-			if (!is_waiting_to_land) { // Ready to land
-				has_finished = true;
-				if (flight_plan.getDestination().equals(Demo.airport.getLocation())) { // Landed at airport
-					Demo.airport.is_active = false;
+		if(!is_takeoff){
+			// Update target		
+			if (current_target.equals(flight_plan.getDestination()) && isAtDestination()) { // At finishing point
+				if (!is_waiting_to_land) { // Ready to land
+					has_finished = true;
+					if (flight_plan.getDestination().equals(Demo.airport.getLocation())) { // Landed at airport
+						Demo.airport.is_active = false;
+					}
 				}
+			} else if (isAt(current_target)) {
+				current_route_stage++;
+				// Next target is the destination if you're at the end of the plan, otherwise it's the next waypoint
+				current_target = current_route_stage >= flight_plan.getRoute().length ? flight_plan.getDestination() : flight_plan.getRoute()[current_route_stage].getLocation();
 			}
-		} else if (isAt(current_target)) {
-			current_route_stage++;
-			// Next target is the destination if you're at the end of the plan, otherwise it's the next waypoint
-			current_target = current_route_stage >= flight_plan.getRoute().length ? flight_plan.getDestination() : flight_plan.getRoute()[current_route_stage].getLocation();
-		}
-
-		// Update bearing
-		if (Math.abs(angleToTarget() - getBearing()) > 0.01) {
-			turnTowardsTarget(time_difference);
+	
+			// Update bearing
+			if (Math.abs(angleToTarget() - getBearing()) > 0.01) {
+				turnTowardsTarget(time_difference);
+			}
+		}else{
+			//checks to move flight out of is_takeoff
+			if(velocity.magnitude() >= takeoff_velocity){
+				//System.out.println("take off success!");
+				//is_takeoff = false;
+				//this.is_manually_controlled = false;
+				setAltitudeState(ALTITUDE_CLIMB);
+				climb();
+				if(this.position.getZ()> 2000){
+					is_takeoff = false;
+					is_manually_controlled = false;
+					setAltitudeState(ALTITUDE_LEVEL);
+				}
+			}else{
+				double velocity_mag = velocity.magnitude();
+				velocity = velocity.normalise().scaleBy(velocity_mag + 0.05);
+			}
+			
 		}
 	}
 
@@ -447,8 +474,11 @@ public class Aircraft {
 		} else { // If it's not 28000-30000, then it's currently landing
 			alpha = 128; 
 		}
-		double scale = 2*(position.getZ()/30000); // Planes with lower altitude are smaller
 		
+		double scale = 2*(position.getZ()/30000); // Planes with lower altitude are smaller
+		if (scale < 1){
+			scale = 1;
+		}
 		// Draw plane image
 		graphics.setColour(128, 128, 128, alpha);
 		graphics.draw(image, scale, position.getX()-image.width()/2, position.getY()-image.height()/2, getBearing(), 8, 8);
@@ -682,7 +712,11 @@ public class Aircraft {
 
 	public void takeOff() {
 		Demo.airport.is_active = true;
+		is_manually_controlled = true;
+		is_takeoff = true;
 		Demo.takeOffSequence(this);
+		//velocity
+		
 		creation_time = System.currentTimeMillis() / 1000; // Reset creation time
 	}
 
@@ -695,5 +729,9 @@ public class Aircraft {
 		double x = this.getPosition().getX() - position.getX();
 		double y = this.getPosition().getY() - position.getY();
 		return x*x + y*y <= 300*300;
+	}
+
+	public boolean is_takeoff() {
+		return is_takeoff;
 	}
 }
