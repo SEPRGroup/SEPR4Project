@@ -1,6 +1,7 @@
 package cls;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class FlightPlan {	
 	private Waypoint[] route;
@@ -67,6 +68,21 @@ public class FlightPlan {
 	private Waypoint[] findGreedyRoute(Waypoint origin, Waypoint destination, Waypoint[] waypoints) {
 		// To hold the route as we generate it.
 		ArrayList<Waypoint> selected_waypoints = new ArrayList<Waypoint>();
+		// Will hold the waypoints can be selected and omit all the waypoints
+		// that aren't necessary
+		ArrayList<Waypoint> remaining_waypoints = new ArrayList<Waypoint>();
+		
+		double originalCost = 0;
+		
+		// Add all waypoints to list omitting redundant entry and exit points and the
+		// original waypoint
+		for (Waypoint wp : waypoints){
+			if (!(wp.getLocation().equals(origin.getLocation())) &&
+					(wp.getLocation().equals(destination.getLocation()) || !wp.isEntryAndExit()))
+			remaining_waypoints.add(wp);
+		}
+		
+		
 		// Initialise the origin as the first point in the route.
 		// SelectedWaypoints.add(origin);
 		// To track our position as we generate the route. Initialise to the start of the route
@@ -74,59 +90,55 @@ public class FlightPlan {
 
 		// To track the closest next waypoint
 		double cost = Double.MAX_VALUE;
-		Waypoint cheapest = null;
+		Waypoint cheapest = remaining_waypoints.get(0);
+		Waypoint secondCheapest = null;
 		// To track if the route is complete
 		boolean at_destination = false;
 
 		while (!at_destination) {
-			for (Waypoint point : waypoints) {
-				boolean skip = false;
-
-				for (Waypoint route_point : selected_waypoints) {
-					// Check we have not already selected the waypoint
-					// If we have, skip evaluating the point
-					// This protects the aircraft from getting stuck looping between points
-					if (route_point.getLocation().equals(point.getLocation())) {
-						skip = true; // Flag to skip
-						break; // No need to check rest of list, already found a match.
+			// loop through remaining waypoints finding the two closest waypoints
+			// to get to the destination
+			for (Waypoint wp: remaining_waypoints) {
+				
+				originalCost = wp.getDistanceFrom(current_position);
+				secondCheapest = cheapest;
+				
+				if (originalCost < cost){
+					// if it is not the destination then select the closest waypoint otherwise select the destination waypoint
+					if (!(Waypoint.getCostBetween(current_position, destination) < Waypoint.getCostBetween(wp, destination))) {
+						cheapest = wp;
+						cost = originalCost;						
 					}
-				}
-				// Do not consider the waypoint we are currently at or the origin
-				// Do not consider offscreen waypoints which are not the destination
-				// Also skip if flagged as a previously selected waypoint
-				if (skip | point.getLocation().equals(current_position.getLocation()) | point.getLocation().equals(origin.getLocation())
-						| (point.isEntryAndExit() && !(point.getLocation().equals(destination.getLocation())))) {
-					skip = false; // Reset flag
-					continue;
-				} else {
-					/*
-					 * Get cost of visiting waypoint 
-					 * Compare cost vs current cheapest 
-					 * If smaller, replace
-					 */
-					if (point.getDistanceFrom(current_position) + 0.5 * Waypoint.getCostBetween(point, destination) < cost) {
-						// Cheaper route found, update
-						cheapest = point;
-						cost = point.getDistanceFrom(current_position) + 0.5 * Waypoint.getCostBetween(point, destination);
-					}
-				}
-
-			} // End for - evaluated all waypoints
-			// The cheapest waypoint must have been found
-			assert cheapest != null : "The cheapest waypoint was not found";
-
-			if (cheapest.getLocation().equals(destination.getLocation())) {
-				// Route has reached destination, break out of while loop
-				at_destination = true;
+				}		
 			}
-			// Update the selected route
-			// Consider further points in route from the position of the selected point
-			selected_waypoints.add(cheapest);
-			current_position = cheapest;
-			// Resaturate cost for next loop
-			cost = Double.MAX_VALUE;
-
+			
+			assert cheapest != null;
+			
+			// assign a random waypoint from the two closest waypoints to the list
+			// of waypoints
+			if (cheapest.getLocation().equals(destination.getLocation())) {
+				at_destination = true;
+				selected_waypoints.add(cheapest);
+			} else {
+				// {!} This may need checking, visually cannot tell if it works
+				Random rand = new Random();
+				int x = rand.nextInt(1);
+				
+				Waypoint selected = (x == 1) ? cheapest : secondCheapest;
+				selected_waypoints.add(selected);
+				current_position = cheapest;
+				cost = Double.MAX_VALUE;
+				
+				// remove a waypoint that has already been selected
+				remaining_waypoints.remove(cheapest);
+			}
+			
+			
+			
 		} // End while
+		
+		
+		
 		// Create a Waypoint[] to hold the new route
 		Waypoint[] route = new Waypoint[selected_waypoints.size()];
 		// Fill route with the selected waypoints
