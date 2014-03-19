@@ -281,18 +281,52 @@ public class Demo extends Scene {
 	}
 	
 	/**
-	 * Creates a new aircraft object and introduces it to the airspace. 
+	 * Creates a new aircraft object and introduces it to the airspace.
+	 * Also doesn't spawn a plane that is to close to another so there is 
+	 * not an instant crash when spawning 
 	 */
 	private void generateFlight() {
-		Aircraft a = createAircraft();
-		if (a != null) {
-			if (a.getFlightPlan().getOriginName().equals(airport.name)) {
-				orders_box.addOrder("<<< " + a.getName() + " is awaiting take off from " + a.getFlightPlan().getOriginName() + " heading towards " + a.getFlightPlan().getDestinationName() + ".");
-				airport.addToHangar(a);
-			} else {
-				orders_box.addOrder("<<< " + a.getName() + " incoming from " + a.getFlightPlan().getOriginName() + " heading towards " + a.getFlightPlan().getDestinationName() + ".");
-				aircraft_in_airspace.add(a);
+				
+		Aircraft aircraft = createAircraft();
+		boolean isTooClose = false;
+		
+		if (aircraft != null) {
+			// go through all the aircrafts currently in the airspace
+			for (Aircraft a : aircraft_in_airspace) {
+				// check the distance from the current selected aircraft and the aircraft waiting to be spawned
+				int distanceX = (int)(Math.abs(Math.round(a.getPosition().getX()) - Math.round(aircraft.getFlightPlan()
+						.getRoute()[0]
+						.getLocation()
+						.getX())));
+				
+				int distanceY = (int)(Math.abs(Math.round(a.getPosition().getY()) - Math.round(aircraft.getFlightPlan()
+						.getRoute()[0]
+						.getLocation()
+						.getY())));
+				
+				int distanceFromEachPlane = (int)Math.sqrt((int)Math.pow(distanceX, 2) + (int) Math.pow(distanceY, 2));
+				
+				// if the distance is less than certain amount then aircraft is too close to be spawned
+				if (distanceFromEachPlane <= 100) {
+					isTooClose = true;
+				}				
+			}			
+			
+			if (!isTooClose) { // Continue only if aricraft is not too close
+				if (aircraft.getFlightPlan().getOriginName().equals(airport.name)) {
+					orders_box.addOrder("<<< " + aircraft.getName() 
+							+ " is awaiting take off from " 
+							+ aircraft.getFlightPlan().getOriginName()
+							+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
+					airport.addToHangar(aircraft);
+				} else {
+					orders_box.addOrder("<<< " + aircraft.getName() 
+							+ " incoming from " + aircraft.getFlightPlan().getOriginName() 
+							+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
+					aircraft_in_airspace.add(aircraft);
+				}
 			}
+			
 		}
 	}
 	
