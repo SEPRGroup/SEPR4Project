@@ -697,7 +697,7 @@ public class Aircraft {
 	}
 
 	private void resetBearing() {
-		if (current_route_stage < flight_plan.getRoute().length & flight_plan.getRoute()[current_route_stage] != null) {
+		if (current_route_stage < flight_plan.getRoute().length && flight_plan.getRoute()[current_route_stage] != null) {
 			current_target = flight_plan.getRoute()[current_route_stage].getLocation();
 		}
 		turnTowardsTarget(0);
