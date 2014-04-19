@@ -16,27 +16,8 @@ import cls.Waypoint;
 import btc.Main;
 
 public class Demo extends Scene {
-	// Due to the way the airspace elements are drawn (graphics.setviewport) these variables are needed to manually adjust mouse listeners and elements
-	// drawn outside the airspace so that they align with the airspace elements. These variables can be used to adjust the size of the airspace view.
-	public final static int airspace_view_offset_x = 16;
-	public final static int airspace_view_offset_y = 48;
-	
-	// Position of things drawn to window  
-	private static final Rectangle PLANE_INFO = 
-			new Rectangle (16, window.height()-120, 
-			               (window.width()-56)/4, 112 );
-	
-	private static final Rectangle ALTIMETER = 
-			new Rectangle (24 +(window.width()-56)/4, window.height() -120, 
-			               (window.width()-56)/5, 112 );
-	
-	private static final Rectangle AIRPORT_CONTROL = 
-			new Rectangle (32 +((window.width()-56)*9/20), window.height() -120, 
-			               (window.width()-56)/5, 112 );
-	
-	private static final Rectangle ORDERS_BOX = 
-			new Rectangle (40 +((window.width()-56)*13/20), window.height() -120, 
-			               (window.width()-56)*7/20, 112 );
+
+	//****** REBUILD PROGRESS MARKER ******
 	
 	private cls.Score score; 	
 	private boolean shown_aircraft_waiting_message = false;
@@ -59,7 +40,7 @@ public class Demo extends Scene {
 	 * An image to be used for aircraft
 	 * Expand to list of images for multiple aircraft appearances
 	 */
-	private graphics.Image aircraft_image;
+	private static graphics.Image aircraft_image;
 	
 	/**
 	 * A button to start and end manual control of an aircraft
@@ -96,7 +77,7 @@ public class Demo extends Scene {
 	/**
 	 * The background to draw in the airspace.
 	 */
-	private graphics.Image background;
+	private static graphics.Image background;
 	
 	/**
 	 * Demo's instance of the airport class
@@ -857,7 +838,7 @@ public class Demo extends Scene {
 				toggleManualControl();
 			break;
 			
-			case input.KEY_LCRTL :
+			case input.KEY_LCRTL :	//{!} for debug only
 				generateFlight();
 			break;
 			
@@ -867,7 +848,7 @@ public class Demo extends Scene {
 				main.closeScene();
 			break;
 			
-			case input.KEY_F5 :
+			case input.KEY_F5 :	//{!} for debug only
 				Aircraft a1 = createAircraft();
 				Aircraft a2 = createAircraft();
 				gameOver(a1, a2);
