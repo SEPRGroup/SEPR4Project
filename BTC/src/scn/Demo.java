@@ -616,34 +616,32 @@ public class Demo extends Scene {
 	private void drawPlaneScoreLabels() {
 		Aircraft aircraft_to_remove = null;
 		int displayed_for = 2000; // How long the label will be displayed for
-		if (recently_departed_aircraft.size() != 0) {
-			for (Aircraft plane : recently_departed_aircraft) {
-				if (plane != null) {
-					double current_time = System.currentTimeMillis(); // Current (system) time
-					double departure_time = plane.getTimeOfDeparture(); // Time when the plane successfully left airspace 
-					double left_airspace_for = current_time - departure_time; // How long since the plane left airspace
-					if (left_airspace_for > displayed_for) {
-						aircraft_to_remove = plane;
-					}
-					else {
-						int score_text_alpha =  (int)((displayed_for - left_airspace_for)/displayed_for * 255); // Transparency of the label, 255 is opaque
-						String plane_score_value = String.valueOf(plane.getScore() * score.getMultiplier());
-						// Drawing the score
-						int score_text_x = (int) plane.getFlightPlan().getRoute()[plane.getFlightPlan().getRoute().length -1].getLocation().getX();
-						int score_text_y = (int) plane.getFlightPlan().getRoute()[plane.getFlightPlan().getRoute().length -1].getLocation().getY();
-						graphics.setColour(255, 255, 255, score_text_alpha);
-						if (score_text_x < 40) score_text_x += 50;
-						if (score_text_y < 40) score_text_y += 50;
-						if (score_text_x > 1000) score_text_x -= 50;
-						if (score_text_y > 1000) score_text_y -= 50;
-						graphics.print(plane_score_value, score_text_x, score_text_y, 2);
-					}
-				}
-			} 
-			if (aircraft_to_remove != null)
-				recently_departed_aircraft.remove(aircraft_to_remove);
-		}
-		
+		for (Aircraft plane : recently_departed_aircraft) {
+
+			double current_time = System.currentTimeMillis(); // Current (system) time
+			double departure_time = plane.getTimeOfDeparture(); // Time when the plane successfully left airspace 
+			double left_airspace_for = current_time - departure_time; // How long since the plane left airspace
+			if (left_airspace_for > displayed_for) {
+				aircraft_to_remove = plane;
+			}
+			else {
+				int score_text_alpha =  (int)((displayed_for - left_airspace_for)/displayed_for * 255); // Transparency of the label, 255 is opaque
+				String plane_score_value = String.valueOf(plane.getScore() * score.getMultiplier());
+				// Drawing the score
+				int score_text_x = (int) plane.getFlightPlan().getRoute()[plane.getFlightPlan().getRoute().length -1].getLocation().getX();
+				int score_text_y = (int) plane.getFlightPlan().getRoute()[plane.getFlightPlan().getRoute().length -1].getLocation().getY();
+				graphics.setColour(255, 255, 255, score_text_alpha);
+				if (score_text_x < 40) score_text_x += 50;
+				if (score_text_y < 40) score_text_y += 50;
+				if (score_text_x > 1000) score_text_x -= 50;
+				if (score_text_y > 1000) score_text_y -= 50;
+				graphics.print(plane_score_value, score_text_x, score_text_y, 2);
+			}
+
+		} 
+		if (aircraft_to_remove != null)
+			recently_departed_aircraft.remove(aircraft_to_remove);
+				
 	}
 		
 	
