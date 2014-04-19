@@ -3,6 +3,8 @@ package lib;
 import java.util.Random;
 
 public abstract class RandomNumber {
+	
+	private static Random rand = new Random();
 
 	/**
 	 * Generates a random integer between min and max, in the range [min, max]
@@ -12,7 +14,6 @@ public abstract class RandomNumber {
 	 * @return a random integer
 	 */
 	public static int randInclusiveInt(int min, int max) {
-		Random rand = new Random();
 		return rand.nextInt((max - min) + 1) + min;
 	}
 	
