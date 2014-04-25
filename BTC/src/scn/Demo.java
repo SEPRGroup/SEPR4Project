@@ -11,11 +11,14 @@ import lib.jog.window;
 import cls.Aircraft;
 import cls.Airport;
 import cls.AirportControlBox;
+import cls.GameWindow;
 import cls.Vector;
 import cls.Waypoint;
 import btc.Main;
 
 public class Demo extends Scene {
+	
+	private final cls.GameWindow game;
 
 	//****** REBUILD PROGRESS MARKER ******
 	
@@ -29,18 +32,6 @@ public class Demo extends Scene {
 	public static java.util.ArrayList<Aircraft> aircraft_in_airspace;
 	public java.util.ArrayList<Aircraft> recently_departed_aircraft;
 	
-	// Static Final Ints for difficulty settings
-	// Difficulty of demo scene determined by difficulty selection scene
-	public final static int DIFFICULTY_EASY = 0;
-	public final static int DIFFICULTY_MEDIUM = 1;
-	public final static int DIFFICULTY_HARD = 2;
-	public static int difficulty = DIFFICULTY_EASY;
-	
-	/**
-	 * An image to be used for aircraft
-	 * Expand to list of images for multiple aircraft appearances
-	 */
-	private static graphics.Image aircraft_image;
 	
 	/**
 	 * A button to start and end manual control of an aircraft
@@ -70,14 +61,9 @@ public class Demo extends Scene {
 	 */
 	private int highlighted_altitude = 30000;
 	
-	/**
-	 * Music to play during the game scene
-	 */
+	/**Music to play during the game scene*/
 	private audio.Music music;
-	/**
-	 * The background to draw in the airspace.
-	 */
-	private static graphics.Image background;
+
 	
 	/**
 	 * Demo's instance of the airport class
@@ -196,8 +182,8 @@ public class Demo extends Scene {
 	 */
 	public Demo(Main main, int difficulty) {
 		super(main);
-		Demo.difficulty = difficulty;
 		airport.loadImage();
+		game = new GameWindow(16,48, window.width() - 32 -1, window.height() - 176 -1, difficulty);
 	}
 
 	/**
@@ -205,15 +191,12 @@ public class Demo extends Scene {
 	 * Shorten flight generation timer according to difficulty
 	 */
 	@Override
-	public void start() {
-		background = graphics.newImage("gfx" + File.separator + "background_base.png");
-		
+	public void start() {	
 		music = audio.newMusic("sfx" + File.separator + "Gypsy_Shoegazer.ogg");
 		music.play();
 		orders_box = new cls.OrdersBox(ORDERS_BOX.x, ORDERS_BOX.y, ORDERS_BOX.width, ORDERS_BOX.height, 6);
 		aircraft_in_airspace = new java.util.ArrayList<Aircraft>();
 		recently_departed_aircraft = new java.util.ArrayList<Aircraft>();
-		aircraft_image = graphics.newImage("gfx" + File.separator + "plane.png");
 		lib.ButtonText.Action manual = new lib.ButtonText.Action() {
 			@Override
 			public void action() {
