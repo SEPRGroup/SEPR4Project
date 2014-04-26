@@ -209,40 +209,41 @@ public class Aircraft {
 	 * @param sceneWaypoints the waypoints on the map.
 	 * @param difficulty the difficulty the game is set to
 	 */
-	public Aircraft(String name, String name_destination, String name_origin, Waypoint destination_point, Waypoint origin_point, graphics.Image img, double speed, Waypoint[] scene_waypoints, int difficulty) {
+	public Aircraft(String name, Waypoint destination_point, Waypoint origin_point, graphics.Image img, double speed, Waypoint[] scene_waypoints, int difficulty) {
 		flight_name = name;		
-		flight_plan = new FlightPlan(scene_waypoints, name_origin, name_destination, origin_point, destination_point);		
+		flight_plan = new FlightPlan(scene_waypoints, origin_point, destination_point);		
 		image = img;
 		creation_time = System.currentTimeMillis() / 1000; // System time when aircraft was created in seconds.
-		position = origin_point.getLocation();
 		
-		
+		boolean startAtAirport = false;
 		for (Airport a : Demo.airport) {
 			if (origin_point.getLocation() == a.getLocation()) {
-				position = position.add(new Vector(-80, -50, 0)); // Start at departures
-				position.setZ(0);
-			}
-			else {
-				last_altitude = (RandomNumber.randInclusiveInt(min_altitude, max_altitude)/1000) *1000;
-				position.setZ(last_altitude);
+				startAtAirport = true;
+				break;
 			}
 		}
 		
-		
-		// Calculate initial velocity (direction)
+		position = origin_point.getLocation();
 		current_target = flight_plan.getRoute()[0].getLocation();
-		for (Airport a : Demo.airport) {
-			if(origin_point.getName() == a.getName()){
-				velocity = new Vector(1, 0, 0);
-			}else{
-			 double x = current_target.getX() - position.getX();
-			 double y = current_target.getY() - position.getY();
-			 velocity = new Vector(x, y, 0).normalise().scaleBy(speed);
-			}
-		}
 		
+		if (startAtAirport) {
+			position = position.add(new Vector(-80, -50, 0)); // Start at departures
+			position.setZ(0);
+			//point down runway
+			velocity = new Vector(0, 0, 0);
+		}else{
+			last_altitude = (RandomNumber.randInclusiveInt(min_altitude, max_altitude)/1000) *1000;
+			position.setZ(last_altitude);
+			
+			
+			// Calculate initial velocity (direction)
+			double x = current_target.getX() - position.getX();
+			double y = current_target.getY() - position.getY();
+			velocity = new Vector(x, y, 0).normalise().scaleBy(speed);
+		}
+
 		for (Airport a : Demo.airport) {
-			if(flight_plan.getDestination().equals(a.getLocation())){
+			if(flight_plan.getDestination().equals(a)){
 				is_waiting_to_land = true;
 			}
 		}
@@ -351,10 +352,10 @@ public class Aircraft {
 	
 	public boolean isAtDestination() {
 		for (Airport a : Demo.airport) {
-			if (flight_plan.getDestination().equals(a.getLocation())) { // At airport
+			if (flight_plan.getDestination().equals(a)) { // At airport
 				return a.isWithinArrivals(position, false); // Within Arrivals rectangle
 			} else {
-				return isAt(flight_plan.getDestination()); // Very close to destination
+				return isAt(flight_plan.getDestination().getLocation()); // Very close to destination
 			}
 		}
 		return false;
@@ -394,16 +395,13 @@ public class Aircraft {
 			}
 			for (Airport a : Demo.airport) {
 				if(flight_plan.getOriginName() == a.getName()){
-					if(position.getZ() < 10000){
+					if(position.getZ() <= 10000){
 						setAltitudeState(ALTITUDE_CLIMB);
 						climb();
 					} else{
 						setAltitudeState(ALTITUDE_LEVEL);
 						climb();
 					}
-				}
-				if(position.getZ() >10000 && flight_plan.getOriginName() == a.getName()){
-					System.out.println("");
 				}
 			}
 		}
@@ -416,11 +414,11 @@ public class Aircraft {
 		if(!is_takeoff){
 			
 			// Update target	
-			if (current_target.equals(flight_plan.getDestination()) && isAtDestination()) { // At finishing point
+			if (current_target.equals(flight_plan.getDestination().getLocation()) && isAtDestination()) { // At finishing point
 				if (!is_waiting_to_land) { // Ready to land
 					has_finished = true;
 					for (Airport a : Demo.airport){
-						if (flight_plan.getDestination().equals(a.getLocation())) { // Landed at airport
+						if (flight_plan.getDestination().equals(a)) { // Landed at airport
 							a.is_active = false;
 						}
 					}
@@ -428,14 +426,14 @@ public class Aircraft {
 			} else if (isAt(current_target)) {
 				current_route_stage++;
 				// Next target is the destination if you're at the end of the plan, otherwise it's the next waypoint
-				current_target = current_route_stage >= flight_plan.getRoute().length ? flight_plan.getDestination() : flight_plan.getRoute()[current_route_stage].getLocation();
+				current_target = current_route_stage >= flight_plan.getRoute().length ? flight_plan.getDestination().getLocation() : flight_plan.getRoute()[current_route_stage].getLocation();
 			}
 			
 			if(is_landing){
 				for (Airport a : Demo.airport){
-					if(flight_plan.getDestination().equals(a.getLocation())){
-						current_target = a.getRunwayLocation();
-						current_target = current_target.add(new Vector(100,50,0));
+					if(flight_plan.getDestination().equals(a)){
+						current_target = a.getRunwayLocation().add(new Vector(100,50,0));
+
 					}
 				}
 			}
@@ -461,11 +459,7 @@ public class Aircraft {
 			
 			//checks to move flight out of is_takeoff
 			if(velocity.magnitude() >= takeoff_velocity){
-				for (Airport a : Demo.airport){
-					if(getFlightPlan().getOriginName().equals(a.getName())){
-						a.is_active = false;
-					}
-				}
+				((Airport)getFlightPlan().getOrigin()).is_active = false;
 				
 				if(position.getZ()> 2000){
 					is_takeoff = false;
@@ -612,7 +606,7 @@ public class Aircraft {
 		}
 
 		Waypoint[] route = flight_plan.getRoute();
-		Vector destination = flight_plan.getDestination();
+		Vector destination = flight_plan.getDestination().getLocation();
 		
 		if (current_target != destination && !is_landing) {
 			// Draw line from plane to next waypoint
@@ -636,7 +630,7 @@ public class Aircraft {
 	public void drawModifiedPath(int modified, double mouseX, double mouseY) {
 		graphics.setColour(0, 128, 128, 128);
 		Waypoint[] route = flight_plan.getRoute();
-		Vector destination = flight_plan.getDestination();
+		Vector destination = flight_plan.getDestination().getLocation();
 		if (current_route_stage > modified - 1) {
 			graphics.line(getPosition().getX(), getPosition().getY(), mouseX, mouseY);
 		} else {
@@ -767,13 +761,10 @@ public class Aircraft {
 	}
 
 	public void takeOff() {
-		for (Airport a : Demo.airport){
-			if(flight_plan.getOriginName().equals(a.getName())){
-				a.is_active = true;
-			}
-		}
+		((Airport)getFlightPlan().getOrigin()).is_active = false;
 		is_manually_controlled = true;
 		is_takeoff = true;
+		velocity = new Vector(1, 0, 0);
 		Demo.takeOffSequence(this);
 		creation_time = System.currentTimeMillis() / 1000; // Reset creation time
 	}
