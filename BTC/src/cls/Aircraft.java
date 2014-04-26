@@ -2,8 +2,6 @@ package cls;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Random;
-
 import scn.Demo;
 import lib.RandomNumber;
 import lib.jog.audio;
@@ -219,29 +217,35 @@ public class Aircraft {
 		position = origin_point.getLocation();
 		
 		
-
-		if (origin_point.getLocation() == Demo.airport.getLocation()) {
-			position = position.add(new Vector(-80, -50, 0)); // Start at departures
-			position.setZ(0);
+		for (Airport a : Demo.airport) {
+			if (origin_point.getLocation() == a.getLocation()) {
+				position = position.add(new Vector(-80, -50, 0)); // Start at departures
+				position.setZ(0);
+			}
+			else {
+				last_altitude = (RandomNumber.randInclusiveInt(min_altitude, max_altitude)/1000) *1000;
+				position.setZ(last_altitude);
+			}
 		}
-		else {
-			Random rand = new Random();
-			last_altitude = (RandomNumber.randInclusiveInt(min_altitude, max_altitude)/1000) *1000;
-			position.setZ(last_altitude);
-		}
+		
 		
 		// Calculate initial velocity (direction)
 		current_target = flight_plan.getRoute()[0].getLocation();
-		if(origin_point.getName() == Demo.airport.getName()){
-			velocity = new Vector(1, 0, 0);
-		}else{
-		 double x = current_target.getX() - position.getX();
-		 double y = current_target.getY() - position.getY();
-		 velocity = new Vector(x, y, 0).normalise().scaleBy(speed);
+		for (Airport a : Demo.airport) {
+			if(origin_point.getName() == a.getName()){
+				velocity = new Vector(1, 0, 0);
+			}else{
+			 double x = current_target.getX() - position.getX();
+			 double y = current_target.getY() - position.getY();
+			 velocity = new Vector(x, y, 0).normalise().scaleBy(speed);
+			}
 		}
 		
-
-		is_waiting_to_land = flight_plan.getDestination().equals(Demo.airport.getLocation());
+		for (Airport a : Demo.airport) {
+			if(flight_plan.getDestination().equals(a.getLocation())){
+				is_waiting_to_land = true;
+			}
+		}
 
 		// Speed up plane for higher difficulties
 		switch (difficulty) {
@@ -346,11 +350,14 @@ public class Aircraft {
 	}
 	
 	public boolean isAtDestination() {
-		if (flight_plan.getDestination().equals(Demo.airport.getLocation())) { // At airport
-			return Demo.airport.isWithinArrivals(position, false); // Within Arrivals rectangle
-		} else {
-			return isAt(flight_plan.getDestination()); // Very close to destination
+		for (Airport a : Demo.airport) {
+			if (flight_plan.getDestination().equals(a.getLocation())) { // At airport
+				return a.isWithinArrivals(position, false); // Within Arrivals rectangle
+			} else {
+				return isAt(flight_plan.getDestination()); // Very close to destination
+			}
 		}
+		return false;
 	}
 
 	/**
@@ -385,17 +392,19 @@ public class Aircraft {
 				climb();				
 				break;
 			}
-			if(flight_plan.getOriginName() == Demo.airport.getName()){
-				if(position.getZ() < 10000){
-					setAltitudeState(ALTITUDE_CLIMB);
-					climb();
-				} else{
-					setAltitudeState(ALTITUDE_LEVEL);
-					climb();
+			for (Airport a : Demo.airport) {
+				if(flight_plan.getOriginName() == a.getName()){
+					if(position.getZ() < 10000){
+						setAltitudeState(ALTITUDE_CLIMB);
+						climb();
+					} else{
+						setAltitudeState(ALTITUDE_LEVEL);
+						climb();
+					}
 				}
-			}
-			if(position.getZ() >10000 && flight_plan.getOriginName() == Demo.airport.getName()){
-				System.out.println("");
+				if(position.getZ() >10000 && flight_plan.getOriginName() == a.getName()){
+					System.out.println("");
+				}
 			}
 		}
 		
@@ -410,8 +419,10 @@ public class Aircraft {
 			if (current_target.equals(flight_plan.getDestination()) && isAtDestination()) { // At finishing point
 				if (!is_waiting_to_land) { // Ready to land
 					has_finished = true;
-					if (flight_plan.getDestination().equals(Demo.airport.getLocation())) { // Landed at airport
-						Demo.airport.is_active = false;
+					for (Airport a : Demo.airport){
+						if (flight_plan.getDestination().equals(a.getLocation())) { // Landed at airport
+							a.is_active = false;
+						}
 					}
 				}
 			} else if (isAt(current_target)) {
@@ -419,9 +430,14 @@ public class Aircraft {
 				// Next target is the destination if you're at the end of the plan, otherwise it's the next waypoint
 				current_target = current_route_stage >= flight_plan.getRoute().length ? flight_plan.getDestination() : flight_plan.getRoute()[current_route_stage].getLocation();
 			}
+			
 			if(is_landing){
-				current_target = Demo.airport.getRunwayLocation();
-				current_target = current_target.add(new Vector(100,50,0));
+				for (Airport a : Demo.airport){
+					if(flight_plan.getDestination().equals(a.getLocation())){
+						current_target = a.getRunwayLocation();
+						current_target = current_target.add(new Vector(100,50,0));
+					}
+				}
 			}
 			// Update bearing
 			if(is_landing){
@@ -445,7 +461,12 @@ public class Aircraft {
 			
 			//checks to move flight out of is_takeoff
 			if(velocity.magnitude() >= takeoff_velocity){
-				Demo.airport.is_active = false;
+				for (Airport a : Demo.airport){
+					if(getFlightPlan().getOriginName().equals(a.getName())){
+						a.is_active = false;
+					}
+				}
+				
 				if(position.getZ()> 2000){
 					is_takeoff = false;
 					is_manually_controlled = false;
@@ -746,7 +767,11 @@ public class Aircraft {
 	}
 
 	public void takeOff() {
-		Demo.airport.is_active = true;
+		for (Airport a : Demo.airport){
+			if(flight_plan.getOriginName().equals(a.getName())){
+				a.is_active = true;
+			}
+		}
 		is_manually_controlled = true;
 		is_takeoff = true;
 		Demo.takeOffSequence(this);

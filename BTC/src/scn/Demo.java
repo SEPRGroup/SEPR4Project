@@ -115,7 +115,8 @@ public class Demo extends Scene {
 		new Waypoint(8, window.height() - ORDERS_BOX.height - 72, true, "100 Acre Woods"), // bottom left
 		new Waypoint(window.width() - 40, 8, true, "City of Rightson"), // top right
 		new Waypoint(window.width() - 40, window.height() - ORDERS_BOX.height - 72, true, "South Sea"), // bottom right
-		airport//,airport2
+		airport[0],
+		airport[1]
 	};
 
 	/**
@@ -141,7 +142,10 @@ public class Demo extends Scene {
 		location_waypoints[1],
 		location_waypoints[2],
 		location_waypoints[3],
-		location_waypoints[4]
+		location_waypoints[4],
+		location_waypoints[5]
+		
+		
 	};
 	
 	/**
@@ -317,17 +321,19 @@ public class Demo extends Scene {
 			}			
 			
 			if (!isTooClose) { // Continue only if aricraft is not too close
-				if (aircraft.getFlightPlan().getOriginName().equals(airport.name)) {
-					orders_box.addOrder("<<< " + aircraft.getName() 
-							+ " is awaiting take off from " 
-							+ aircraft.getFlightPlan().getOriginName()
-							+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
-					airport.addToHangar(aircraft);
-				} else {
-					orders_box.addOrder("<<< " + aircraft.getName() 
-							+ " incoming from " + aircraft.getFlightPlan().getOriginName() 
-							+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
-					aircraft_in_airspace.add(aircraft);
+				for (Airport a: airport){
+					if (aircraft.getFlightPlan().getOriginName().equals(a.name)) {
+						orders_box.addOrder("<<< " + aircraft.getName() 
+								+ " is awaiting take off from " 
+								+ aircraft.getFlightPlan().getOriginName()
+								+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
+						a.addToHangar(aircraft);
+					} else {
+						orders_box.addOrder("<<< " + aircraft.getName() 
+								+ " incoming from " + aircraft.getFlightPlan().getOriginName() 
+								+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
+						aircraft_in_airspace.add(aircraft);
+					}
 				}
 			}
 			
@@ -343,18 +349,20 @@ public class Demo extends Scene {
 		// Origin and Destination
 		String destination_name;
 		String origin_name = "";
-		Waypoint origin_point;
+		Waypoint origin_point = null;
 		Waypoint destination_point;
 	
 		// Chooses two waypoints randomly and then checks if they satisfy the rules, if not, it tries until it finds good ones. 	
 		java.util.ArrayList<Waypoint> available_origins = getAvailableEntryPoints();
 		
 		if (available_origins.isEmpty()) {
-			if (airport.aircraft_hangar.size() == airport.getHangarSize()) {
-				return null;
-			} else {
-				origin_point = airport;
-				origin_name = airport.name;
+			for (Airport a: airport){
+				if (a.aircraft_hangar.size() == a.getHangarSize()) {
+					return null;
+				} else {
+					origin_point = a;
+					origin_name = a.name;
+				}
 			}
 		} else {
 			origin_point = available_origins.get(RandomNumber.randInclusiveInt(0, available_origins.size()-1));
@@ -417,14 +425,16 @@ public class Demo extends Scene {
 		time_elapsed += time_difference;
 		score.update();
 		graphics.setColour(graphics.green_transp);
-		if (airport.getLongestTimeInHangar(time_elapsed) > 5) {
-			score.increaseMeterFill(-1);
-			if (!shown_aircraft_waiting_message) {
-				orders_box.addOrder(">>> Plane waiting to take off, multiplier decreasing");
-				shown_aircraft_waiting_message = true;
+		for (Airport a: airport){
+			if (a.getLongestTimeInHangar(time_elapsed) > 5) {
+				score.increaseMeterFill(-1);
+				if (!shown_aircraft_waiting_message) {
+					orders_box.addOrder(">>> Plane waiting to take off, multiplier decreasing");
+					shown_aircraft_waiting_message = true;
+				}
+			} else {
+				shown_aircraft_waiting_message = false;
 			}
-		} else {
-			shown_aircraft_waiting_message = false;
 		}
 		
 		orders_box.update(time_difference);
@@ -463,8 +473,9 @@ public class Demo extends Scene {
 				aircraft_in_airspace.remove(i);
 			}
 		}
-		airport.update(this);
-		//airport2.update(this);
+		for (Airport a: airport){
+			a.update(this);
+		}
 		if (selected_aircraft != null) {
 			if(!selected_aircraft.is_takeoff()){
 				if (selected_aircraft.isManuallyControlled()) {
@@ -529,8 +540,9 @@ public class Demo extends Scene {
 	 */
 	public void gameOver(Aircraft plane1, Aircraft plane2) {
 		aircraft_in_airspace.clear();
-		airport.clear();
-		airport2.clear();
+		for (Airport a: airport){
+			a.clear();
+		}
 		playSound(audio.newSoundEffect("sfx" + File.separator + "crash.ogg"));
 		main.closeScene();
 		main.setScene(new GameOver(main, plane1, plane2, score.getTotalScore()));
@@ -580,13 +592,13 @@ public class Demo extends Scene {
 	 */
 	private void drawMap() {
 		for (Waypoint waypoint : airspace_waypoints) {
-			if (!waypoint.equals(airport)&&!waypoint.equals(airport2)) { // Skip the airport
+			if (!waypoint.equals(airport[0])&&!waypoint.equals(airport[1])) { // Skip the airport
 				waypoint.draw();
 			}
 		}
 		graphics.setColour(255, 255, 255);
 		for (Aircraft aircraft : aircraft_in_airspace) {
-			aircraft.draw(highlighted_altitude);
+			aircraft.draw();
 			if (aircraft.isMouseOver()) {
 				aircraft.drawFlightPath(false);
 			}
@@ -619,6 +631,7 @@ public class Demo extends Scene {
 		graphics.print(location_waypoints[2].getName(), location_waypoints[2].getLocation().getX() - 141, location_waypoints[2].getLocation().getY() - 6);
 		graphics.print(location_waypoints[3].getName(), location_waypoints[3].getLocation().getX() - 91, location_waypoints[3].getLocation().getY() - 6);
 		graphics.print(location_waypoints[4].getName(), location_waypoints[4].getLocation().getX() - 20, location_waypoints[4].getLocation().getY() + 25);
+		graphics.print(location_waypoints[5].getName(), location_waypoints[5].getLocation().getX() - 20, location_waypoints[5].getLocation().getY() + 25);
 
 	}
 	
@@ -751,12 +764,24 @@ public class Demo extends Scene {
 		return null;
 	}
 	
-	private boolean isArrivalsClicked(int x, int y) {
-		return airport.isWithinArrivals(new Vector(x,y,0)) && !airport.is_active;
+	private Airport getArrivalsClicked(int x, int y) {
+		for (Airport a: airport){
+			if(a.isWithinArrivals(new Vector(x,y,0)) && !a.is_active){
+				return a;
+			}
+		}
+		return null;
+		
 	}
 	
-	private boolean isDeparturesClicked(int x, int y) {
-		return airport.isWithinDepartures(new Vector(x,y,0)) && !airport.is_active;
+	private Airport getDeparturesClicked(int x, int y) {
+		for (Airport a: airport){
+			if(a.isWithinDepartures(new Vector(x,y,0)) && !a.is_active){
+				return a;
+			}
+			
+		}
+		return null; 
 	}
 
 	/**
@@ -780,18 +805,19 @@ public class Demo extends Scene {
 					selected_path_point = selected_aircraft.getFlightPlan().indexOfWaypoint(clicked_waypoint);					
 				}
 			}
-			
-			if (isArrivalsClicked(x, y) && selected_aircraft != null) {
-				if (selected_aircraft.is_waiting_to_land && selected_aircraft.current_target.equals(airport[0].getLocation())) {
-					airport[0].arrivalsTriggered();
+			Airport a = getArrivalsClicked(x, y);
+			Airport b = getDeparturesClicked(x, y);
+			if (a != null && selected_aircraft != null) {
+				if (selected_aircraft.is_waiting_to_land && selected_aircraft.current_target.equals(a.getLocation())) {
+					a.arrivalsTriggered();
 					//airport.mousePressed(key, x, y);
 					selected_aircraft.land();
 					deselectAircraft();
 				}
-			} else if (isDeparturesClicked(x, y)) {
-				if (airport[0].aircraft_hangar.size() > 0) {
+			} else if (b != null) {
+				if (b.aircraft_hangar.size() > 0) {
 					//airport.mousePressed(key, x, y);
-					airport[0].signalTakeOff();
+					b.signalTakeOff();
 				}
 			}
 		} else if (key == input.MOUSE_RIGHT) {
@@ -820,7 +846,10 @@ public class Demo extends Scene {
 
 	@Override
 	public void mouseReleased(int key, int x, int y) {
-		airport.releaseTriggered();
+		for (Airport a: airport){
+			a.releaseTriggered();
+		}
+		
 		//airport.mouseReleased(key, x, y);
 		airport_control_box.mouseReleased(key, x, y);
 		altimeter.mouseReleased(key, x, y);

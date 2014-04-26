@@ -37,7 +37,7 @@ public class Airport extends Waypoint implements EventHandler {
 	 */
 	public java.util.ArrayList<Aircraft> aircraft_hangar = new java.util.ArrayList<Aircraft>();
 	public java.util.ArrayList<Double> time_entered = new java.util.ArrayList<Double>();
-	private int hangar_size = 3;
+	private final int hangar_size = 3;
 	
 	public Airport(String name, double x_location, double y_location) {
 		super(x_location, y_location, true, name);
