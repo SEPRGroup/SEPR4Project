@@ -321,20 +321,20 @@ public class Demo extends Scene {
 			}			
 			
 			if (!isTooClose) { // Continue only if aricraft is not too close
-				for (Airport a: airport){
-					if (aircraft.getFlightPlan().getOriginName().equals(a.name)) {
+				Waypoint w = aircraft.getFlightPlan().getOrigin();
+					if (w instanceof Airport){
 						orders_box.addOrder("<<< " + aircraft.getName() 
 								+ " is awaiting take off from " 
 								+ aircraft.getFlightPlan().getOriginName()
 								+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
-						a.addToHangar(aircraft);
+						((Airport) w).addToHangar(aircraft);
 					} else {
 						orders_box.addOrder("<<< " + aircraft.getName() 
 								+ " incoming from " + aircraft.getFlightPlan().getOriginName() 
 								+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
 						aircraft_in_airspace.add(aircraft);
 					}
-				}
+				
 			}
 			
 		}
@@ -347,7 +347,6 @@ public class Demo extends Scene {
 	 */
 	private Aircraft createAircraft() {
 		// Origin and Destination
-		String destination_name;
 		String origin_name = "";
 		Waypoint origin_point = null;
 		Waypoint destination_point;
@@ -361,27 +360,19 @@ public class Demo extends Scene {
 					return null;
 				} else {
 					origin_point = a;
-					origin_name = a.name;
 				}
 			}
 		} else {
 			origin_point = available_origins.get(RandomNumber.randInclusiveInt(0, available_origins.size()-1));
-			for (int i = 0; i < location_waypoints.length; i++) {
-				if (location_waypoints[i].equals(origin_point)) {
-					origin_name = location_waypoints[i].getName();
-					break;
-				}
-			}
+			origin_name = origin_point.getName();
 		}
 		
 		// Work out destination
 		int destination = RandomNumber.randInclusiveInt(0, location_waypoints.length - 1);
-		destination_name = location_waypoints[destination].getName();
 		destination_point = location_waypoints[destination];
 		
 		while (location_waypoints[destination].getName() == origin_name) {
 			destination = RandomNumber.randInclusiveInt(0, location_waypoints.length - 1);
-			destination_name = location_waypoints[destination].getName();
 			destination_point = location_waypoints[destination];
 		}			
 		
@@ -395,7 +386,7 @@ public class Demo extends Scene {
 				if (a.getName() == name) name_is_taken = true;
 			}
 		}
-		return new Aircraft(name, destination_name, origin_name, destination_point, origin_point, aircraft_image, 32 + (int)(10 * Math.random()), airspace_waypoints, difficulty);
+		return new Aircraft(name,destination_point, origin_point, aircraft_image, 32 + (int)(10 * Math.random()), airspace_waypoints, difficulty);
 	}
 	
 	/**
@@ -592,7 +583,7 @@ public class Demo extends Scene {
 	 */
 	private void drawMap() {
 		for (Waypoint waypoint : airspace_waypoints) {
-			if (!waypoint.equals(airport[0])&&!waypoint.equals(airport[1])) { // Skip the airport
+			if(!(waypoint instanceof Airport)){	 // Skip the airport
 				waypoint.draw();
 			}
 		}

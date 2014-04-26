@@ -64,7 +64,7 @@ public class Airport extends Waypoint implements EventHandler {
 	@Override
 	public void draw() { 
 		// Draw the airport image
-		graphics.setColour(64, 64, 64, 128);
+		graphics.setColour(128, 128, 128, 128);
 		graphics.draw(airport, x_location-airport.width()/2, y_location-airport.height()/2);
 		
 		int green_fine = 128;
@@ -115,8 +115,8 @@ public class Airport extends Waypoint implements EventHandler {
 			graphics.setColour(255, 255, 255, 128);
 			graphics.print(Integer.toString(aircraft_waiting_to_land.size()), arrivals_x_location-airport.width()/2 + 50, arrivals_y_location-airport.height()/2 + 26);
 		}	
-		graphics.setColour(255, 255, 255, 128);
-		graphics.print(Integer.toString(1), x_location+120, y_location-65);
+		//graphics.setColour(255, 255, 255, 128);
+		//graphics.print(Integer.toString(1), x_location+120, y_location-65);
 	}
 	
 	public double getLongestTimeInHangar(double currentTime) {

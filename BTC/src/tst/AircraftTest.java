@@ -17,7 +17,7 @@ public class AircraftTest {
 	@Before
 	public void setUp() {
 		Waypoint[] waypoints = new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), new Waypoint(25, 75, false), new Waypoint(75, 25, false), new Waypoint(50,50, false)};
-		test_aircraft = new Aircraft("testAircraft", "Berlin", "Dublin", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypoints, 1);
+		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypoints, 1);
 		test_score = new Score();
 	}
 	
@@ -73,7 +73,7 @@ public class AircraftTest {
 	@Test
 	public void testOutOfAirspaceBounds() {
 		Waypoint[] waypoints = new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), new Waypoint(25, 75, false), new Waypoint(75, 25, false), new Waypoint(50,50, false)};
-		test_aircraft = new Aircraft("testAircraft", "Berlin", "Dublin", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypoints, 1);
+		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypoints, 1);
 		assertTrue("Out of bounds = false", test_aircraft.isOutOfAirspaceBounds());
 	}
 	
@@ -88,7 +88,7 @@ public class AircraftTest {
 	@Test		
 	public void testIsCloseToEntry() {
 		Waypoint[] waypointList = new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), new Waypoint(25, 75, false), new Waypoint(675, 125, false), new Waypoint(530,520, false)};
-		test_aircraft = new Aircraft("testAircraft", "Berlin", "Dublin", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypointList, 1);
+		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypointList, 1);
 		assertTrue(test_aircraft.isCloseToEntry(waypointList[0].getLocation()));			
 		assertTrue(test_aircraft.isCloseToEntry(waypointList[1].getLocation()));
 		assertTrue(test_aircraft.isCloseToEntry(waypointList[2].getLocation()));

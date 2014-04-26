@@ -5,33 +5,33 @@ import java.util.Random;
 
 public class FlightPlan {	
 	private Waypoint[] route;
-	private String origin_name;
-	private String destination_name;
-	private Vector destination;
+	private Waypoint destination, origin;
 	
-	public FlightPlan(Waypoint[] route, String origin_name, String destination_name, Waypoint origin_point, Waypoint destination_point) {
+	public FlightPlan(Waypoint[] route, Waypoint origin_point, Waypoint destination_point) {
 		this.route = findGreedyRoute(origin_point, destination_point, route);
-		this.origin_name = origin_name;
-		this.destination_name = destination_name;
-		this.destination = destination_point.getLocation();
+		origin = origin_point;
+		destination = destination_point;
 	}
 	
 	public Waypoint[] getRoute() {
 		return route;
 	}
 	
-	public Vector getDestination() {
+	public Waypoint getDestination() {
 		return destination;
 	}
 	
 	public String getDestinationName() {
-		return destination_name;
+		return destination.getName();
 	}
 	
 	public String getOriginName() {
-		return origin_name;
+		return origin.getName();
 	}
 	
+	public Waypoint getOrigin(){
+		return origin;
+	}
 	/**
 	 * Edits the plane's path by changing the waypoint it will go to at a certain stage in its route.
 	 * @param routeStage the stage at which the new waypoint will replace the old.
