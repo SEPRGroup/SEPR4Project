@@ -98,10 +98,8 @@ public class Demo extends Scene {
 	 */
 	private graphics.Image background;
 	
-	/**
-	 * Demo's instance of the airport class
-	 */
-	public static Airport[] airport = new Airport[] {
+	/** Demo's instance of the airport class */
+	private static Airport[] airport = new Airport[] {
 		new Airport("Mosbear Airport",600,200),
 		new Airport("Airport",600,500)
 	};
@@ -223,8 +221,6 @@ public class Demo extends Scene {
 	public Demo(Main main, int difficulty) {
 		super(main);
 		Demo.difficulty = difficulty;
-		//airport.loadImage();
-		//airport2.loadImage();
 	}
 
 	/**
@@ -233,8 +229,7 @@ public class Demo extends Scene {
 	 */
 	@Override
 	public void start() {
-		background = graphics.newImage("gfx" + File.separator + "background_base.png");
-		
+		background = graphics.newImage("gfx" + File.separator + "new" + File.separator + "background_base.png");
 		music = audio.newMusic("sfx" + File.separator + "Gypsy_Shoegazer.ogg");
 		music.play();
 		orders_box = new cls.OrdersBox(ORDERS_BOX.x, ORDERS_BOX.y, ORDERS_BOX.width, ORDERS_BOX.height, 6);
@@ -415,17 +410,21 @@ public class Demo extends Scene {
 	public void update(double time_difference) {
 		time_elapsed += time_difference;
 		score.update();
-		graphics.setColour(graphics.green_transp);
+		boolean waiting = false;
 		for (Airport a: airport){
 			if (a.getLongestTimeInHangar(time_elapsed) > 5) {
-				score.increaseMeterFill(-1);
-				if (!shown_aircraft_waiting_message) {
-					orders_box.addOrder(">>> Plane waiting to take off, multiplier decreasing");
-					shown_aircraft_waiting_message = true;
-				}
-			} else {
-				shown_aircraft_waiting_message = false;
+				waiting = true;
+				break;
 			}
+		}
+		if (waiting) {
+			score.increaseMeterFill(-1);
+			if (!shown_aircraft_waiting_message) {
+				orders_box.addOrder(">>> Plane waiting to take off, multiplier decreasing");
+				shown_aircraft_waiting_message = true;
+			}
+		} else {
+			shown_aircraft_waiting_message = false;
 		}
 		
 		orders_box.update(time_difference);
@@ -551,7 +550,7 @@ public class Demo extends Scene {
 		graphics.setViewport(airspace_view_offset_x, airspace_view_offset_y, window.width() - 32 -1, window.height() - 176 -1);
 		
 		graphics.setColour(255, 255, 255, 96);
-		graphics.draw(background, 0, 0, window.scale());	//{!} NOT accounting for fixed border size
+		graphics.draw(background, 0, 0, window.scale()/2);	//{!} NOT accounting for fixed border size
 		graphics.setColour(255, 255, 255, 96);
 		for(Airport a : airport){
 			a.draw();

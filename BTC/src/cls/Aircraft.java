@@ -215,13 +215,7 @@ public class Aircraft {
 		image = img;
 		creation_time = System.currentTimeMillis() / 1000; // System time when aircraft was created in seconds.
 		
-		boolean startAtAirport = false;
-		for (Airport a : Demo.airport) {
-			if (origin_point.getLocation() == a.getLocation()) {
-				startAtAirport = true;
-				break;
-			}
-		}
+		boolean startAtAirport = flight_plan.getOrigin() instanceof Airport;
 		
 		position = origin_point.getLocation();
 		current_target = flight_plan.getRoute()[0].getLocation();
@@ -242,12 +236,11 @@ public class Aircraft {
 			velocity = new Vector(x, y, 0).normalise().scaleBy(speed);
 		}
 
-		for (Airport a : Demo.airport) {
-			if(flight_plan.getDestination().equals(a)){
-				is_waiting_to_land = true;
-			}
+	
+		if(flight_plan.getDestination() instanceof Airport){
+			is_waiting_to_land = true;
 		}
-
+		
 		// Speed up plane for higher difficulties
 		switch (difficulty) {
 		// Adjust the aircraft's attributes according to the difficulty of the parent scene
@@ -351,14 +344,11 @@ public class Aircraft {
 	}
 	
 	public boolean isAtDestination() {
-		for (Airport a : Demo.airport) {
-			if (flight_plan.getDestination().equals(a)) { // At airport
-				return a.isWithinArrivals(position, false); // Within Arrivals rectangle
-			} else {
-				return isAt(flight_plan.getDestination().getLocation()); // Very close to destination
-			}
+		if (flight_plan.getDestination() instanceof Airport) { // At airport
+			return ((Airport)flight_plan.getDestination()).isWithinArrivals(position, false); // Within Arrivals rectangle
+		} else {
+			return isAt(flight_plan.getDestination().getLocation()); // Very close to destination
 		}
-		return false;
 	}
 
 	/**
@@ -393,17 +383,17 @@ public class Aircraft {
 				climb();				
 				break;
 			}
-			for (Airport a : Demo.airport) {
-				if(flight_plan.getOriginName() == a.getName()){
-					if(position.getZ() <= 10000){
-						setAltitudeState(ALTITUDE_CLIMB);
-						climb();
-					} else{
-						setAltitudeState(ALTITUDE_LEVEL);
-						climb();
-					}
+			
+			if(flight_plan.getOrigin() instanceof Airport){
+				if(position.getZ() <= 10000){
+					setAltitudeState(ALTITUDE_CLIMB);
+					climb();
+				} else{
+					setAltitudeState(ALTITUDE_LEVEL);
+					climb();
 				}
 			}
+			
 		}
 		
 		// Update position
@@ -417,10 +407,8 @@ public class Aircraft {
 			if (current_target.equals(flight_plan.getDestination().getLocation()) && isAtDestination()) { // At finishing point
 				if (!is_waiting_to_land) { // Ready to land
 					has_finished = true;
-					for (Airport a : Demo.airport){
-						if (flight_plan.getDestination().equals(a)) { // Landed at airport
-							a.is_active = false;
-						}
+					if (flight_plan.getDestination() instanceof Airport) { // Landed at airport
+						((Airport)flight_plan.getDestination()).is_active = false;
 					}
 				}
 			} else if (isAt(current_target)) {
@@ -430,11 +418,9 @@ public class Aircraft {
 			}
 			
 			if(is_landing){
-				for (Airport a : Demo.airport){
-					if(flight_plan.getDestination().equals(a)){
-						current_target = a.getRunwayLocation().add(new Vector(100,50,0));
+				if(flight_plan.getDestination() instanceof Airport){
+					current_target = ((Airport)flight_plan.getDestination()).getRunwayLocation().add(new Vector(100,50,0));
 
-					}
 				}
 			}
 			// Update bearing
@@ -761,7 +747,7 @@ public class Aircraft {
 	}
 
 	public void takeOff() {
-		((Airport)getFlightPlan().getOrigin()).is_active = false;
+		((Airport)getFlightPlan().getOrigin()).is_active = true;
 		is_manually_controlled = true;
 		is_takeoff = true;
 		velocity = new Vector(1, 0, 0);

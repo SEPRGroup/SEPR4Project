@@ -7,7 +7,6 @@ import scn.Demo;
 import lib.jog.graphics;
 import lib.jog.input;
 import lib.jog.input.EventHandler;
-import lib.jog.window;
 
 public class Airport extends Waypoint implements EventHandler {
 	// Put the airport in the middle of the airspace
