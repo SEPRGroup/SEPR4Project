@@ -19,13 +19,10 @@ import btc.Main;
 public class Demo extends Scene {
 	
 	private final cls.GameWindow game;
-
+	
+	
 	//****** REBUILD PROGRESS MARKER ******
 	
-	private cls.Score score; 	
-	private boolean shown_aircraft_waiting_message = false;
-	private cls.OrdersBox orders_box;
-	private static double time_elapsed;
 	private Aircraft selected_aircraft;
 	private Waypoint clicked_waypoint;
 	private int selected_path_point; // Selected path point, in an aircraft's route, used for altering the route
@@ -52,9 +49,7 @@ public class Demo extends Scene {
 	/**Music to play during the game scene*/
 	private audio.Music music;
 
-	
-	/** Demo's instance of the airport class*/
-	public static Airport airport = new Airport("Mosbear Airport");
+
 	
 	/**
 	 * The set of waypoints in the airspace which are origins / destinations
@@ -125,11 +120,12 @@ public class Demo extends Scene {
 	public java.util.ArrayList<Aircraft> getAircraftList() {
 		return aircraft_in_airspace;
 	}
-
-	public static double getTime() {
-		return time_elapsed;
-	}
 	
+	
+	public double getTime() {
+		return game.getTime();
+	}
+
 	/**
 	 * Returns array of entry points that are fair to be entry points for a plane (no plane is currently going to exit the airspace there,
 	 * also it is not too close to any plane). 
@@ -180,7 +176,6 @@ public class Demo extends Scene {
 	public void start() {	
 		music = audio.newMusic("sfx" + File.separator + "Gypsy_Shoegazer.ogg");
 		music.play();
-		orders_box = new cls.OrdersBox(ORDERS_BOX.x, ORDERS_BOX.y, ORDERS_BOX.width, ORDERS_BOX.height, 6);
 		aircraft_in_airspace = new java.util.ArrayList<Aircraft>();
 		recently_departed_aircraft = new java.util.ArrayList<Aircraft>();
 		lib.ButtonText.Action manual = new lib.ButtonText.Action() {
@@ -191,10 +186,8 @@ public class Demo extends Scene {
 			}
 		};
 		
-		score = new cls.Score();
 		
 		manual_override_button = new lib.ButtonText("Take Control", manual, (window.width() - 128) / 2, 32, 128, 64, 8, 4);
-		time_elapsed = 0;
 		compass_clicked = false;
 		selected_aircraft = null;
 		clicked_waypoint = null;
@@ -360,21 +353,9 @@ public class Demo extends Scene {
 	 */
 	@Override
 	public void update(double time_difference) {
-		time_elapsed += time_difference;
-		score.update();
 
-		if (airport.getLongestTimeInHangar(time_elapsed) > 5) {
-			score.increaseMeterFill(-1);
-			if (!shown_aircraft_waiting_message) {
-				orders_box.addOrder(">>> Plane waiting to take off, multiplier decreasing");
-				shown_aircraft_waiting_message = true;
-			}
-		} else {
-			shown_aircraft_waiting_message = false;
-		}
-		
-		orders_box.update(time_difference);
 		for (Aircraft aircraft : aircraft_in_airspace) {
+			
 			aircraft.update(time_difference);
 			if (aircraft.isFinished()) {
 				aircraft.setAdditionToMultiplier(score.getMultiplierLevel());
@@ -480,9 +461,7 @@ public class Demo extends Scene {
 		main.setScene(new GameOver(main, plane1, plane2, score.getTotalScore()));
 	}
 	
-	/**
-	 * Draw the scene GUI and all drawables within it, e.g. aircraft and waypoints
-	 */
+	/** Draw the scene GUI and all drawables within it, e.g. aircraft and waypoints */
 	@Override
 	public void draw() {
 		graphics.setColour(graphics.green);
@@ -564,9 +543,7 @@ public class Demo extends Scene {
 
 	}
 	
-	/**
-	 * Draw the info of a selected plane in the scene GUI
-	 */
+	/** Draw the info of a selected plane in the scene GUI */
 	private void drawPlaneInfo() {
 		graphics.setColour(graphics.green);
 		graphics.rectangle(false, PLANE_INFO.x, PLANE_INFO.y, PLANE_INFO.width, PLANE_INFO.height);
@@ -629,9 +606,7 @@ public class Demo extends Scene {
 	}
 		
 	
-	/**
-	 * draw a readout of the time the game has been played for & aircraft in the sky.
-	 */
+	/** draw a readout of the time the game has been played for & aircraft in the sky. */
 	private void drawAdditional() {
 		int hours = (int)(time_elapsed / (60 * 60));
 		int minutes = (int)(time_elapsed / 60);
@@ -700,9 +675,7 @@ public class Demo extends Scene {
 		return airport.isWithinDepartures(new Vector(x,y,0)) && !airport.is_active;
 	}
 
-	/**
-	 * Handle mouse input
-	 */
+	/** Handle mouse input */
 	@Override
 	public void mousePressed(int key, int x, int y) {
 		airport_control_box.mousePressed(key, x, y);
@@ -791,14 +764,10 @@ public class Demo extends Scene {
 	}
 
 	@Override
-	public void keyPressed(int key) {
-		
-	}
+	public void keyPressed(int key) {}
 
 	@Override
-	/**
-	 * handle keyboard input
-	 */
+	/** handle keyboard input */
 	public void keyReleased(int key) {
 		switch (key) {		
 			case input.KEY_SPACE :
