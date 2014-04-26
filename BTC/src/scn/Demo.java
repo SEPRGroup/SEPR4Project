@@ -362,7 +362,7 @@ public class Demo extends Scene {
 	public void update(double time_difference) {
 		time_elapsed += time_difference;
 		score.update();
-		graphics.setColour(graphics.green_transp);
+
 		if (airport.getLongestTimeInHangar(time_elapsed) > 5) {
 			score.increaseMeterFill(-1);
 			if (!shown_aircraft_waiting_message) {
@@ -528,7 +528,7 @@ public class Demo extends Scene {
 		}
 		graphics.setColour(255, 255, 255);
 		for (Aircraft aircraft : aircraft_in_airspace) {
-			aircraft.draw(highlighted_altitude);
+			aircraft.draw();
 			if (aircraft.isMouseOver()) {
 				aircraft.drawFlightPath(false);
 			}
@@ -641,7 +641,6 @@ public class Demo extends Scene {
 		String timePlayed = String.format("%d:%02d:", hours, minutes) + df.format(seconds); 
 		graphics.print(timePlayed, window.width() - (timePlayed.length() * 8 + 32), 32);
 		int planes = aircraft_in_airspace.size();
-		graphics.print(String.valueOf("Highlighted altitude: " + Integer.toString(highlighted_altitude)) , 32, 15);
 		graphics.print(String.valueOf(aircraft_in_airspace.size()) + " plane" + (planes == 1 ? "" : "s") + " in the sky.", 32, 32);
 	}
 	
@@ -765,7 +764,8 @@ public class Demo extends Scene {
 		airport_control_box.mouseReleased(key, x, y);
 		altimeter.mouseReleased(key, x, y);
 		
-		if (key == input.MOUSE_LEFT) {
+		switch (key){
+		case input.MOUSE_LEFT: 
 			if (manualOverridePressed(x, y)) {
 				manual_override_button.act();
 			} else if (waypoint_clicked && selected_aircraft != null) {
@@ -778,17 +778,15 @@ public class Demo extends Scene {
 				selected_path_point = -1;
 			}
 			clicked_waypoint = null; // Fine to set to null now as will have been dealt with
-		} else if (key == input.MOUSE_RIGHT) {
+			break;
+		case input.MOUSE_RIGHT:
 			if (compass_clicked && selected_aircraft != null) {
 				double dx = input.mouseX() - selected_aircraft.getPosition().getX() + airspace_view_offset_x;
 				double dy = input.mouseY() - selected_aircraft.getPosition().getY() + airspace_view_offset_y;
 				double newBearing = Math.atan2(dy, dx);
 				selected_aircraft.setBearing(newBearing);
 			}
-		} else if (key == input.MOUSE_WHEEL_UP) {
-			highlighted_altitude = 30000;
-		} else if (key == input.MOUSE_WHEEL_DOWN){
-			highlighted_altitude = 28000;
+			break;
 		}
 	}
 
