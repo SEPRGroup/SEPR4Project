@@ -10,12 +10,13 @@ public class Server extends Thread {
 	private Socket clientSocket = null;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
+	private int port = 10007;
 	
 	
 	public Server() throws IOException {
 		
 		try {
-			serverSocket = new ServerSocket(10007);
+			serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
 			System.err.println("Could not listen on port: 10007.");
 		}
