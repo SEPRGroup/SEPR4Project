@@ -33,41 +33,27 @@ public class Demo extends Scene {
 	public java.util.ArrayList<Aircraft> recently_departed_aircraft;
 	
 	
-	/**
-	 * A button to start and end manual control of an aircraft
-	 */
+	/** A button to start and end manual control of an aircraft*/
 	private lib.ButtonText manual_override_button;
-	/**
-	 * Tracks if manual heading compass of a manually controlled aircraft has been clicked
-	 */
+	/** Tracks if manual heading compass of a manually controlled aircraft has been clicked*/
 	private boolean compass_clicked;
-	/**
-	 * Tracks if waypoint of a manually controlled aircraft has been clicked
-	 */
+	/** Tracks if waypoint of a manually controlled aircraft has been clicked*/
 	private boolean waypoint_clicked;
-	/**
-	 * An altimeter to display aircraft altitidue, heading, etc.
-	 */
+	/** An altimeter to display aircraft altitidue, heading, etc. */
 	private cls.Altimeter altimeter;
 	private cls.AirportControlBox airport_control_box;
 
-	/**
-	 * The time elapsed since the last flight was generated
-	 */
+	/** The time elapsed since the last flight was generated*/
 	private double time_since_flight_generation = 0;
 	
-	/**
-	 * The current control altitude of the ACTO - initially 30,000
-	 */
+	/** The current control altitude of the ACTO - initially 30,000*/
 	private int highlighted_altitude = 30000;
 	
 	/**Music to play during the game scene*/
 	private audio.Music music;
 
 	
-	/**
-	 * Demo's instance of the airport class
-	 */
+	/** Demo's instance of the airport class*/
 	public static Airport airport = new Airport("Mosbear Airport");
 	
 	/**
@@ -856,6 +842,6 @@ public class Demo extends Scene {
 	 */	
 	@Deprecated
 	public Demo(int difficulty) {
-		Demo.difficulty = difficulty;
+		game = new GameWindow(16,48, window.width() - 32 -1, window.height() - 176 -1, difficulty);
 	}
 }

@@ -3,14 +3,13 @@ package cls;
 import java.util.Arrays;
 
 import lib.jog.graphics;
+import lib.jog.window;
 
 public class Score {
-	
 	
 	private final int MAX_SCORE = 9999999;
 	private final int MAX_DIGITS_IN_SCORE = (int)Math.log10(MAX_SCORE) + 1;
 	
-	private int current_digits_in_score;
 	
 	private int total_score = 0; // Records the total score the user has achieved at a given time.
 	private int target_score = 0;
@@ -37,14 +36,15 @@ public class Score {
 	 * Also used in Demo to vary max_aircraft and aircraft_spawn rates.
 	 */
 	private int multiplierLevel = 1;
-
-	// Variables used in multiplier bar
-	int bar_segments = 16;
-	int bar_segment_dif = 24;
-	int bar_x_offset = 608;
-	int bar_y_offset = 8;
-	int segment_width = 16;
-	int segment_height = 32;
+	
+	// Variables used in multiplier bar: assume to occupy 30% of screen width
+	int	bar_segments = 16,
+		bar_segment_dif = (3*window.width()) / (10*bar_segments),
+		bar_x_offset = window.width() / 2,
+		bar_y_offset = 8,
+		segment_width = window.width() /80,
+		segment_height = 32;
+	
 	
 	public int getTotalScore() {
 		if (total_score > MAX_SCORE)
@@ -87,9 +87,8 @@ public class Score {
 	public int calculateAircraftScore(Aircraft aircraft) {
 		double efficiency = efficiencyFactor(aircraft);
 		int base_score = aircraft.getBaseScore();
-		int bonus = (int)((base_score/3) * efficiency);
-		int aircraft_score = base_score + bonus;
-		return aircraft_score;
+		int bonus = (int)((base_score*efficiency)/3);
+		return base_score +bonus;
 	}
 	
 	/**
@@ -191,8 +190,9 @@ public class Score {
 	
 	private void drawScore() {
 		// Takes the maximum possible digits in the score and calculates how many of them are currently 0
-		current_digits_in_score = getTotalScore() != 0 ? (int)Math.log10(getTotalScore()) + 1 : 0; // Don't do log10(0) as it's undefined and gives an exception
-		char[] chars = new char[MAX_DIGITS_IN_SCORE - current_digits_in_score];
+		int current_digits_in_score = 
+				getTotalScore() != 0 ? (int)Math.log10(getTotalScore()) + 1 : 0; // Don't do log10(0) as it's undefined and gives an exception
+		char[] chars = new char[MAX_DIGITS_IN_SCORE -current_digits_in_score];
 		Arrays.fill(chars, '0');
 		String zeros = new String(chars);
 		
@@ -211,25 +211,26 @@ public class Score {
 		if (meter_draining) { // Make it red
 			red = 128;
 			green = 0;
-		}
+		}		
+		
+		int x = bar_x_offset;	//temporary variable for positioning
 		for (int i = 0; i < bar_segments; i++) { // Draw each segment
 			// Draw background
 			graphics.setColour(red, green, 0, 64);
-			graphics.rectangle(true, bar_x_offset, bar_y_offset, segment_width, segment_height);
+			graphics.rectangle(true, x, bar_y_offset, segment_width, segment_height);
 			graphics.setColour(red, green, 0);
 			// Draw inside
-			drawMultiplierSegment(meter_fill, i, bar_x_offset, bar_y_offset, segment_width, segment_height);
+			drawMultiplierSegment(meter_fill, i, x, bar_y_offset, segment_width, segment_height);
 			// Go to next segment
-			bar_x_offset += bar_segment_dif;
+			x += bar_segment_dif;
 		}
 		graphics.setColour(graphics.green);
 		
 		// Print multiplier e.g. x 10
-		bar_x_offset += 16;
+		x += 16;
 		String mul_var = String.format("%d", multiplier);
-		graphics.print("x", bar_x_offset, 18, 3);
-		graphics.print(mul_var, bar_x_offset + 32, 4, 5);
-		bar_x_offset = 608; // Reset x offset
+		graphics.print("x", x, 18, 3);
+		graphics.print(mul_var, x + 32, 4, 5);
 	}
 
 	private void drawMultiplierSegment(int meter_fill, int segment_number, int bar_x_offset, int bar_y_offset, int segment_width, int segment_height) {
