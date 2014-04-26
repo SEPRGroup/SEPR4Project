@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import scn.Demo;
+import lib.RandomNumber;
 import lib.jog.audio;
 import lib.jog.graphics;
 import lib.jog.input;
@@ -225,8 +226,8 @@ public class Aircraft {
 		}
 		else {
 			Random rand = new Random();
-			last_altitude = min_altitude + (rand.nextInt((max_altitude - min_altitude)/1000))* 1000;
-			position = position.add(new Vector(0, 0, last_altitude));
+			last_altitude = (RandomNumber.randInclusiveInt(min_altitude, max_altitude)/1000) *1000;
+			position.setZ(last_altitude);
 		}
 		
 		// Calculate initial velocity (direction)
@@ -500,15 +501,8 @@ public class Aircraft {
 	 * Draws the plane and any warning circles if necessary.
 	 * @param The altitude to highlight aircraft at
 	 */
-	public void draw(int highlighted_altitude) {
-		double alpha;
-		if (position.getZ() >= 28000 && position.getZ() <= 29000) { // 28000-29000
-			alpha = highlighted_altitude == 28000 ? 255 : 128; // 255 if highlighted, else 128
-		} else if (position.getZ() <= 30000 && position.getZ() >= 29000) { // 29000-30000
-			alpha = highlighted_altitude == 30000 ? 255 : 128; // 255 if highlighted, else 128
-		} else { // If it's not 28000-30000, then it's currently landing
-			alpha = 128; 
-		}
+	public void draw() {
+		double alpha = 128;	
 		
 		double scale = 2*(position.getZ()/30000); // Planes with lower altitude are smaller
 		if (scale < 1){ //caps the size of planes so they don't get infinitely small
@@ -748,7 +742,7 @@ public class Aircraft {
 		is_waiting_to_land = false;
 		is_landing = true;
 		is_manually_controlled = false;
-		Demo.airport.is_active = true;
+		
 	}
 
 	public void takeOff() {

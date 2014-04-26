@@ -101,7 +101,10 @@ public class Demo extends Scene {
 	/**
 	 * Demo's instance of the airport class
 	 */
-	public static Airport airport = new Airport("Mosbear Airport");
+	public static Airport[] airport = new Airport[] {
+		new Airport("Mosbear Airport",600,200),
+		new Airport("Airport",600,500)
+	};
 	
 	/**
 	 * The set of waypoints in the airspace which are origins / destinations
@@ -112,7 +115,7 @@ public class Demo extends Scene {
 		new Waypoint(8, window.height() - ORDERS_BOX.height - 72, true, "100 Acre Woods"), // bottom left
 		new Waypoint(window.width() - 40, 8, true, "City of Rightson"), // top right
 		new Waypoint(window.width() - 40, window.height() - ORDERS_BOX.height - 72, true, "South Sea"), // bottom right
-		airport
+		airport//,airport2
 	};
 
 	/**
@@ -216,7 +219,8 @@ public class Demo extends Scene {
 	public Demo(Main main, int difficulty) {
 		super(main);
 		Demo.difficulty = difficulty;
-		airport.loadImage();
+		//airport.loadImage();
+		//airport2.loadImage();
 	}
 
 	/**
@@ -252,7 +256,7 @@ public class Demo extends Scene {
 		
 		manual_override_button = new lib.ButtonText(" Take Control", manual, (window.width() - 128) / 2, 32, 128, 64, 8, 4);
 		altimeter = new cls.Altimeter(ALTIMETER.x, ALTIMETER.y, ALTIMETER.width, ALTIMETER.height, orders_box);
-		airport_control_box = new AirportControlBox(AIRPORT_CONTROL.x, AIRPORT_CONTROL.y, AIRPORT_CONTROL.width, AIRPORT_CONTROL.height, airport);
+		airport_control_box = new AirportControlBox(AIRPORT_CONTROL.x, AIRPORT_CONTROL.y, AIRPORT_CONTROL.width, AIRPORT_CONTROL.height, airport[0]);
 		deselectAircraft();
 	}
 	
@@ -460,6 +464,7 @@ public class Demo extends Scene {
 			}
 		}
 		airport.update(this);
+		//airport2.update(this);
 		if (selected_aircraft != null) {
 			if(!selected_aircraft.is_takeoff()){
 				if (selected_aircraft.isManuallyControlled()) {
@@ -525,6 +530,7 @@ public class Demo extends Scene {
 	public void gameOver(Aircraft plane1, Aircraft plane2) {
 		aircraft_in_airspace.clear();
 		airport.clear();
+		airport2.clear();
 		playSound(audio.newSoundEffect("sfx" + File.separator + "crash.ogg"));
 		main.closeScene();
 		main.setScene(new GameOver(main, plane1, plane2, score.getTotalScore()));
@@ -544,7 +550,9 @@ public class Demo extends Scene {
 		graphics.setColour(255, 255, 255, 96);
 		graphics.draw(background, 0, 0, window.scale());	//{!} NOT accounting for fixed border size
 		graphics.setColour(255, 255, 255, 96);
-		airport.draw();
+		for(Airport a : airport){
+			a.draw();
+		}
 		drawMap();
 		
 		//System.out.println("restore Demo");
@@ -572,7 +580,7 @@ public class Demo extends Scene {
 	 */
 	private void drawMap() {
 		for (Waypoint waypoint : airspace_waypoints) {
-			if (!waypoint.equals(airport)) { // Skip the airport
+			if (!waypoint.equals(airport)&&!waypoint.equals(airport2)) { // Skip the airport
 				waypoint.draw();
 			}
 		}
@@ -774,15 +782,16 @@ public class Demo extends Scene {
 			}
 			
 			if (isArrivalsClicked(x, y) && selected_aircraft != null) {
-				if (selected_aircraft.is_waiting_to_land && selected_aircraft.current_target.equals(airport.getLocation())) {
-					airport.mousePressed(key, x, y);
+				if (selected_aircraft.is_waiting_to_land && selected_aircraft.current_target.equals(airport[0].getLocation())) {
+					airport[0].arrivalsTriggered();
+					//airport.mousePressed(key, x, y);
 					selected_aircraft.land();
 					deselectAircraft();
 				}
 			} else if (isDeparturesClicked(x, y)) {
-				if (airport.aircraft_hangar.size() > 0) {
-					airport.mousePressed(key, x, y);
-					airport.signalTakeOff();
+				if (airport[0].aircraft_hangar.size() > 0) {
+					//airport.mousePressed(key, x, y);
+					airport[0].signalTakeOff();
 				}
 			}
 		} else if (key == input.MOUSE_RIGHT) {
@@ -811,7 +820,8 @@ public class Demo extends Scene {
 
 	@Override
 	public void mouseReleased(int key, int x, int y) {
-		airport.mouseReleased(key, x, y);
+		airport.releaseTriggered();
+		//airport.mouseReleased(key, x, y);
 		airport_control_box.mouseReleased(key, x, y);
 		altimeter.mouseReleased(key, x, y);
 		
@@ -863,7 +873,9 @@ public class Demo extends Scene {
 			
 			case input.KEY_ESCAPE :
 				aircraft_in_airspace.clear();
-				airport.clear();
+				for(Airport a : airport){
+					a.clear();
+				}
 				main.closeScene();
 			break;
 			
@@ -875,6 +887,7 @@ public class Demo extends Scene {
 		}
 	}
 	
+	//private void 
 	// Necessary for testing	
 	/**
 	 * This method should only be used for unit testing (avoiding instantiation of main class). Its purpose is to initialize array where
