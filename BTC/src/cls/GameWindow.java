@@ -104,7 +104,7 @@ public class GameWindow {
 		scale = width / 1248.0;
 		
 		//precalculate game, control position increments
-		int gHeight = (int)(scale * 672),
+		int gHeight = (int)(scale * 784),
 			cSpacing = 8,
 			cWidth = width -cSpacing*3,
 			cHeight = height -gHeight -cSpacing,
