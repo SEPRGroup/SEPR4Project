@@ -14,8 +14,9 @@ public class GameWindow {
 	
 	// Position of things drawn to window  
 	private int x, y, width, height;
+	private double scale;
 	private final Rectangle
-		planeInfo, altimeter, airportControl, ordersBox;
+		gameArea, planeInfo, altimeter, airportControl, ordersBox;
 	
 	// Static Final ints for difficulty settings
 	public final static int DIFFICULTY_EASY = 0;
@@ -35,7 +36,9 @@ public class GameWindow {
 	private double timeElapsed = 0;
 	
 	/** instance of the airport class*/
-	public static Airport airport = new Airport("Mosbear Airport");
+	private Airport airport;
+	/** The set of waypoints in the airspace which are origins / destinations */
+	public Waypoint[] locationWaypoints;
 	
 	
 	public static void start(){
@@ -52,12 +55,20 @@ public class GameWindow {
 		this.difficulty= difficulty;
 		
 		//set up window controls
+		gameArea = new Rectangle();
 		planeInfo = new Rectangle();
 		altimeter = new Rectangle();
 		airportControl = new Rectangle();
 		ordersBox = new Rectangle();
 		setAreas();
-			
+
+		airport = new Airport("Mosbear Airport");
+		locationWaypoints= new Waypoint[] { 
+				new Waypoint(8, 8, true, "North West Top Leftonia"), // top left
+				new Waypoint(8, gameArea.height-8, true, "100 Acre Woods"), // bottom left
+				new Waypoint(gameArea.width-8, 8, true, "City of Rightson"), // top right
+				new Waypoint(gameArea.width-8, gameArea.height -8, true, "South Sea"), // bottom right
+				airport};
 	}
 
 	
@@ -90,12 +101,16 @@ public class GameWindow {
 	 * replaces orders with a OrdersBox of the new size
 	 * */
 	private void setAreas(){
-		//precalculate control position increments
-		int cSpacing = 8,
-			cWidth = width -cSpacing*3,
-			cHeight = 112,
-			cY = height -(cHeight +cSpacing);
+		scale = width / 1248.0;
 		
+		//precalculate game, control position increments
+		int gHeight = (int)(scale * 672),
+			cSpacing = 8,
+			cWidth = width -cSpacing*3,
+			cHeight = height -gHeight -cSpacing,
+			cY = gHeight +cSpacing;
+		gameArea.setRect(x, y,
+				width, gHeight);
 		planeInfo.setRect(0, cY, 
 				cWidth/4, cHeight );
 		altimeter.setRect(cSpacing +cWidth/4, cY, 
@@ -105,7 +120,8 @@ public class GameWindow {
 		ordersBox.setRect(cSpacing*3 +(cWidth*13/20), cY, 
 				cWidth*7/20, cHeight );
 		
-		orders = new cls.OrdersBox(ordersBox.x +x, ordersBox.y +y, ordersBox.width, ordersBox.height, 6);
+		orders = new cls.OrdersBox(ordersBox.x +x, ordersBox.y +y, 
+				ordersBox.width, ordersBox.height, 6);
 	}
 	
 	

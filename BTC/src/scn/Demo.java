@@ -17,6 +17,8 @@ import cls.Waypoint;
 import btc.Main;
 
 public class Demo extends Scene {
+	/**Music to play during the game scene*/
+	private audio.Music music;
 	
 	private final cls.GameWindow game;
 	
@@ -42,30 +44,8 @@ public class Demo extends Scene {
 
 	/** The time elapsed since the last flight was generated*/
 	private double time_since_flight_generation = 0;
-	
-	/** The current control altitude of the ACTO - initially 30,000*/
-	private int highlighted_altitude = 30000;
-	
-	/**Music to play during the game scene*/
-	private audio.Music music;
 
-
-	
-	/**
-	 * The set of waypoints in the airspace which are origins / destinations
-	 */
-	public static Waypoint[] location_waypoints = new Waypoint[] {
-		// A set of Waypoints which are origin / destination points 
-		new Waypoint(8, 8, true, "North West Top Leftonia"), // top left
-		new Waypoint(8, window.height() - ORDERS_BOX.height - 72, true, "100 Acre Woods"), // bottom left
-		new Waypoint(window.width() - 40, 8, true, "City of Rightson"), // top right
-		new Waypoint(window.width() - 40, window.height() - ORDERS_BOX.height - 72, true, "South Sea"), // bottom right
-		airport
-	};
-
-	/**
-	 * All waypoints in the airspace, INCLUDING locationWaypoints.
-	 */
+	/** All waypoints in the airspace, INCLUDING locationWaypoints. */
 	public static Waypoint[] airspace_waypoints = new Waypoint[] {		
 		/* All waypoints in the airspace, including location Way Points*/
 	
@@ -164,7 +144,6 @@ public class Demo extends Scene {
 	 */
 	public Demo(Main main, int difficulty) {
 		super(main);
-		airport.loadImage();
 		game = new GameWindow(16,48, window.width() - 32 -1, window.height() - 176 -1, difficulty);
 	}
 
