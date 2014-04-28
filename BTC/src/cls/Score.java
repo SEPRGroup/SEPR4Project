@@ -41,7 +41,7 @@ public class Score {
 	private int	
 		bar_segments = 16,
 		bar_segment_dif,
-		bar_x_offset,
+		bar_x_offset = 280 +8,
 		bar_y_offset = 0,
 		bar_segment_width,
 		bar_segment_height;
@@ -55,9 +55,9 @@ public class Score {
 	
 	/** set up positioning based on width, height */
 	private void setSize(){
-		bar_segment_dif = (3*width) / (10*bar_segments);
-		bar_x_offset = width / 2;
-		bar_segment_width = width / 80;
+		int bar_width = width -bar_x_offset -64;
+		bar_segment_dif = bar_width / bar_segments;
+		bar_segment_width = bar_segment_dif *2 /3;
 		bar_segment_height = height;
 	}
 	
@@ -211,10 +211,10 @@ public class Score {
 		
 		// Prints the unused score digits as 0s, and the current score.
 		graphics.setColour(graphics.green_transp);
-		graphics.print(zeros, 264, 3, 5);
+		graphics.print(zeros, 0, 3, 5);
 		graphics.setColour(graphics.green);
 		if (getTotalScore() != 0) 
-			graphics.printRight(String.valueOf(getTotalScore()), 544, 3, 5, 0);		
+			graphics.printRight(String.valueOf(getTotalScore()),  280, 3, 5, 0);		
 	}
 	
 	private void drawMultiplier() {
@@ -243,7 +243,7 @@ public class Score {
 		x += 16;
 		String mul_var = String.format("%d", multiplier);
 		graphics.print("x", x, 18, 3);
-		graphics.print(mul_var, x + 32, 4, 5);
+		graphics.print(mul_var, x +32, 4, 5);
 	}
 
 	private void drawMultiplierSegment(int meter_fill, int segment_number, int bar_x_offset, int bar_y_offset, int segment_width, int segment_height) {

@@ -141,14 +141,16 @@ public class GameWindow {
 		
 		//precalculate score, game, control position increments
 		int spacing = 8,
+			sX = 256 +spacing,
+			sWidth = width -sX -spacing -150,
 			sHeight = 32,
 			gHeight = (int)(scale * 784),
 			gY = sHeight +spacing,
 			cWidth = width -3*spacing,	//total width available to controls
 			cHeight = height -sHeight -gHeight -2*spacing,
 			cY = sHeight +gHeight +2*spacing;
-		scoreArea.setRect(0, 0,
-				width, sHeight);
+		scoreArea.setRect(sX, 0,
+				sWidth, sHeight);
 		gameArea.setRect(0, gY,
 				width, gHeight);
 		planeInfo.setRect(0, cY, 
