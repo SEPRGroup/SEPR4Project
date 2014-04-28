@@ -168,6 +168,16 @@ public class GameWindow {
 	}
 	
 	
+	private boolean isArrivalsClicked(int x, int y) {
+		return airport.isWithinArrivals(new Vector(x,y,0)) && !airport.is_active;
+	}
+	
+	
+	private boolean isDeparturesClicked(int x, int y) {
+		return airport.isWithinDepartures(new Vector(x,y,0)) && !airport.is_active;
+	}
+	
+	
 	/** wrapper for graphics.setViewport converting from a Rectangle */
 	private void setViewportRect(Rectangle rect){
 		graphics.setViewport(rect.x, rect.y, rect.width, rect.height);

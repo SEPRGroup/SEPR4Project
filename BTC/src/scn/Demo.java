@@ -284,7 +284,7 @@ public class Demo extends Scene {
 	 * Sets the airport to busy, adds the aircraft passed to the airspace, where it begins its flight plan starting at the airport
 	 * @param aircraft
 	 */
-	public static void takeOffSequence(Aircraft aircraft) {
+	public void takeOffSequence(Aircraft aircraft) {
 		aircraft_in_airspace.add(aircraft);
 		// Space to implement some animation features?
 	}
@@ -579,13 +579,6 @@ public class Demo extends Scene {
 		return null;
 	}
 	
-	private boolean isArrivalsClicked(int x, int y) {
-		return airport.isWithinArrivals(new Vector(x,y,0)) && !airport.is_active;
-	}
-	
-	private boolean isDeparturesClicked(int x, int y) {
-		return airport.isWithinDepartures(new Vector(x,y,0)) && !airport.is_active;
-	}
 
 	/** Handle mouse input */
 	@Override
