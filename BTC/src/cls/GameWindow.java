@@ -16,7 +16,7 @@ public class GameWindow {
 	private int x, y, width, height;
 	private double scale;
 	private final Rectangle
-		gameArea, planeInfo, altimeter, airportControl, ordersBox;
+		scoreArea, gameArea, planeInfo, altimeter, airportControl, ordersBox;
 	
 	// Static Final ints for difficulty settings
 	public final static int DIFFICULTY_EASY = 0;
@@ -29,7 +29,7 @@ public class GameWindow {
 	/** The background to draw in the airspace.*/
 	private static graphics.Image backgroundImage;
 	
-	private cls.Score score = new cls.Score(); 	
+	private cls.Score score;
 	private boolean shownAircraftWaitingMessage = false;
 	private cls.OrdersBox orders;
 	
@@ -55,6 +55,7 @@ public class GameWindow {
 		this.difficulty= difficulty;
 		
 		//set up window controls
+		scoreArea = new Rectangle();
 		gameArea = new Rectangle();
 		planeInfo = new Rectangle();
 		altimeter = new Rectangle();
@@ -98,29 +99,35 @@ public class GameWindow {
 	
 	/** 
 	 * Sets up control areas based on x, y, width, height
+	 * replaces score with a Score of the new size
 	 * replaces orders with a OrdersBox of the new size
 	 * */
 	private void setAreas(){
 		scale = width / 1248.0;
 		
-		//precalculate game, control position increments
-		int gHeight = (int)(scale * 784),
-			cSpacing = 8,
-			cWidth = width -cSpacing*3,
-			cHeight = height -gHeight -cSpacing,
-			cY = gHeight +cSpacing;
-		gameArea.setRect(x, y,
+		//precalculate score, game, control position increments
+		int spacing = 8,
+			sHeight = 32,
+			gHeight = (int)(scale * 784),
+			gY = sHeight +spacing,
+			cWidth = width -3*spacing,	//total width available to controls
+			cHeight = height -sHeight -gHeight -2*spacing,
+			cY = sHeight +gHeight +2*spacing;
+		scoreArea.setRect(0, 0,
+				width, sHeight);
+		gameArea.setRect(0, gY,
 				width, gHeight);
 		planeInfo.setRect(0, cY, 
 				cWidth/4, cHeight );
-		altimeter.setRect(cSpacing +cWidth/4, cY, 
+		altimeter.setRect(spacing +cWidth/4, cY, 
 				cWidth/5, cHeight );
-		airportControl.setRect(cSpacing*2 +(cWidth*9/20), cY, 
+		airportControl.setRect(spacing*2 +(cWidth*9/20), cY, 
 				cWidth/5, cHeight );
-		ordersBox.setRect(cSpacing*3 +(cWidth*13/20), cY, 
+		ordersBox.setRect(spacing*3 +(cWidth*13/20), cY, 
 				cWidth*7/20, cHeight );
 		
-		orders = new cls.OrdersBox(ordersBox.x +x, ordersBox.y +y, 
+		score = new cls.Score(width, sHeight);
+		orders = new cls.OrdersBox(ordersBox.x, ordersBox.y, 
 				ordersBox.width, ordersBox.height, 6);
 	}
 	

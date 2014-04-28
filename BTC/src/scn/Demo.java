@@ -144,8 +144,8 @@ public class Demo extends Scene {
 	 */
 	public Demo(Main main, int difficulty) {
 		super(main);
-		game = new GameWindow(16,48, 
-				window.width() -32, window.height() -48 -8, difficulty);
+		game = new GameWindow(16, 8, 
+				window.width() -32, window.height() -16, difficulty);
 	}
 
 	/**
