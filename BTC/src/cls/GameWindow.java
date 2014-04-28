@@ -177,6 +177,36 @@ public class GameWindow {
 	}
 	
 	
+	/**
+	 * adds the aircraft passed to the airspace, where it begins its flight plan starting at the airport
+	 * @param aircraft
+	 */
+	public void takeOffSequence(Aircraft aircraft) {
+		aircraftInAirspace.add(aircraft);
+		// Space to implement some animation features?
+	}
+	
+	
+	private boolean aircraftClicked(int gameX, int gameY) {
+		for (Aircraft a : aircraftInAirspace) {
+			if (a.isMouseOver(gameX, gameY)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	private Aircraft findClickedAircraft(int gameX, int gameY) {
+		for (Aircraft a : aircraftInAirspace) {
+			if (a.isMouseOver(gameX, gameY)) {
+				return a;
+			}
+		}
+		return null;
+	}
+	
+	
 	private boolean isArrivalsClicked(int gameX, int gameY) {
 		return airport.isWithinArrivals(new Vector(gameX,gameY,0))
 				&& !airport.is_active;

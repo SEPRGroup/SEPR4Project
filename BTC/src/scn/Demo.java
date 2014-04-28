@@ -233,14 +233,6 @@ public class Demo extends Scene {
 		return new Aircraft(name, destination_name, origin_name, destination_point, origin_point, aircraft_image, 32 + (int)(10 * Math.random()), airspace_waypoints, difficulty);
 	}
 	
-	/**
-	 * Sets the airport to busy, adds the aircraft passed to the airspace, where it begins its flight plan starting at the airport
-	 * @param aircraft
-	 */
-	public void takeOffSequence(Aircraft aircraft) {
-		aircraft_in_airspace.add(aircraft);
-		// Space to implement some animation features?
-	}
 
 	/**
 	 * cleanly exit by stopping the scene's music
@@ -485,24 +477,6 @@ public class Demo extends Scene {
 	}
 	
 
-	private boolean aircraftClicked(int x, int y) {
-		for (Aircraft a : aircraft_in_airspace) {
-			if (a.isMouseOver(x-airspace_view_offset_x, y-airspace_view_offset_y)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private Aircraft findClickedAircraft(int x, int y) {
-		for (Aircraft a : aircraft_in_airspace) {
-			if (a.isMouseOver(x-airspace_view_offset_x, y-airspace_view_offset_y)) {
-				return a;
-			}
-		}
-		return null;
-	}
-	
 	private boolean waypointInFlightplanClicked(int x, int y, Aircraft a) {
 		if (a != null) {
 			for (Waypoint w : airspace_waypoints) {
