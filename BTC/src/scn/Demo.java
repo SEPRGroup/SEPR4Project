@@ -25,7 +25,6 @@ public class Demo extends Scene {
 	
 	//****** REBUILD PROGRESS MARKER ******
 	
-	private Aircraft selected_aircraft;
 	private Waypoint clicked_waypoint;
 	private int selected_path_point; // Selected path point, in an aircraft's route, used for altering the route
 	private java.util.ArrayList<Aircraft> aircraft_in_airspace;
@@ -144,7 +143,6 @@ public class Demo extends Scene {
 		
 		manual_override_button = new lib.ButtonText("Take Control", manual, (window.width() - 128) / 2, 32, 128, 64, 8, 4);
 		compass_clicked = false;
-		selected_aircraft = null;
 		clicked_waypoint = null;
 		selected_path_point = -1;
 		
@@ -429,7 +427,6 @@ public class Demo extends Scene {
 			selected_aircraft.drawCompass();
 		}
 		
-		drawPlaneInfo();
 		
 		graphics.setColour(graphics.green);
 		drawAdditional();
@@ -484,32 +481,6 @@ public class Demo extends Scene {
 
 	}
 	
-	/** Draw the info of a selected plane in the scene GUI */
-	private void drawPlaneInfo() {
-		graphics.setColour(graphics.green);
-		graphics.rectangle(false, PLANE_INFO.x, PLANE_INFO.y, PLANE_INFO.width, PLANE_INFO.height);
-		if (selected_aircraft != null) {
-			//System.out.println("set Demo.planeInfo");
-			graphics.setViewport(PLANE_INFO.x, PLANE_INFO.y, PLANE_INFO.width, PLANE_INFO.height);
-			graphics.printCentred(selected_aircraft.getName(), 0, 5, 2, PLANE_INFO.width);
-			// Altitude
-			String altitude = String.format("%.0f", selected_aircraft.getPosition().getZ()) + "£";
-			graphics.print("Altitude:", 10, 40);
-			graphics.print(altitude, PLANE_INFO.width - 10 - altitude.length()*8, 40);
-			// Speed
-			String speed = String.format("%.2f", selected_aircraft.getSpeed() * 1.687810) + "$";
-			graphics.print("Speed:", 10, 55);
-			graphics.print(speed, PLANE_INFO.width - 10 - speed.length()*8, 55);
-			// Origin
-			graphics.print("Origin:", 10, 70);
-			graphics.print(selected_aircraft.getFlightPlan().getOriginName(), PLANE_INFO.width - 10 - selected_aircraft.getFlightPlan().getOriginName().length()*8, 70);
-			// Destination
-			graphics.print("Destination:", 10, 85);
-			graphics.print(selected_aircraft.getFlightPlan().getDestinationName(), PLANE_INFO.width - 10 - selected_aircraft.getFlightPlan().getDestinationName().length()*8, 85);
-			//System.out.println("restore Demo.planeInfo");
-			graphics.setViewport();
-		}
-	}
 	
 	/**
 	 * Draws points scored for a plane when it successfully leaves the airspace. The points the

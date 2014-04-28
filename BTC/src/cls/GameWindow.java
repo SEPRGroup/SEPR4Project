@@ -34,13 +34,15 @@ public class GameWindow {
 	private cls.Altimeter altimeter;
 	private cls.AirportControlBox airportControl;
 	private cls.OrdersBox orders;
-	
+		
 	private double timeElapsed = 0;
 	
 	/** instance of the airport class*/
 	private Airport airport;
 	/** The set of waypoints in the airspace which are origins / destinations */
 	public Waypoint[] locationWaypoints;
+	
+	private Aircraft selectedAircraft = null;
 	
 	
 	public static void start(){
@@ -108,6 +110,7 @@ public class GameWindow {
 					gameArea.y, scale);
 			
 			//{!} DRAW GAME COMPONENTS
+			drawPlaneInfo();
 			setViewportRect(scoreArea);
 			score.draw();
 			graphics.setViewport();
@@ -126,6 +129,42 @@ public class GameWindow {
 				
 		//System.out.println("restore GameWindow");
 		graphics.setViewport();
+	}
+	
+	
+	/** Draw the info of a selected plane in the scene GUI */
+	private void drawPlaneInfo() {
+		graphics.setColour(graphics.green);
+		graphics.rectangle(false, planeInfo.x, planeInfo.y, planeInfo.width, planeInfo.height);
+		if (selectedAircraft != null) {
+			//System.out.println("set Demo.planeInfo");
+			graphics.setViewport(planeInfo.x, planeInfo.y, planeInfo.width, planeInfo.height);
+			
+			graphics.printCentred(selectedAircraft.getName(), 0, 5, 2, planeInfo.width);
+			// Altitude
+			String altitude = String.format("%.0f", selectedAircraft.getPosition().getZ()) +"£";
+			graphics.print("Altitude:", 10, 40);
+			//graphics.print(altitude, planeInfo.width -10 -altitude.length()*8, 40);
+			graphics.printRight(altitude, planeInfo.width -10, 40, 1, -1);
+			// Speed
+			String speed = String.format("%.2f", selectedAircraft.getSpeed() * 1.687810) + "$";
+			graphics.print("Speed:", 10, 55);
+			//graphics.print(speed,  planeInfo.width -10 -speed.length()*8, 55);
+			graphics.printRight(speed, planeInfo.width -10, 55, 1, -1);
+			// Origin
+			String origin = selectedAircraft.getFlightPlan().getOriginName();
+			graphics.print("Origin:", 10, 70);
+			//graphics.print(origin, planeInfo.width -10 -origin.length()*8, 70);
+			graphics.printRight(origin, planeInfo.width -10, 70, 1, -1);
+			// Destination
+			String destination = selectedAircraft.getFlightPlan().getDestinationName();
+			graphics.print("Destination:", 10, 85);
+			//graphics.print(destination, planeInfo.width -10 -destination.length()*8, 85);
+			graphics.printRight(destination, planeInfo.width -10, 85, 1, -1);
+			//System.out.println("restore Demo.planeInfo");
+			
+			graphics.setViewport();
+		}
 	}
 	
 	
