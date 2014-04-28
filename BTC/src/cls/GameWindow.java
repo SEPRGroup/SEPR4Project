@@ -16,7 +16,7 @@ public class GameWindow {
 	private int x, y, width, height;
 	private double scale;
 	private final Rectangle
-		scoreArea, gameArea, planeInfo, altimeter, airportControl, ordersBox;
+		scoreArea, gameArea, planeInfo, altimeterBox, airportControlBox, ordersBox;
 	
 	// Static Final ints for difficulty settings
 	public final static int DIFFICULTY_EASY = 0;
@@ -32,6 +32,8 @@ public class GameWindow {
 	private cls.Score score;
 	private boolean shownAircraftWaitingMessage = false;
 	private cls.OrdersBox orders;
+	private cls.Altimeter altimeter;
+	private cls.AirportControlBox airportControl;
 	
 	private double timeElapsed = 0;
 	
@@ -58,8 +60,8 @@ public class GameWindow {
 		scoreArea = new Rectangle();
 		gameArea = new Rectangle();
 		planeInfo = new Rectangle();
-		altimeter = new Rectangle();
-		airportControl = new Rectangle();
+		altimeterBox = new Rectangle();
+		airportControlBox = new Rectangle();
 		ordersBox = new Rectangle();
 		setAreas();
 
@@ -101,6 +103,8 @@ public class GameWindow {
 	 * Sets up control areas based on x, y, width, height
 	 * replaces score with a Score of the new size
 	 * replaces orders with a OrdersBox of the new size
+	 * replaces airportControl with an airportControlBox of the new size
+	 * replaces altimeter with an Altimeter of the new size
 	 * */
 	private void setAreas(){
 		scale = width / 1248.0;
@@ -119,16 +123,21 @@ public class GameWindow {
 				width, gHeight);
 		planeInfo.setRect(0, cY, 
 				cWidth/4, cHeight );
-		altimeter.setRect(spacing +cWidth/4, cY, 
+		altimeterBox.setRect(spacing +cWidth/4, cY, 
 				cWidth/5, cHeight );
-		airportControl.setRect(spacing*2 +(cWidth*9/20), cY, 
+		airportControlBox.setRect(spacing*2 +(cWidth*9/20), cY, 
 				cWidth/5, cHeight );
 		ordersBox.setRect(spacing*3 +(cWidth*13/20), cY, 
 				cWidth*7/20, cHeight );
 		
+		//regenerate sized components
 		score = new cls.Score(width, sHeight);
+		airportControl = new cls.AirportControlBox(airportControlBox.x, airportControlBox.y, 
+				airportControlBox.width, airportControlBox.height, airport);
 		orders = new cls.OrdersBox(ordersBox.x, ordersBox.y, 
 				ordersBox.width, ordersBox.height, 6);
+		altimeter = new cls.Altimeter(altimeterBox.x, altimeterBox.y,
+				altimeterBox.width, altimeterBox.height, orders);
 	}
 	
 	

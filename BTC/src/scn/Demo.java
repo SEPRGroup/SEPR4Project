@@ -38,9 +38,7 @@ public class Demo extends Scene {
 	private boolean compass_clicked;
 	/** Tracks if waypoint of a manually controlled aircraft has been clicked*/
 	private boolean waypoint_clicked;
-	/** An altimeter to display aircraft altitidue, heading, etc. */
-	private cls.Altimeter altimeter;
-	private cls.AirportControlBox airport_control_box;
+
 
 	/** The time elapsed since the last flight was generated*/
 	private double time_since_flight_generation = 0;
@@ -151,8 +149,6 @@ public class Demo extends Scene {
 		selected_path_point = -1;
 		
 		manual_override_button = new lib.ButtonText(" Take Control", manual, (window.width() - 128) / 2, 32, 128, 64, 8, 4);
-		altimeter = new cls.Altimeter(ALTIMETER.x, ALTIMETER.y, ALTIMETER.width, ALTIMETER.height, orders_box);
-		airport_control_box = new AirportControlBox(AIRPORT_CONTROL.x, AIRPORT_CONTROL.y, AIRPORT_CONTROL.width, AIRPORT_CONTROL.height, airport);
 		deselectAircraft();
 	}
 	
