@@ -429,10 +429,6 @@ public class Demo extends Scene {
 			selected_aircraft.drawCompass();
 		}
 		
-		score.draw();
-		orders_box.draw();
-		altimeter.draw();
-		airport_control_box.draw();
 		drawPlaneInfo();
 		
 		graphics.setColour(graphics.green);

@@ -31,9 +31,9 @@ public class GameWindow {
 	
 	private cls.Score score;
 	private boolean shownAircraftWaitingMessage = false;
-	private cls.OrdersBox orders;
 	private cls.Altimeter altimeter;
 	private cls.AirportControlBox airportControl;
+	private cls.OrdersBox orders;
 	
 	private double timeElapsed = 0;
 	
@@ -108,6 +108,12 @@ public class GameWindow {
 					gameArea.y, scale);
 			
 			//{!} DRAW GAME COMPONENTS
+			setViewportRect(scoreArea);
+			score.draw();
+			graphics.setViewport();
+			altimeter.draw();
+			airportControl.draw();
+			orders.draw();			
 			
 			//draw border
 			graphics.setColour(graphics.green);
@@ -162,8 +168,8 @@ public class GameWindow {
 		ordersBox.setRect(spacing*3 +(cWidth*13/20), cY, 
 				cWidth*7/20, cHeight );
 		
-		//regenerate sized components
-		score = new cls.Score(width, sHeight);
+		//regenerate sized control components
+		score = new cls.Score(scoreArea.width, scoreArea.height);
 		airportControl = new cls.AirportControlBox(airportControlBox.x, airportControlBox.y, 
 				airportControlBox.width, airportControlBox.height, airport);
 		orders = new cls.OrdersBox(ordersBox.x, ordersBox.y, 
