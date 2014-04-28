@@ -26,10 +26,6 @@ public class Demo extends Scene {
 	//****** REBUILD PROGRESS MARKER ******
 	
 	
-	private java.util.ArrayList<Aircraft> aircraft_in_airspace;
-	private java.util.ArrayList<Aircraft> recently_departed_aircraft;
-	
-	
 	/** A button to start and end manual control of an aircraft*/
 	private lib.ButtonText manual_override_button;
 	/** Tracks if manual heading compass of a manually controlled aircraft has been clicked*/
@@ -66,49 +62,11 @@ public class Demo extends Scene {
 	};
 	
 	
-	/**
-	 * Getter for aircraft list
-	 * @return the arrayList of aircraft in the airspace
-	 */
-	public java.util.ArrayList<Aircraft> getAircraftList() {
-		return aircraft_in_airspace;
-	}
-	
 	
 	public double getTime() {
 		return game.getTime();
 	}
 
-	/**
-	 * Returns array of entry points that are fair to be entry points for a plane (no plane is currently going to exit the airspace there,
-	 * also it is not too close to any plane). 
-	 */	
-	private java.util.ArrayList<Waypoint> getAvailableEntryPoints() {
-		java.util.ArrayList<Waypoint> available_entry_points = new java.util.ArrayList<Waypoint>();
-		
-		for (Waypoint entry_point : location_waypoints) {
-			
-			boolean is_available = true;
-			/**
-			 * prevents spawning a plane in waypoint both:
-			 * if any plane is currently going towards it 
-			 * if any plane is less than 250 from it
-			 */
-			
-			for (Aircraft aircraft : aircraft_in_airspace) {
-				// Check if any plane is currently going towards the exit point/chosen originPoint
-				// Check if any plane is less than what is defined as too close from the chosen originPoint
-				if (aircraft.current_target.equals(entry_point.getLocation()) || aircraft.isCloseToEntry(entry_point.getLocation())) {
-					is_available = false;
-				}	
-			}
-			
-			if (is_available) {
-				available_entry_points.add(entry_point);
-			}	
-		}
-		return available_entry_points;
-	}
 	
 	/**
 	 * Constructor
@@ -129,8 +87,7 @@ public class Demo extends Scene {
 	public void start() {	
 		music = audio.newMusic("sfx" + File.separator + "Gypsy_Shoegazer.ogg");
 		music.play();
-		aircraft_in_airspace = new java.util.ArrayList<Aircraft>();
-		recently_departed_aircraft = new java.util.ArrayList<Aircraft>();
+
 		lib.ButtonText.Action manual = new lib.ButtonText.Action() {
 			@Override
 			public void action() {

@@ -2,6 +2,9 @@ package cls;
 
 import java.awt.Rectangle;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import lib.jog.graphics;
 
 public class GameWindow {
@@ -42,11 +45,15 @@ public class GameWindow {
 	/** The set of waypoints in the airspace which are origins / destinations */
 	public Waypoint[] locationWaypoints;
 	
+	private List<Aircraft>
+		aircraftInAirspace = new ArrayList<Aircraft>(),
+		recentlyDepartedAircraft = new ArrayList<Aircraft>();
+		
 	private Aircraft selectedAircraft = null;
 	private Waypoint clickedWaypoint= null;
 	private int selectedPathPoint = -1; // Selected path point, in an aircraft's route, used for altering the route
-	
-	
+
+
 	public static void start(){
 		aircraftImage = graphics.newImage("gfx" + File.separator + "plane.png");
 		backgroundImage = graphics.newImage("gfx" + File.separator + "background_base.png");
@@ -96,8 +103,8 @@ public class GameWindow {
 		
 		orders.update(time_difference);
 	}
-	
-	
+
+
 	public void draw() {
 		//System.out.println("set GameWindow");
 		graphics.setViewport(x, y, width, height);
@@ -246,6 +253,35 @@ public class GameWindow {
 	
 	
 	/**
+	 * Returns array of entry points that are fair to be entry points for a plane (no plane is currently going to exit the airspace there,
+	 * also it is not too close to any plane). 
+	 */	
+	private java.util.List<Waypoint> getAvailableEntryPoints() {
+		ArrayList<Waypoint> availableEntryPoints = new ArrayList<Waypoint>();
+		
+		for (Waypoint w : locationWaypoints) {
+			boolean isAvailable = true;
+			/* prevents spawning a plane in waypoint both:
+			 * -if any plane is currently going towards it 
+			 * -if any plane is less than 250 from it */
+			
+			for (Aircraft a : aircraftInAirspace) {
+				// Check if any plane is currently going towards the exit point/chosen originPoint
+				// Check if any plane is less than what is defined as too close from the chosen originPoint
+				if (a.current_target.equals(w.getLocation()) || a.isCloseToEntry(w.getLocation())) {
+					isAvailable = false;
+				}	
+			}
+			
+			if (isAvailable){
+				availableEntryPoints.add(w);
+			}
+		}
+		return availableEntryPoints;
+	}
+	
+	
+	/**
 	 * This method provides maximum number of planes using value of multiplier
 	 * @return maximum number of planes
 	 */
@@ -284,4 +320,13 @@ public class GameWindow {
 		return timeElapsed;
 	}
 
+	
+	/**
+	 * Getter for aircraft list
+	 * @return the arrayList of aircraft in the airspace
+	 */
+	public java.util.List<Aircraft> getAircraftList() {
+		return aircraftInAirspace;
+	}
+	
 }
