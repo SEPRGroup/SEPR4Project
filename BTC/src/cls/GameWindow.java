@@ -95,7 +95,37 @@ public class GameWindow {
 	
 	
 	public void draw() {
+		//System.out.println("set GameWindow");
+		graphics.setViewport(x, y, width, height);
 		
+		{//draw game area
+			//System.out.println("set GameWindow.gameArea");
+			setViewportRect(gameArea);
+			
+			//draw background
+			graphics.setColour(255, 255, 255, 96);
+			graphics.draw(backgroundImage, gameArea.x, 
+					gameArea.y, scale);
+			
+			//{!} DRAW GAME COMPONENTS
+			
+			//draw border
+			graphics.setColour(graphics.green);
+			graphics.rectangle(false, gameArea.x, gameArea.y,
+					gameArea.width, gameArea.height);
+			
+			//System.out.println("restore GameWindow.gameArea");
+			graphics.setViewport();
+		}
+				
+		//System.out.println("restore GameWindow");
+		graphics.setViewport();
+	}
+	
+	
+	/** wrapper for graphics.setViewport converting from a Rectangle */
+	private void setViewportRect(Rectangle rect){
+		graphics.setViewport(rect.x, rect.y, rect.width, rect.height);
 	}
 	
 	

@@ -417,20 +417,12 @@ public class Demo extends Scene {
 	/** Draw the scene GUI and all drawables within it, e.g. aircraft and waypoints */
 	@Override
 	public void draw() {
-		graphics.setColour(graphics.green);
-		graphics.rectangle(false, airspace_view_offset_x, airspace_view_offset_y, window.width() - 32, window.height() - 176);
+		game.draw();
 
-		//System.out.println("set Demo");
-		graphics.setViewport(airspace_view_offset_x, airspace_view_offset_y, window.width() - 32 -1, window.height() - 176 -1);
-		
-		graphics.setColour(255, 255, 255, 96);
-		graphics.draw(background, 0, 0, window.scale());	//{!} NOT accounting for fixed border size
-		graphics.setColour(255, 255, 255, 96);
+		/* GAME AREA DRAWING
+		 * graphics.setColour(255, 255, 255, 96);
 		airport.draw();
-		drawMap();
-		
-		//System.out.println("restore Demo");
-		graphics.setViewport();
+		drawMap();*/
 		
 		
 		if (selected_aircraft != null && selected_aircraft.isManuallyControlled() && !selected_aircraft.is_takeoff()) {
