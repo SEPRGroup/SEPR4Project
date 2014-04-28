@@ -43,6 +43,8 @@ public class GameWindow {
 	public Waypoint[] locationWaypoints;
 	
 	private Aircraft selectedAircraft = null;
+	private Waypoint clickedWaypoint= null;
+	private int selectedPathPoint = -1; // Selected path point, in an aircraft's route, used for altering the route
 	
 	
 	public static void start(){
@@ -168,13 +170,28 @@ public class GameWindow {
 	}
 	
 	
-	private boolean isArrivalsClicked(int x, int y) {
-		return airport.isWithinArrivals(new Vector(x,y,0)) && !airport.is_active;
+	private boolean isArrivalsClicked(int gameX, int gameY) {
+		return airport.isWithinArrivals(new Vector(gameX,gameY,0))
+				&& !airport.is_active;
 	}
 	
 	
-	private boolean isDeparturesClicked(int x, int y) {
-		return airport.isWithinDepartures(new Vector(x,y,0)) && !airport.is_active;
+	private boolean isDeparturesClicked(int gameX, int gameY) {
+		return airport.isWithinDepartures(new Vector(gameX,gameY,0))
+				&& !airport.is_active;
+	}
+	
+	
+	private boolean compassClicked(int gameX, int gameY) {
+		if (selectedAircraft != null) {
+			Vector pos = selectedAircraft.getPosition();
+			double 
+				dx = pos.getX() -gameX ,
+				dy = pos.getY() -gameY;
+			int r = Aircraft.COMPASS_RADIUS;
+			return  dx*dx + dy*dy < r*r;
+		}
+		else return false;
 	}
 	
 	

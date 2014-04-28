@@ -25,8 +25,7 @@ public class Demo extends Scene {
 	
 	//****** REBUILD PROGRESS MARKER ******
 	
-	private Waypoint clicked_waypoint;
-	private int selected_path_point; // Selected path point, in an aircraft's route, used for altering the route
+	
 	private java.util.ArrayList<Aircraft> aircraft_in_airspace;
 	private java.util.ArrayList<Aircraft> recently_departed_aircraft;
 	
@@ -139,12 +138,9 @@ public class Demo extends Scene {
 				toggleManualControl();
 			}
 		};
-		
-		
+
 		manual_override_button = new lib.ButtonText("Take Control", manual, (window.width() - 128) / 2, 32, 128, 64, 8, 4);
 		compass_clicked = false;
-		clicked_waypoint = null;
-		selected_path_point = -1;
 		
 		manual_override_button = new lib.ButtonText(" Take Control", manual, (window.width() - 128) / 2, 32, 128, 64, 8, 4);
 		deselectAircraft();
@@ -531,16 +527,7 @@ public class Demo extends Scene {
 		graphics.print(String.valueOf(aircraft_in_airspace.size()) + " plane" + (planes == 1 ? "" : "s") + " in the sky.", 32, 32);
 	}
 	
-	private boolean compassClicked() {
-		if (selected_aircraft != null) {
-			double dx = selected_aircraft.getPosition().getX() - input.mouseX() + airspace_view_offset_x;
-			double dy = selected_aircraft.getPosition().getY() - input.mouseY() + airspace_view_offset_y;
-			int r = Aircraft.COMPASS_RADIUS;
-			return  dx*dx + dy*dy < r*r;
-		}
-		return false;
-	}
-	
+
 	private boolean aircraftClicked(int x, int y) {
 		for (Aircraft a : aircraft_in_airspace) {
 			if (a.isMouseOver(x-airspace_view_offset_x, y-airspace_view_offset_y)) {
