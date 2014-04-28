@@ -132,6 +132,41 @@ public class GameWindow {
 	}
 	
 	
+	/**
+	 * This method provides maximum number of planes using value of multiplier
+	 * @return maximum number of planes
+	 */
+	private int getMaxAircraft() {
+		int multiplier = score.getMultiplier();
+		switch (multiplier){
+		case 1: 
+			return 3;
+		case 2: 
+			return 5;
+		default: 
+			return multiplier;
+		}
+	}
+	
+	
+	/** The interval in seconds to generate flights after */
+	private int getFlightGenerationInterval() {
+		int base = 30;
+		/* Planes move faster on higher difficulties so this makes
+		them spawn more often to maintain quantity on screen */
+		switch (difficulty){
+		case DIFFICULTY_EASY:
+			return base / getMaxAircraft();
+		case DIFFICULTY_MEDIUM:
+			return base / (2*getMaxAircraft());
+		case DIFFICULTY_HARD:
+			return base / (3*getMaxAircraft());
+		default:	//error case
+			return -1;
+		}
+	}
+	
+	
 	public double getTime() {
 		return timeElapsed;
 	}
