@@ -5,9 +5,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import lib.RandomNumber;
 import lib.jog.graphics;
+import lib.jog.input.EventHandler;
 
-public class GameWindow {
+public class GameWindow implements EventHandler{
 			
 	/*
 	private static int airspace_view_offset_x = 16;
@@ -101,6 +103,33 @@ public class GameWindow {
 			shownAircraftWaitingMessage = false;
 		}
 		
+		for (Aircraft a : aircraftInAirspace) {
+			a.update(time_difference);
+			if (a.isFinished()) {
+				a.setAdditionToMultiplier(score.getMultiplierLevel());
+				score.increaseMeterFill(a.getAdditionToMultiplier());
+				a.setScore(score.calculateAircraftScore(a));
+				score.increaseTotalScore(score.getMultiplier() * a.getScore());
+				a.setDepartureTime(System.currentTimeMillis());
+				recentlyDepartedAircraft.add(a);
+		
+				if (a.getAdditionToMultiplier() < 0)
+					orders.addOrder("<<< The plane has breached separation rules on its path, your multiplier may be reduced ");
+				
+				switch (RandomNumber.randInclusiveInt(0, 2)){
+				case 0:
+					orders.addOrder("<<< Thank you Comrade");
+					break;
+				case 1:
+					orders.addOrder("<<< Well done Comrade");
+					break;
+				case 2:
+					orders.addOrder("<<< Many thanks Comrade");
+					break;
+				}
+			}
+		}
+		
 		orders.update(time_difference);
 	}
 
@@ -186,7 +215,7 @@ public class GameWindow {
 		// Space to implement some animation features?
 	}
 	
-	
+
 	private boolean aircraftClicked(int gameX, int gameY) {
 		for (Aircraft a : aircraftInAirspace) {
 			if (a.isMouseOver(gameX, gameY)) {
@@ -357,6 +386,28 @@ public class GameWindow {
 	 */
 	public java.util.List<Aircraft> getAircraftList() {
 		return aircraftInAirspace;
+	}
+
+
+	@Override
+	public void mousePressed(int key, int x, int y) {
+	
+	}
+
+
+	@Override
+	public void mouseReleased(int key, int x, int y) {
+	
+	}
+
+
+	@Override
+	public void keyPressed(int key) {}
+
+
+	@Override
+	public void keyReleased(int key) {
+
 	}
 	
 }

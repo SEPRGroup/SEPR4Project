@@ -79,6 +79,7 @@ public class Demo extends Scene {
 				window.width() -32, window.height() -16, difficulty);
 	}
 
+	
 	/**
 	 * Initialise and begin music, init background image and scene variables.
 	 * Shorten flight generation timer according to difficulty
@@ -103,9 +104,7 @@ public class Demo extends Scene {
 		deselectAircraft();
 	}
 	
-	/**
-	 * Causes a selected aircraft to call methods to toggle manual control
-	 */
+	/** Causes a selected aircraft to call methods to toggle manual control */
 	private void toggleManualControl() {
 		if (selected_aircraft != null) {
 			selected_aircraft.toggleManualControl();
@@ -113,9 +112,7 @@ public class Demo extends Scene {
 		}
 	}
 	
-	/**
-	 * Causes an aircraft to call methods to handle deselection
-	 */
+	/** Causes an aircraft to call methods to handle deselection */
 	private void deselectAircraft() {
 		if (selected_aircraft != null && selected_aircraft.isManuallyControlled()) {
 			selected_aircraft.toggleManualControl();
@@ -234,13 +231,12 @@ public class Demo extends Scene {
 	}
 	
 
-	/**
-	 * cleanly exit by stopping the scene's music
-	 */
+	/** cleanly exit by stopping the scene's music */
 	@Override
 	public void close() {
 		music.stop();
 	}
+	
 	
 	/**
 	 * Update all objects within the scene, ie aircraft, orders box altimeter.
@@ -250,33 +246,6 @@ public class Demo extends Scene {
 	@Override
 	public void update(double time_difference) {
 
-		for (Aircraft aircraft : aircraft_in_airspace) {
-			
-			aircraft.update(time_difference);
-			if (aircraft.isFinished()) {
-				aircraft.setAdditionToMultiplier(score.getMultiplierLevel());
-				score.increaseMeterFill(aircraft.getAdditionToMultiplier());
-				aircraft.setScore(score.calculateAircraftScore(aircraft));
-				score.increaseTotalScore(score.getMultiplier() * aircraft.getScore());
-				aircraft.setDepartureTime(System.currentTimeMillis());
-				recently_departed_aircraft.add(aircraft);
-		
-				if (aircraft.getAdditionToMultiplier() < 0)
-					orders_box.addOrder("<<< The plane has breached separation rules on its path, your multiplier may be reduced ");
-				
-				switch (RandomNumber.randInclusiveInt(0, 2)){
-				case 0:
-					orders_box.addOrder("<<< Thank you Comrade");
-					break;
-				case 1:
-					orders_box.addOrder("<<< Well done Comrade");
-					break;
-				case 2:
-					orders_box.addOrder("<<< Many thanks Comrade");
-					break;
-				}
-			}
-		}
 		checkCollisions(time_difference);
 		for (int i = aircraft_in_airspace.size()-1; i >=0; i --) {
 			if (aircraft_in_airspace.get(i).isFinished()) {
@@ -343,6 +312,7 @@ public class Demo extends Scene {
 		sound.play();
 	}
 	
+	
 	/**
 	 * Handle a game over caused by two planes colliding
 	 * Create a gameOver scene and make it the current scene
@@ -356,6 +326,7 @@ public class Demo extends Scene {
 		main.closeScene();
 		main.setScene(new GameOver(main, plane1, plane2, score.getTotalScore()));
 	}
+	
 	
 	/** Draw the scene GUI and all drawables within it, e.g. aircraft and waypoints */
 	@Override
@@ -587,7 +558,9 @@ public class Demo extends Scene {
 	}
 
 	@Override
-	public void keyPressed(int key) {}
+	public void keyPressed(int key) {
+		game.keyPressed(key);
+	}
 
 	@Override
 	/** handle keyboard input */
