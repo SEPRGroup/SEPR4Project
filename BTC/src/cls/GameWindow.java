@@ -32,6 +32,9 @@ public class GameWindow implements EventHandler{
 	private cls.AirportControlBox airportControl;
 	private cls.OrdersBox orders;
 		
+	/** A button to start and end manual control of an aircraft*/
+	private lib.ButtonText manualOverrideButton;
+	
 	/** instance of the airport class*/
 	private Airport airport;
 	/** The set of waypoints in the airspace which are origins / destinations */
@@ -78,6 +81,20 @@ public class GameWindow implements EventHandler{
 		airportControlBox = new Rectangle();
 		ordersBox = new Rectangle();
 		setAreas();
+		{
+			int bWidth = 128, bHeight = 64;
+			lib.ButtonText.Action manual = new lib.ButtonText.Action() {
+				@Override
+				public void action() {
+					// _selectedAircraft.manuallyControl();
+					toggleManualControl();
+				}
+			};
+			manualOverrideButton = new lib.ButtonText(" Take Control", manual,
+					(gameArea.width -bWidth)/2, 32, 
+					bWidth, bHeight, 
+					x +gameArea.x, y +gameArea.y);
+		}
 
 		//create waypoints
 		airport = new Airport("Mosbear Airport");
@@ -235,6 +252,15 @@ public class GameWindow implements EventHandler{
 		if (gameOver){
 			aircraftInAirspace.clear();
 			airport.clear();
+		}
+	}
+	
+	
+	/** Causes a selected aircraft to call methods to toggle manual control */
+	private void toggleManualControl() {
+		if (selectedAircraft != null) {
+			selectedAircraft.toggleManualControl();
+			manualOverrideButton.setText( (selectedAircraft.isManuallyControlled() ? "Remove" : " Take") + " Control");
 		}
 	}
 	

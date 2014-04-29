@@ -26,9 +26,7 @@ public class Demo extends Scene {
 	
 	//****** REBUILD PROGRESS MARKER ******
 	
-	
-	/** A button to start and end manual control of an aircraft*/
-	private lib.ButtonText manual_override_button;
+
 	/** Tracks if manual heading compass of a manually controlled aircraft has been clicked*/
 	private boolean compass_clicked;
 	/** Tracks if waypoint of a manually controlled aircraft has been clicked*/
@@ -65,28 +63,11 @@ public class Demo extends Scene {
 		music = audio.newMusic("sfx" + File.separator + "Gypsy_Shoegazer.ogg");
 		music.play();
 
-		lib.ButtonText.Action manual = new lib.ButtonText.Action() {
-			@Override
-			public void action() {
-				// _selectedAircraft.manuallyControl();
-				toggleManualControl();
-			}
-		};
-
-		manual_override_button = new lib.ButtonText("Take Control", manual, (window.width() - 128) / 2, 32, 128, 64, 8, 4);
 		compass_clicked = false;
 		
-		manual_override_button = new lib.ButtonText(" Take Control", manual, (window.width() - 128) / 2, 32, 128, 64, 8, 4);
 		deselectAircraft();
 	}
 	
-	/** Causes a selected aircraft to call methods to toggle manual control */
-	private void toggleManualControl() {
-		if (selected_aircraft != null) {
-			selected_aircraft.toggleManualControl();
-			manual_override_button.setText( (selected_aircraft.isManuallyControlled() ? "Remove" : " Take") + " Control");
-		}
-	}
 	
 	/** Causes an aircraft to call methods to handle deselection */
 	private void deselectAircraft() {
