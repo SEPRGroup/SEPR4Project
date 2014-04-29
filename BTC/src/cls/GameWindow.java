@@ -10,29 +10,21 @@ import lib.jog.graphics;
 import lib.jog.input.EventHandler;
 
 public class GameWindow implements EventHandler{
-			
-	/*
-	private static int airspace_view_offset_x = 16;
-	public static int airspace_view_offset_y = 48;
-		=> x, y
-	*/
-	
-	// Position of things drawn to window  
-	private int x, y, width, height;
-	private double scale;
-	private final Rectangle
-		scoreArea, gameArea, planeInfo, altimeterBox, airportControlBox, ordersBox;
-	
-	// Static Final ints for difficulty settings
-	public final static int DIFFICULTY_EASY = 0;
-	public final static int DIFFICULTY_MEDIUM = 1;
-	public final static int DIFFICULTY_HARD = 2;
-	private final int difficulty;
+	//Static Final ints for difficulty settings
+	public static final int DIFFICULTY_EASY = 0;
+	public static final int DIFFICULTY_MEDIUM = 1;
+	public static final int DIFFICULTY_HARD = 2;
 	
 	/** An image to be used for aircraft*/
 	private static graphics.Image aircraftImage;
 	/** The background to draw in the airspace.*/
 	private static graphics.Image backgroundImage;
+	
+	//Position of things drawn to window  
+	private int x, y, width, height;
+	private double scale;
+	private final Rectangle
+		scoreArea, gameArea, planeInfo, altimeterBox, airportControlBox, ordersBox;
 	
 	private cls.Score score;
 	private boolean shownAircraftWaitingMessage = false;
@@ -40,24 +32,25 @@ public class GameWindow implements EventHandler{
 	private cls.AirportControlBox airportControl;
 	private cls.OrdersBox orders;
 		
-	private double timeElapsed = 0;
-	
 	/** instance of the airport class*/
 	private Airport airport;
 	/** The set of waypoints in the airspace which are origins / destinations */
 	public Waypoint[] locationWaypoints;
+	/** All waypoints in the airspace, INCLUDING locationWaypoints. */
+	public Waypoint[] airspaceWaypoints;
 	
 	private List<Aircraft>
 		aircraftInAirspace = new ArrayList<Aircraft>(),
 		recentlyDepartedAircraft = new ArrayList<Aircraft>(),
 		crashedAircraft = new ArrayList<Aircraft>();
+	
+	private int difficulty;
+	private double timeElapsed = 0;
+	private Boolean gameOver = false;
 		
 	private Aircraft selectedAircraft = null;
 	private Waypoint clickedWaypoint= null;
 	private int selectedPathPoint = -1; // Selected path point, in an aircraft's route, used for altering the route
-
-	private Boolean gameOver = false;
-	
 	
 
 	public static void start(){
@@ -82,13 +75,36 @@ public class GameWindow implements EventHandler{
 		ordersBox = new Rectangle();
 		setAreas();
 
+		//create waypoints
 		airport = new Airport("Mosbear Airport");
-		locationWaypoints= new Waypoint[] { 
+		locationWaypoints = new Waypoint[] { 
 				new Waypoint(8, 8, true, "North West Top Leftonia"), // top left
 				new Waypoint(8, gameArea.height-8, true, "100 Acre Woods"), // bottom left
 				new Waypoint(gameArea.width-8, 8, true, "City of Rightson"), // top right
 				new Waypoint(gameArea.width-8, gameArea.height -8, true, "South Sea"), // bottom right
-				airport};
+				airport
+		};	
+		airspaceWaypoints = new Waypoint[] {		
+				//All waypoints in the airspace, including location Way Points
+				// Airspace waypoints
+				new Waypoint(0.10*gameArea.width, 0.07*gameArea.height, false),
+				new Waypoint(0.55*gameArea.width, 0.10*gameArea.height, false),
+				new Waypoint(0.81*gameArea.width, 0.08*gameArea.height, false),
+				new Waypoint(0.39*gameArea.width, 0.21*gameArea.height, false),
+				new Waypoint(0.82*gameArea.width, 0.42*gameArea.height, false),
+				new Waypoint(0.20*gameArea.width, 0.42*gameArea.height, false),
+				new Waypoint(0.16*gameArea.width, 0.66*gameArea.height, false),
+				new Waypoint(0.39*gameArea.width, 0.68*gameArea.height, false),
+				new Waypoint(0.63*gameArea.width, 0.78*gameArea.height, false),
+				new Waypoint(0.78*gameArea.width, 0.78*gameArea.height, false),
+				// Destination/origin waypoints - present in this list for pathfinding.
+				locationWaypoints[0],
+				locationWaypoints[1],
+				locationWaypoints[2],
+				locationWaypoints[3],
+				locationWaypoints[4]
+		};
+		
 	}
 
 	

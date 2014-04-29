@@ -38,31 +38,6 @@ public class Demo extends Scene {
 	/** The time elapsed since the last flight was generated*/
 	private double time_since_flight_generation = 0;
 
-	/** All waypoints in the airspace, INCLUDING locationWaypoints. */
-	public static Waypoint[] airspace_waypoints = new Waypoint[] {		
-		/* All waypoints in the airspace, including location Way Points*/
-	
-		// Airspace waypoints
-		new Waypoint(0.10*window.width(), 0.07*window.height(), false),
-		new Waypoint(0.55*window.width(), 0.1*window.height(), false),
-		new Waypoint(0.81*window.width(), 0.08*window.height(), false),
-		new Waypoint(0.39*window.width(), 0.21*window.height(), false),
-		new Waypoint(0.82*window.width(), 0.42*window.height(), false),
-		new Waypoint(0.20*window.width(), 0.42*window.height(), false),
-		new Waypoint(0.16*window.width(), 0.66*window.height(), false),
-		new Waypoint(0.39*window.width(), 0.68*window.height(), false),
-		new Waypoint(0.63*window.width(), 0.78*window.height(), false),
-		new Waypoint(0.78*window.width(), 0.78*window.height(), false),
-
-		// Destination/origin waypoints - present in this list for pathfinding.
-		location_waypoints[0],
-		location_waypoints[1],
-		location_waypoints[2],
-		location_waypoints[3],
-		location_waypoints[4]
-	};
-	
-	
 	
 	public double getTime() {
 		return game.getTime();
@@ -321,7 +296,7 @@ public class Demo extends Scene {
 	}
 	
 	
-	/** Draw the scene GUI and all drawables within it, e.g. aircraft and waypoints */
+	/** draw the game window */
 	@Override
 	public void draw() {
 		game.draw();
