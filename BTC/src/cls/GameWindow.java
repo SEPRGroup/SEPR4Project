@@ -126,6 +126,7 @@ public class GameWindow implements EventHandler{
 				locationWaypoints[4]
 		};
 		
+		altimeter.hide();
 	}
 
 	
@@ -253,6 +254,19 @@ public class GameWindow implements EventHandler{
 			aircraftInAirspace.clear();
 			airport.clear();
 		}
+	}
+	
+	
+	/** Causes an aircraft to call methods to handle deselection */
+	private void deselectAircraft() {
+		if (selectedAircraft != null && selectedAircraft.isManuallyControlled()) {
+			selectedAircraft.toggleManualControl();
+			manualOverrideButton.setText(" Take Control");
+		}
+		selectedAircraft = null;
+		clickedWaypoint = null; 
+		selectedPathPoint = -1;
+		altimeter.hide();
 	}
 	
 	

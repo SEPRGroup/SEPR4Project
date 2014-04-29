@@ -64,23 +64,9 @@ public class Demo extends Scene {
 		music.play();
 
 		compass_clicked = false;
-		
-		deselectAircraft();
 	}
-	
-	
-	/** Causes an aircraft to call methods to handle deselection */
-	private void deselectAircraft() {
-		if (selected_aircraft != null && selected_aircraft.isManuallyControlled()) {
-			selected_aircraft.toggleManualControl();
-			manual_override_button.setText(" Take Control");
-		}
-		selected_aircraft = null;
-		clicked_waypoint = null; 
-		selected_path_point = -1;
-		altimeter.hide();
-	}
-	
+
+
 	/**
 	 * Creates a new aircraft object and introduces it to the airspace.
 	 * Also doesn't spawn a plane that is to close to another so there is 
