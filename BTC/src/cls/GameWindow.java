@@ -242,7 +242,7 @@ public class GameWindow implements EventHandler{
 	 */
 	private void checkCollisions(double timeDifference) {
 		for (Aircraft a : aircraftInAirspace) {
-			int collisionState = a.updateCollisions(timeDifference, aircraftInAirspace, score);
+			int collisionState = a.updateCollisions(aircraftInAirspace, score);
 			if (collisionState > -1) {
 				crashedAircraft.add(a);
 				gameOver = true;
