@@ -2,6 +2,7 @@ package scn;
 
 import java.awt.Rectangle;
 import java.io.File;
+import java.util.List;
 
 import lib.RandomNumber;
 import lib.jog.audio;
@@ -239,14 +240,22 @@ public class Demo extends Scene {
 	
 	
 	/**
-	 * Update all objects within the scene, ie aircraft, orders box altimeter.
-	 * Cause collision detection to occur
-	 * Generate a new flight if flight generation interval has been exceeded.
+	 * Update game state and handle any game over state
+	 * {!}Generate a new flight if flight generation interval has been exceeded.
 	 */
 	@Override
 	public void update(double time_difference) {
+		game.update(time_difference);
+		
+		if (game.isGameOver()){
+			List<Aircraft> crashed = game.getCrashedAircraft();
+			//list of crashed aircraft should contain at least 2 elements
+			gameOver(crashed.get(0), crashed.get(1));
+		}
+		
+		//****** REBUILD PROGRESS MARKER ******
+		
 
-		checkCollisions(time_difference);
 		for (int i = aircraft_in_airspace.size()-1; i >=0; i --) {
 			if (aircraft_in_airspace.get(i).isFinished()) {
 				if (aircraft_in_airspace.get(i) == selected_aircraft) {
@@ -291,20 +300,6 @@ public class Demo extends Scene {
 			generateFlight();
 	}
 	
-	/**
-	 * Cause all planes in airspace to update collisions
-	 * Catch and handle a resultant game over state
-	 * @param time_difference delta time since last collision check
-	 */
-	private void checkCollisions(double time_difference) {
-		for (Aircraft plane : aircraft_in_airspace) {
-			int collision_state = plane.updateCollisions(time_difference, getAircraftList(), score);
-			if (collision_state >= 0) {
-				gameOver(plane, getAircraftList().get(collision_state));
-				return;
-			}
-		}
-	}
 	
 	@Override
 	public void playSound(audio.Sound sound) {
@@ -320,8 +315,6 @@ public class Demo extends Scene {
 	 * @param plane2 the second plane in the collision
 	 */
 	public void gameOver(Aircraft plane1, Aircraft plane2) {
-		aircraft_in_airspace.clear();
-		airport.clear();
 		playSound(audio.newSoundEffect("sfx" + File.separator + "crash.ogg"));
 		main.closeScene();
 		main.setScene(new GameOver(main, plane1, plane2, score.getTotalScore()));

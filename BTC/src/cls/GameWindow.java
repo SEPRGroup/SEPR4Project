@@ -49,12 +49,16 @@ public class GameWindow implements EventHandler{
 	
 	private List<Aircraft>
 		aircraftInAirspace = new ArrayList<Aircraft>(),
-		recentlyDepartedAircraft = new ArrayList<Aircraft>();
+		recentlyDepartedAircraft = new ArrayList<Aircraft>(),
+		crashedAircraft = new ArrayList<Aircraft>();
 		
 	private Aircraft selectedAircraft = null;
 	private Waypoint clickedWaypoint= null;
 	private int selectedPathPoint = -1; // Selected path point, in an aircraft's route, used for altering the route
 
+	private Boolean gameOver = false;
+	
+	
 
 	public static void start(){
 		aircraftImage = graphics.newImage("gfx" + File.separator + "plane.png");
@@ -88,11 +92,15 @@ public class GameWindow implements EventHandler{
 	}
 
 	
-	public void update(double time_difference){
-		timeElapsed += time_difference;
+	/**
+	 * Update all game objects, ie aircraft, orders box altimeter.
+	 * Cause collision detection to occur
+	 */
+	public void update(double timeDifference){
+		timeElapsed += timeDifference;
 		
 		//update score
-		score.update();	
+		score.update();
 		if (airport.getLongestTimeInHangar(timeElapsed) > 5) {
 			score.increaseMeterFill(-1);
 			if (!shownAircraftWaitingMessage) {
@@ -104,7 +112,7 @@ public class GameWindow implements EventHandler{
 		}
 		
 		for (Aircraft a : aircraftInAirspace) {
-			a.update(time_difference);
+			a.update(timeDifference);
 			if (a.isFinished()) {
 				a.setAdditionToMultiplier(score.getMultiplierLevel());
 				score.increaseMeterFill(a.getAdditionToMultiplier());
@@ -129,11 +137,13 @@ public class GameWindow implements EventHandler{
 				}
 			}
 		}
+		checkCollisions(timeDifference);
 		
-		orders.update(time_difference);
+		orders.update(timeDifference);
 	}
+	
 
-
+	/** Draw the GUI and all game objects, e.g. aircraft and waypoints */
 	public void draw() {
 		//System.out.println("set GameWindow");
 		graphics.setViewport(x, y, width, height);
@@ -167,6 +177,27 @@ public class GameWindow implements EventHandler{
 				
 		//System.out.println("restore GameWindow");
 		graphics.setViewport();
+	}
+	
+	
+	/**
+	 * Cause all planes in airspace to update collisions
+	 * Catch any resultant game over state, crashed planes
+	 * @param time_difference delta time since last collision check
+	 */
+	private void checkCollisions(double timeDifference) {
+		for (Aircraft a : aircraftInAirspace) {
+			int collisionState = a.updateCollisions(timeDifference, aircraftInAirspace, score);
+			if (collisionState > -1) {
+				crashedAircraft.add(a);
+				gameOver = true;
+			}
+		}
+		
+		if (gameOver){
+			aircraftInAirspace.clear();
+			airport.clear();
+		}
 	}
 	
 	
@@ -378,14 +409,27 @@ public class GameWindow implements EventHandler{
 	public double getTime() {
 		return timeElapsed;
 	}
+	
+	
+	public Boolean isGameOver(){
+		return gameOver;
+	}
 
 	
 	/**
 	 * Getter for aircraft list
-	 * @return the arrayList of aircraft in the airspace
+	 * @return the List of aircraft in the airspace
 	 */
 	public java.util.List<Aircraft> getAircraftList() {
 		return aircraftInAirspace;
+	}
+	
+	/**
+	 * Getter for crashed aircraft list
+	 * @return the List of aircraft that have crashed while in the airspace
+	 */
+	public java.util.List<Aircraft> getCrashedAircraft() {
+		return crashedAircraft;
 	}
 
 
