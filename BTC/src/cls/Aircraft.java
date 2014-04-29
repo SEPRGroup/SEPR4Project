@@ -247,7 +247,7 @@ public class Aircraft {
 		// Adjust the aircraft's attributes according to the difficulty of the parent scene
 		// 0 has the easiest attributes (slower aircraft, more forgiving separation rules)
 		// 2 has the hardest attributes (faster aircraft, least forgiving separation rules)
-		case Demo.DIFFICULTY_EASY:
+		case GameWindow.DIFFICULTY_EASY:
 			minimum_separation_distance = 64;
 			turn_speed = Math.PI / 4;
 			altitude_change_speed = 500;
@@ -255,7 +255,7 @@ public class Aircraft {
 			optimal_time = flight_plan.getTotalDistance() / speed;
 		break;
 
-		case Demo.DIFFICULTY_MEDIUM:
+		case GameWindow.DIFFICULTY_MEDIUM:
 			minimum_separation_distance = 96;
 			velocity = velocity.scaleBy(2);
 			turn_speed = Math.PI / 3;
@@ -264,7 +264,7 @@ public class Aircraft {
 			optimal_time = flight_plan.getTotalDistance() / (speed * 2);
 		break;
 			
-		case Demo.DIFFICULTY_HARD:
+		case GameWindow.DIFFICULTY_HARD:
 			minimum_separation_distance = 128;
 			velocity = velocity.scaleBy(3);
 			// At high velocities, the aircraft is allowed to turn faster - this helps keep the aircraft on track.
@@ -642,12 +642,11 @@ public class Aircraft {
 
 	/**
 	 * Updates the number of planes that are violating the separation rule. Also checks for crashes.
-	 * @param time_difference the time elapsed since the last frame.
 	 * @param aircraftList all aircraft in the airspace
 	 * @param global score object used to decrement score if separation is breached
 	 * @return index of plane breaching separation distance with this plane, or -1 if no planes are in violation.
 	 */
-	public int updateCollisions(double time_difference,	ArrayList<Aircraft> aircraftList, Score score) {
+	public int updateCollisions(java.util.List<Aircraft> aircraftList, Score score) {
 		planes_too_near.clear();
 		for (int i = 0; i < aircraftList.size(); i++) {
 			Aircraft plane = aircraftList.get(i);
