@@ -311,10 +311,8 @@ public class Demo extends Scene {
 			selected_aircraft.drawCompass();
 		}
 		
-		
 		graphics.setColour(graphics.green);
 		drawAdditional();
-		drawPlaneScoreLabels();
 	}
 	
 	/**
@@ -364,43 +362,7 @@ public class Demo extends Scene {
 		graphics.print(location_waypoints[4].getName(), location_waypoints[4].getLocation().getX() - 20, location_waypoints[4].getLocation().getY() + 25);
 
 	}
-	
-	
-	/**
-	 * Draws points scored for a plane when it successfully leaves the airspace. The points the
-	 * plane scored are displayed just above the plane.
-	 */
-	private void drawPlaneScoreLabels() {
-		Aircraft aircraft_to_remove = null;
-		int displayed_for = 2000; // How long the label will be displayed for
-		for (Aircraft plane : recently_departed_aircraft) {
 
-			double current_time = System.currentTimeMillis(); // Current (system) time
-			double departure_time = plane.getTimeOfDeparture(); // Time when the plane successfully left airspace 
-			double left_airspace_for = current_time - departure_time; // How long since the plane left airspace
-			if (left_airspace_for > displayed_for) {
-				aircraft_to_remove = plane;
-			}
-			else {
-				int score_text_alpha =  (int)((displayed_for - left_airspace_for)/displayed_for * 255); // Transparency of the label, 255 is opaque
-				String plane_score_value = String.valueOf(plane.getScore() * score.getMultiplier());
-				// Drawing the score
-				int score_text_x = (int) plane.getFlightPlan().getRoute()[plane.getFlightPlan().getRoute().length -1].getLocation().getX();
-				int score_text_y = (int) plane.getFlightPlan().getRoute()[plane.getFlightPlan().getRoute().length -1].getLocation().getY();
-				graphics.setColour(255, 255, 255, score_text_alpha);
-				if (score_text_x < 40) score_text_x += 50;
-				if (score_text_y < 40) score_text_y += 50;
-				if (score_text_x > 1000) score_text_x -= 50;
-				if (score_text_y > 1000) score_text_y -= 50;
-				graphics.print(plane_score_value, score_text_x, score_text_y, 2);
-			}
-
-		} 
-		if (aircraft_to_remove != null)
-			recently_departed_aircraft.remove(aircraft_to_remove);
-				
-	}
-		
 	
 	/** draw a readout of the time the game has been played for & aircraft in the sky. */
 	private void drawAdditional() {

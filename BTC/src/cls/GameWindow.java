@@ -52,7 +52,11 @@ public class GameWindow implements EventHandler{
 	private Waypoint clickedWaypoint= null;
 	private int selectedPathPoint = -1; // Selected path point, in an aircraft's route, used for altering the route
 	
+	/** How long the label will be displayed for in ms */
+	private static final int SCORE_LABEL_DISPLAY = 2000;
+	
 
+	
 	public static void start(){
 		aircraftImage = graphics.newImage("gfx" + File.separator + "plane.png");
 		backgroundImage = graphics.newImage("gfx" + File.separator + "background_base.png");
@@ -111,6 +115,7 @@ public class GameWindow implements EventHandler{
 	/**
 	 * Update all game objects, ie aircraft, orders box altimeter.
 	 * Cause collision detection to occur
+	 * Manages recentlyDepartedAircraft
 	 */
 	public void update(double timeDifference){
 		timeElapsed += timeDifference;
@@ -155,6 +160,20 @@ public class GameWindow implements EventHandler{
 		}
 		checkCollisions(timeDifference);
 		
+		{	//manage recentlyDepartedAircraft
+			double currentTime = System.currentTimeMillis(); // Current (system) time
+			ArrayList<Aircraft> aircraftToRemove = new ArrayList<Aircraft>();
+			for (Aircraft d : recentlyDepartedAircraft) {
+				double 
+					departure_time = d.getTimeOfDeparture(), // Time when the plane successfully left airspace 
+					leftAirspaceFor = currentTime - departure_time; // How long since the plane left airspace
+				if (leftAirspaceFor > SCORE_LABEL_DISPLAY) {
+					aircraftToRemove.add(d);
+				}				
+			}
+			recentlyDepartedAircraft.removeAll(aircraftToRemove);
+		}
+
 		orders.update(timeDifference);
 	}
 	
@@ -180,7 +199,10 @@ public class GameWindow implements EventHandler{
 			graphics.setViewport();
 			altimeter.draw();
 			airportControl.draw();
-			orders.draw();			
+			orders.draw();		
+			
+			//draw scoring labels
+			drawPlaneScoreLabels();
 			
 			//draw border
 			graphics.setColour(graphics.green);
@@ -250,6 +272,37 @@ public class GameWindow implements EventHandler{
 			
 			graphics.setViewport();
 		}
+	}
+
+
+	/**
+	 * Draws points scored for a plane when it successfully leaves the airspace. The points the
+	 * plane scored are displayed just above the plane.
+	 */
+	private void drawPlaneScoreLabels() {
+		double currentTime = System.currentTimeMillis(); // Current (system) time
+		
+		for (Aircraft a : recentlyDepartedAircraft) {
+			double 
+				departure_time = a.getTimeOfDeparture(), // Time when the plane successfully left airspace 
+				leftAirspaceFor = currentTime -departure_time; // How long since the plane left airspace	
+			int scoreTextAlpha = (int)( 255 * (SCORE_LABEL_DISPLAY-leftAirspaceFor)/SCORE_LABEL_DISPLAY );
+			
+			String planeScoreValue = String.valueOf(a.getScore() * score.getMultiplier());
+			
+			Vector position = a.getFlightPlan().getDestination();
+			//constrain label position
+			int scoreTextX = (int) position.getX(),
+					scoreTextY = (int) position.getY();
+			if (scoreTextX < 40) scoreTextX += 50;
+			if (scoreTextY < 40) scoreTextY += 50;
+			if (scoreTextX > (gameArea.width-240))scoreTextX -= 50;
+			if (scoreTextY > (gameArea.width-240)) scoreTextY -= 50;
+			
+			// Drawing the score
+			graphics.setColour(255, 255, 255, scoreTextAlpha);
+			graphics.print(planeScoreValue, scoreTextX, scoreTextY, 2);
+		}	
 	}
 	
 	
