@@ -163,9 +163,9 @@ public class Airport extends Waypoint implements EventHandler {
 	 * Decides whether to draw the radius around the airport by checking if any aircraft which are landing are close
 	 * @param demo For getting aircraft list
 	 */
-	public void update(Demo demo) {
+	public void update(java.util.List<Aircraft> aircraftInAirspace) {
 		aircraft_waiting_to_land.clear();
-		for (Aircraft a : demo.getAircraftList()) {
+		for (Aircraft a : aircraftInAirspace) {
 			if (a.current_target.equals(this.getLocation())) {
 				aircraft_waiting_to_land.add(a);
 			}

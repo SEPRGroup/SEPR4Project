@@ -139,29 +139,43 @@ public class GameWindow implements EventHandler{
 	 */
 	public void update(double timeDifference){
 		timeElapsed += timeDifference;
+
+		//update aircraft in airspace
+		for (Aircraft a : aircraftInAirspace)
+			a.update(timeDifference);
 		
-		//update score
-		score.update();
-		if (airport.getLongestTimeInHangar(timeElapsed) > 5) {
-			score.increaseMeterFill(-1);
-			if (!shownAircraftWaitingMessage) {
-				orders.addOrder(">>> Plane waiting to take off, multiplier decreasing");
-				shownAircraftWaitingMessage = true;
+		checkCollisions();
+		
+		{	//manage recentlyDepartedAircraft
+			double currentTime = System.currentTimeMillis(); // Current (system) time
+			ArrayList<Aircraft> aircraftToRemove = new ArrayList<Aircraft>();
+			for (Aircraft d : recentlyDepartedAircraft) {
+				double 
+					departure_time = d.getTimeOfDeparture(), // Time when the plane successfully left airspace 
+					leftAirspaceFor = currentTime -departure_time; // How long since the plane left airspace
+				if (leftAirspaceFor > SCORE_LABEL_DISPLAY) {
+					aircraftToRemove.add(d);
+				}				
 			}
-		} else {
-			shownAircraftWaitingMessage = false;
+			recentlyDepartedAircraft.removeAll(aircraftToRemove);
 		}
 		
-		for (Aircraft a : aircraftInAirspace) {
-			a.update(timeDifference);
+		//check for and handle aircraft that have completed their route
+		for (int i = aircraftInAirspace.size()-1; i >= 0; i--) {
+			Aircraft a = aircraftInAirspace.get(i);
 			if (a.isFinished()) {
+				if (a == selectedAircraft) {
+					deselectAircraft();
+				}
+				aircraftInAirspace.remove(i);
+				recentlyDepartedAircraft.add(a);
+
 				a.setAdditionToMultiplier(score.getMultiplierLevel());
 				score.increaseMeterFill(a.getAdditionToMultiplier());
 				a.setScore(score.calculateAircraftScore(a));
 				score.increaseTotalScore(score.getMultiplier() * a.getScore());
 				a.setDepartureTime(System.currentTimeMillis());
-				recentlyDepartedAircraft.add(a);
-		
+
 				if (a.getAdditionToMultiplier() < 0)
 					orders.addOrder("<<< The plane has breached separation rules on its path, your multiplier may be reduced ");
 				
@@ -178,22 +192,24 @@ public class GameWindow implements EventHandler{
 				}
 			}
 		}
-		checkCollisions(timeDifference);
 		
-		{	//manage recentlyDepartedAircraft
-			double currentTime = System.currentTimeMillis(); // Current (system) time
-			ArrayList<Aircraft> aircraftToRemove = new ArrayList<Aircraft>();
-			for (Aircraft d : recentlyDepartedAircraft) {
-				double 
-					departure_time = d.getTimeOfDeparture(), // Time when the plane successfully left airspace 
-					leftAirspaceFor = currentTime - departure_time; // How long since the plane left airspace
-				if (leftAirspaceFor > SCORE_LABEL_DISPLAY) {
-					aircraftToRemove.add(d);
-				}				
+		//update airports
+		airport.update(aircraftInAirspace);
+		
+		//handle if Aircraft are waiting to take off
+		if (airport.getLongestTimeInHangar(timeElapsed) > 5) {
+			score.increaseMeterFill(-1);
+			if (!shownAircraftWaitingMessage) {
+				orders.addOrder(">>> Plane waiting to take off, multiplier decreasing");
+				shownAircraftWaitingMessage = true;
 			}
-			recentlyDepartedAircraft.removeAll(aircraftToRemove);
+		} else {
+			shownAircraftWaitingMessage = false;
 		}
 
+		
+		//update controls
+		score.update();
 		orders.update(timeDifference);
 	}
 	
@@ -255,7 +271,7 @@ public class GameWindow implements EventHandler{
 	 * Catch any resultant game over state, crashed planes
 	 * @param time_difference delta time since last collision check
 	 */
-	private void checkCollisions(double timeDifference) {
+	private void checkCollisions() {
 		for (Aircraft a : aircraftInAirspace) {
 			int collisionState = a.updateCollisions(aircraftInAirspace, score);
 			if (collisionState > -1) {
@@ -325,10 +341,8 @@ public class GameWindow implements EventHandler{
 		}
 		
 		//correct mouse position for coordinate system
-		int mx = input.mouseX(),
-		    my = input.mouseY();
-		mx = mx -x -gameArea.x;
-		my = my -y -gameArea.y;
+		int mx = input.mouseX() -x -gameArea.x,
+		    my = input.mouseY() -y -gameArea.y;
 
 		//draw aircraft and highlight flightplan
 		for (Aircraft a : aircraftInAirspace) {

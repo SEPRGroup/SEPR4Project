@@ -198,15 +198,6 @@ public class Demo extends Scene {
 		//****** REBUILD PROGRESS MARKER ******
 		
 
-		for (int i = aircraft_in_airspace.size()-1; i >=0; i --) {
-			if (aircraft_in_airspace.get(i).isFinished()) {
-				if (aircraft_in_airspace.get(i) == selected_aircraft) {
-					deselectAircraft();
-				}
-				aircraft_in_airspace.remove(i);
-			}
-		}
-		airport.update(this);
 		if (selected_aircraft != null) {
 			if(!selected_aircraft.is_takeoff()){
 				if (selected_aircraft.isManuallyControlled()) {
@@ -272,8 +263,6 @@ public class Demo extends Scene {
 		drawAdditional();
 	}
 	
-	
-
 	
 	/** draw a readout of the time the game has been played for & aircraft in the sky. */
 	private void drawAdditional() {
