@@ -267,68 +267,12 @@ public class Demo extends Scene {
 	@Override
 	public void draw() {
 		game.draw();
-
-		/* GAME AREA DRAWING
-		 * graphics.setColour(255, 255, 255, 96);
-		airport.draw();
-		drawMap();*/
-		
-		
-		if (selected_aircraft != null && selected_aircraft.isManuallyControlled() && !selected_aircraft.is_takeoff()) {
-			selected_aircraft.drawCompass();
-		}
 		
 		graphics.setColour(graphics.green);
 		drawAdditional();
 	}
 	
-	/**
-	 * Draw waypoints, and route of a selected aircraft between waypoints
-	 * Print waypoint names next to waypoints
-	 */
-	private void drawMap() {
-		for (Waypoint waypoint : airspace_waypoints) {
-			if (!waypoint.equals(airport)) { // Skip the airport
-				waypoint.draw();
-			}
-		}
-		graphics.setColour(255, 255, 255);
-		for (Aircraft aircraft : aircraft_in_airspace) {
-			aircraft.draw();
-			if (aircraft.isMouseOver()) {
-				aircraft.drawFlightPath(false);
-			}
-		}
-		
-		if (selected_aircraft != null) {
-			// Flight Path
-			selected_aircraft.drawFlightPath(true);
-			graphics.setColour(graphics.green);
-			// Override Button
-			graphics.setColour(graphics.black);
-			graphics.rectangle(true, (window.width() - 128) / 2, 16, 128, 32);
-			graphics.setColour(graphics.green);
-			graphics.rectangle(false, (window.width() - 128) / 2, 16, 128, 32);
-			manual_override_button.draw();
-			
-			selected_aircraft.drawFlightPath(true);
-			graphics.setColour(graphics.green);
-			
-		}
-		
-		if (clicked_waypoint != null && selected_aircraft.isManuallyControlled() == false) {
-			selected_aircraft.drawModifiedPath(selected_path_point, input.mouseX() - airspace_view_offset_x, input.mouseY() - airspace_view_offset_y);
-		}
-		
-		//draw transfer waypoint labels
-		graphics.setColour(graphics.green);
-		graphics.print(location_waypoints[0].getName(), location_waypoints[0].getLocation().getX() + 9, location_waypoints[0].getLocation().getY() - 6);
-		graphics.print(location_waypoints[1].getName(), location_waypoints[1].getLocation().getX() + 9, location_waypoints[1].getLocation().getY() - 6);
-		graphics.print(location_waypoints[2].getName(), location_waypoints[2].getLocation().getX() - 141, location_waypoints[2].getLocation().getY() - 6);
-		graphics.print(location_waypoints[3].getName(), location_waypoints[3].getLocation().getX() - 91, location_waypoints[3].getLocation().getY() - 6);
-		graphics.print(location_waypoints[4].getName(), location_waypoints[4].getLocation().getX() - 20, location_waypoints[4].getLocation().getY() + 25);
-
-	}
+	
 
 	
 	/** draw a readout of the time the game has been played for & aircraft in the sky. */

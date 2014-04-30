@@ -7,6 +7,7 @@ import java.util.List;
 
 import lib.RandomNumber;
 import lib.jog.graphics;
+import lib.jog.input;
 import lib.jog.input.EventHandler;
 
 public class GameWindow implements EventHandler{
@@ -24,7 +25,8 @@ public class GameWindow implements EventHandler{
 	private int x, y, width, height;
 	private double scale;
 	private final Rectangle
-		scoreArea, gameArea, planeInfo, altimeterBox, airportControlBox, ordersBox;
+		scoreArea, gameArea, manualOverrideBox,
+		planeInfo, altimeterBox, airportControlBox, ordersBox;
 	
 	private cls.Score score;
 	private boolean shownAircraftWaitingMessage = false;
@@ -76,13 +78,13 @@ public class GameWindow implements EventHandler{
 		//set up window controls
 		scoreArea = new Rectangle();
 		gameArea = new Rectangle();
+		manualOverrideBox = new Rectangle();
 		planeInfo = new Rectangle();
 		altimeterBox = new Rectangle();
 		airportControlBox = new Rectangle();
 		ordersBox = new Rectangle();
 		setAreas();
 		{
-			int bWidth = 128, bHeight = 64;
 			lib.ButtonText.Action manual = new lib.ButtonText.Action() {
 				@Override
 				public void action() {
@@ -91,9 +93,9 @@ public class GameWindow implements EventHandler{
 				}
 			};
 			manualOverrideButton = new lib.ButtonText(" Take Control", manual,
-					(gameArea.width -bWidth)/2, 32, 
-					bWidth, bHeight, 
-					x +gameArea.x, y +gameArea.y);
+					manualOverrideBox.x, manualOverrideBox.y,
+					manualOverrideBox.width, manualOverrideBox.height,
+					0, 0);
 		}
 
 		//create waypoints
@@ -201,35 +203,47 @@ public class GameWindow implements EventHandler{
 		//System.out.println("set GameWindow");
 		graphics.setViewport(x, y, width, height);
 		
+		setViewportRect(scoreArea);
+		score.draw();
+		graphics.setViewport();
+		
 		{//draw game area
 			//System.out.println("set GameWindow.gameArea");
 			setViewportRect(gameArea);
 			
-			//draw background
-			graphics.setColour(255, 255, 255, 96);
-			graphics.draw(backgroundImage, gameArea.x, 
-					gameArea.y, scale);
-			
-			//{!} DRAW GAME COMPONENTS
-			drawPlaneInfo();
-			setViewportRect(scoreArea);
-			score.draw();
-			graphics.setViewport();
-			altimeter.draw();
-			airportControl.draw();
-			orders.draw();		
+			drawMap();
 			
 			//draw scoring labels
 			drawPlaneScoreLabels();
 			
+			//draw UI
+			if (selectedAircraft != null){
+				//Compass
+				if (selectedAircraft.isManuallyControlled() && !selectedAircraft.is_takeoff()) {
+					selectedAircraft.drawCompass();
+				}
+				// Override Button
+				graphics.setColour(graphics.black);
+				drawRect(true, manualOverrideBox);
+				graphics.setColour(graphics.green);
+				drawRect(false, manualOverrideBox);
+				manualOverrideButton.draw();
+			}
+			
 			//draw border
 			graphics.setColour(graphics.green);
-			graphics.rectangle(false, gameArea.x, gameArea.y,
+			graphics.rectangle(false, 0, 0,
 					gameArea.width, gameArea.height);
 			
 			//System.out.println("restore GameWindow.gameArea");
 			graphics.setViewport();
 		}
+
+		//draw control panels
+		drawPlaneInfo();
+		altimeter.draw();
+		airportControl.draw();
+		orders.draw();	
 				
 		//System.out.println("restore GameWindow");
 		graphics.setViewport();
@@ -279,6 +293,67 @@ public class GameWindow implements EventHandler{
 	}
 	
 	
+	/**
+	 * Draw background, waypoints, aircraft,
+	 * and route of a selected aircraft between waypoints
+	 * Print waypoint names next to waypoints
+	 */
+	private void drawMap() {	
+		//draw background
+		graphics.setColour(255, 255, 255, 96);
+		graphics.draw(backgroundImage, gameArea.x, 
+				gameArea.y, scale);
+		
+		//draw waypoints excluding airports
+		for (Waypoint w : airspaceWaypoints) {
+			if (! (w instanceof Airport)) {
+				w.draw();
+			}
+		}
+		//draw airports
+		graphics.setColour(255, 255, 255, 96);
+		airport.draw();
+		
+		//draw transfer waypoint labels
+		graphics.setColour(graphics.green);
+		graphics.print(locationWaypoints[0].getName(), locationWaypoints[0].getLocation().getX() + 9, locationWaypoints[0].getLocation().getY() - 6);
+		graphics.print(locationWaypoints[1].getName(), locationWaypoints[1].getLocation().getX() + 9, locationWaypoints[1].getLocation().getY() - 6);
+		graphics.print(locationWaypoints[2].getName(), locationWaypoints[2].getLocation().getX() - 141, locationWaypoints[2].getLocation().getY() - 6);
+		graphics.print(locationWaypoints[3].getName(), locationWaypoints[3].getLocation().getX() - 91, locationWaypoints[3].getLocation().getY() - 6);
+		for (int i=4; i < locationWaypoints.length; i++){
+			graphics.print(locationWaypoints[i].getName(), locationWaypoints[i].getLocation().getX() - 20, locationWaypoints[i].getLocation().getY() + 25);
+		}
+		
+		//correct mouse position for coordinate system
+		int mx = input.mouseX(),
+		    my = input.mouseY();
+		mx = mx -x -gameArea.x;
+		my = my -y -gameArea.y;
+
+		//draw aircraft and highlight flightplan
+		for (Aircraft a : aircraftInAirspace) {
+			a.draw();
+			if (a.isMouseOver(mx, my)) {
+				a.drawFlightPath(false);
+			}
+		}
+		
+		if (selectedAircraft != null) {
+			// Flight Path
+			selectedAircraft.drawFlightPath(true);
+			graphics.setColour(graphics.green);
+			
+			//draw flightplan of selected flight
+			selectedAircraft.drawFlightPath(true);
+		}
+		
+		if (clickedWaypoint != null && !selectedAircraft.isManuallyControlled()) {
+			selectedAircraft.drawModifiedPath(selectedPathPoint, mx, my);
+		}
+		
+	}
+	
+	
 	/** Draw the info of a selected plane in the scene GUI */
 	private void drawPlaneInfo() {
 		graphics.setColour(graphics.green);
@@ -308,8 +383,8 @@ public class GameWindow implements EventHandler{
 			graphics.print("Destination:", 10, 85);
 			//graphics.print(destination, planeInfo.width -10 -destination.length()*8, 85);
 			graphics.printRight(destination, planeInfo.width -10, 85, 1, -1);
-			//System.out.println("restore Demo.planeInfo");
 			
+			//System.out.println("restore Demo.planeInfo");
 			graphics.setViewport();
 		}
 	}
@@ -406,6 +481,11 @@ public class GameWindow implements EventHandler{
 		graphics.setViewport(rect.x, rect.y, rect.width, rect.height);
 	}
 	
+	/** wrapper for graphics.rectangle converting from a Rectangle */
+	private void drawRect(Boolean fill, Rectangle rect){
+		graphics.rectangle(fill, rect.x, rect.y, rect.width, rect.height);
+	}
+	
 	
 	/** 
 	 * Sets up control areas based on x, y, width, height
@@ -424,6 +504,9 @@ public class GameWindow implements EventHandler{
 			sHeight = 32,
 			gHeight = (int)(scale * 784),
 			gY = sHeight +spacing,
+			bWidth = 128,
+			bHeight = 64,
+			bY = 32,
 			cWidth = width -3*spacing,	//total width available to controls
 			cHeight = height -sHeight -gHeight -2*spacing,
 			cY = sHeight +gHeight +2*spacing;
@@ -431,7 +514,9 @@ public class GameWindow implements EventHandler{
 				sWidth, sHeight);
 		gameArea.setRect(0, gY,
 				width, gHeight);
-		planeInfo.setRect(0, cY, 
+		manualOverrideBox.setRect((width -bWidth)/2, bY,	//relative to gameArea
+				bWidth, bHeight);
+		planeInfo.setRect(0, cY,
 				cWidth/4, cHeight );
 		altimeterBox.setRect(spacing +cWidth/4, cY, 
 				cWidth/5, cHeight );
