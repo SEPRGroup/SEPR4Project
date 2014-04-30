@@ -258,25 +258,8 @@ public class Demo extends Scene {
 	@Override
 	public void draw() {
 		game.draw();
-		
-		graphics.setColour(graphics.green);
-		drawAdditional();
 	}
-	
-	
-	/** draw a readout of the time the game has been played for & aircraft in the sky. */
-	private void drawAdditional() {
-		int hours = (int)(time_elapsed / (60 * 60));
-		int minutes = (int)(time_elapsed / 60);
-		minutes %= 60;
-		double seconds = time_elapsed % 60;
-		java.text.DecimalFormat df = new java.text.DecimalFormat("00.00");
-		String timePlayed = String.format("%d:%02d:", hours, minutes) + df.format(seconds); 
-		graphics.print(timePlayed, window.width() - (timePlayed.length() * 8 + 32), 32);
-		int planes = aircraft_in_airspace.size();
-		graphics.print(String.valueOf(aircraft_in_airspace.size()) + " plane" + (planes == 1 ? "" : "s") + " in the sky.", 32, 32);
-	}
-	
+
 
 	private boolean waypointInFlightplanClicked(int x, int y, Aircraft a) {
 		if (a != null) {

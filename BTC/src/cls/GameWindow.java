@@ -222,6 +222,7 @@ public class GameWindow implements EventHandler{
 		setViewportRect(scoreArea);
 		score.draw();
 		graphics.setViewport();
+		drawAdditional();
 		
 		{//draw game area
 			//System.out.println("set GameWindow.gameArea");
@@ -341,8 +342,8 @@ public class GameWindow implements EventHandler{
 		}
 		
 		//correct mouse position for coordinate system
-		int mx = input.mouseX() -x -gameArea.x,
-		    my = input.mouseY() -y -gameArea.y;
+		int	mx = input.mouseX() -x -gameArea.x,
+			my = input.mouseY() -y -gameArea.y;
 
 		//draw aircraft and highlight flightplan
 		for (Aircraft a : aircraftInAirspace) {
@@ -432,6 +433,22 @@ public class GameWindow implements EventHandler{
 			graphics.setColour(255, 255, 255, scoreTextAlpha);
 			graphics.print(planeScoreValue, scoreTextX, scoreTextY, 2);
 		}	
+	}
+	
+	
+	/** draw a readout of the time the game has been played for & aircraft in the sky. */
+	private void drawAdditional() {
+		int	hours = (int)(timeElapsed / (60 * 60)),
+			minutes = (int)(timeElapsed / 60) % 60;
+		double seconds = timeElapsed % 60;
+		java.text.DecimalFormat df = new java.text.DecimalFormat("00.00");
+		String timePlayed = String.format("%d:%02d:", hours, minutes) + df.format(seconds);
+		
+		graphics.setColour(graphics.green);
+		//graphics.print(timePlayed, width -timePlayed.length()*8 -16, 8);
+		graphics.printRight(timePlayed, 16, 8, 1, -1);
+		int planes = aircraftInAirspace.size();
+		graphics.print(String.valueOf(planes) + " plane" + (planes == 1 ? "" : "s") + " in the sky.", 16, 8);
 	}
 	
 	
