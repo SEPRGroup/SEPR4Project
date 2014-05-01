@@ -51,7 +51,16 @@ public class GameWindow implements EventHandler{
 	
 	private int difficulty;
 	private double timeElapsed = 0;
+	private Boolean controllable = false;
 	private Boolean gameOver = false;
+	
+	private int[] 
+			keysLeft = new int[] {input.KEY_LEFT, input.KEY_A},
+			keysRight = new int[] {input.KEY_RIGHT, input.KEY_D},
+			keysUp = new int[]{input.KEY_W, input.KEY_UP},
+			keysDown = new int[]{input.KEY_S, input.KEY_DOWN};
+			
+			
 		
 	private Aircraft selectedAircraft = null;
 	private Waypoint clickedWaypoint= null;
@@ -141,6 +150,37 @@ public class GameWindow implements EventHandler{
 	 */
 	public void update(double timeDifference){
 		timeElapsed += timeDifference;
+		
+		//handle controlled aircraft
+		if (selectedAircraft != null) {
+			if(controllable && !selectedAircraft.is_takeoff()){
+				Boolean
+					turnLeft = input.keyPressed(keysLeft),
+					turnRight = input.keyPressed(keysRight);
+				if (!selectedAircraft.isManuallyControlled()
+						&& (turnLeft || turnRight)){
+					toggleManualControl();
+				}
+				if (selectedAircraft.isManuallyControlled()) {
+					if (turnLeft) {
+						selectedAircraft.turnLeft(timeDifference);
+					} else if (turnRight) {
+						selectedAircraft.turnRight(timeDifference);
+					}
+				}
+				
+				if (input.keyPressed(keysDown)) {
+					selectedAircraft.setAltitudeState(Aircraft.ALTITUDE_FALL);
+				} else if (input.keyPressed(keysUp)) {
+					selectedAircraft.setAltitudeState(Aircraft.ALTITUDE_CLIMB);
+				}
+			}
+			
+			if (selectedAircraft.isOutOfAirspaceBounds()) {
+				orders.addOrder(">>> " + selectedAircraft.getName() + " out of bounds, returning to route");
+				deselectAircraft();
+			}	
+		}
 
 		//update aircraft in airspace
 		for (Aircraft a : aircraftInAirspace)
@@ -776,15 +816,24 @@ public class GameWindow implements EventHandler{
 	}
 	
 	
+	
 	public double getTime() {
 		return timeElapsed;
 	}
 	
-	
+
 	public int getScore(){
 		return score.getTotalScore();
 	}
 	
+	public Boolean getControllable() {
+		return controllable;
+	}
+
+	public void setControllable(Boolean controllable) {
+		this.controllable = controllable;
+	}
+
 	
 	public Boolean isGameOver(){
 		return gameOver;
