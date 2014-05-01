@@ -781,6 +781,11 @@ public class GameWindow implements EventHandler{
 	}
 	
 	
+	public int getScore(){
+		return score.getTotalScore();
+	}
+	
+	
 	public Boolean isGameOver(){
 		return gameOver;
 	}
