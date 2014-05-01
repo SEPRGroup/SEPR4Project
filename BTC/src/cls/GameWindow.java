@@ -56,6 +56,8 @@ public class GameWindow implements EventHandler{
 	private Aircraft selectedAircraft = null;
 	private Waypoint clickedWaypoint= null;
 	private int selectedPathPoint = -1; // Selected path point, in an aircraft's route, used for altering the route
+	/** The time elapsed since the last flight was generated*/
+	private double timeSinceFlightGeneration = 0;
 	
 	/** How long the label will be displayed for in ms */
 	private static final int SCORE_LABEL_DISPLAY = 2000;
@@ -205,6 +207,19 @@ public class GameWindow implements EventHandler{
 			}
 		} else {
 			shownAircraftWaitingMessage = false;
+		}
+		
+		{	//generate Flights
+			timeSinceFlightGeneration += timeDifference;
+			int interval = getFlightGenerationInterval();
+			if (timeSinceFlightGeneration >= interval) {
+				timeSinceFlightGeneration -= interval;
+				if (aircraftInAirspace.size() < getMaxAircraft()) {
+					generateFlight();
+				}
+			}
+			if (aircraftInAirspace.size() == 0)
+				generateFlight();
 		}
 
 		
@@ -461,6 +476,108 @@ public class GameWindow implements EventHandler{
 		// Space to implement some animation features?
 	}
 	
+	
+	/**
+	 * Creates a new aircraft object and introduces it to the airspace.
+	 * Also doesn't spawn a plane that is to close to another so there is 
+	 * not an instant crash when spawning 
+	 */
+	private void generateFlight() {
+		Aircraft aircraft = createAircraft();
+
+		if (aircraft != null) {
+			//check all the aircraft currently in the airspace
+			boolean isTooClose = false;
+			Vector originPos = aircraft.getFlightPlan().getOrigin().getPosition();
+			for (Aircraft a : aircraftInAirspace) {
+				Vector pos = a.getPosition();
+				// check the distance from the aircraft and the aircraft waiting to be spawned
+				double
+					dx = pos.getX() -originPos.getX(),
+					dy = pos.getY() -originPos.getY(),
+					distance = Math.sqrt(dx*dx + dy*dy);
+				
+				// if the distance is less than certain amount then aircraft is too close to be spawned
+				if (distance <= 100*scale) {
+					isTooClose = true;
+				}				
+			}			
+			
+			if (!isTooClose) { // Continue only if aircraft are not too close
+				if (aircraft.getFlightPlan().getOrigin() instanceof Airport) {
+					orders.addOrder("<<< " + aircraft.getName() 
+							+ " is awaiting take off from " 
+							+ aircraft.getFlightPlan().getOriginName()
+							+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
+					airport.addToHangar(aircraft);
+				} else {
+					orders.addOrder("<<< " + aircraft.getName() 
+							+ " incoming from " + aircraft.getFlightPlan().getOriginName() 
+							+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
+					aircraftInAirspace.add(aircraft);
+				}
+			}
+			
+		}
+	}
+	
+	
+	/**
+	 * Handle nitty gritty of aircraft creating
+	 * including randomisation of entry, exit, altitude, etc.
+	 * @return the created aircraft object
+	 */
+	private Aircraft createAircraft() {
+		// Origin and Destination
+		String name;
+		String originName, destinationName;
+		Waypoint originPoint, destinationPoint;
+			
+		{	//attempt to find a valid origin
+			ArrayList<Waypoint> availableOrigins = getAvailableEntryPoints();	
+			if (availableOrigins.isEmpty()) {
+				//then try to spawn in hangar instead
+				if (airport.aircraft_hangar.size() == airport.getHangarSize()) {
+					return null;	//no space to generate
+				} else {
+					originPoint = airport;
+					originName = airport.name;
+				}
+			} else {
+				originPoint = availableOrigins.get(RandomNumber.randInclusiveInt(0, availableOrigins.size()-1));
+				originName = originPoint.getName();
+			}
+		}
+
+		{	//find valid destination
+			do {
+				int destination = RandomNumber.randInclusiveInt(0, locationWaypoints.length -1);
+				destinationPoint = locationWaypoints[destination];
+				destinationName = destinationPoint.getName();
+			} while (destinationName == originName);
+		}
+	
+		
+		{	// generate Name
+			boolean nameIsTaken;
+			do {
+				nameIsTaken = false;
+				name = "Flight " +RandomNumber.randInclusiveInt(100, 999);
+				for (Aircraft a : aircraftInAirspace) {
+					if (a.getName() == name){
+						nameIsTaken = true;
+						break;
+					}
+				}
+			} while (nameIsTaken);
+		}
+		
+		return new Aircraft(name, destinationName, originName, 
+				destinationPoint, originPoint, 
+				aircraftImage, RandomNumber.randInclusiveInt(32, 41)*scale, 
+				airspaceWaypoints, difficulty);
+	}
+	
 
 	private boolean aircraftClicked(int gameX, int gameY) {
 		for (Aircraft a : aircraftInAirspace) {
@@ -571,7 +688,7 @@ public class GameWindow implements EventHandler{
 	 * Returns array of entry points that are fair to be entry points for a plane (no plane is currently going to exit the airspace there,
 	 * also it is not too close to any plane). 
 	 */	
-	private java.util.List<Waypoint> getAvailableEntryPoints() {
+	private ArrayList<Waypoint> getAvailableEntryPoints() {
 		ArrayList<Waypoint> availableEntryPoints = new ArrayList<Waypoint>();
 		
 		for (Waypoint w : locationWaypoints) {

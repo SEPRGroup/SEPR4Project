@@ -33,10 +33,7 @@ public class Demo extends Scene {
 	private boolean waypoint_clicked;
 
 
-	/** The time elapsed since the last flight was generated*/
-	private double time_since_flight_generation = 0;
 
-	
 	public double getTime() {
 		return game.getTime();
 	}
@@ -66,113 +63,6 @@ public class Demo extends Scene {
 		compass_clicked = false;
 	}
 
-
-	/**
-	 * Creates a new aircraft object and introduces it to the airspace.
-	 * Also doesn't spawn a plane that is to close to another so there is 
-	 * not an instant crash when spawning 
-	 */
-	private void generateFlight() {
-				
-		Aircraft aircraft = createAircraft();
-		boolean isTooClose = false;
-		
-		if (aircraft != null) {
-			// go through all the aircrafts currently in the airspace
-			for (Aircraft a : aircraft_in_airspace) {
-				// check the distance from the current selected aircraft and the aircraft waiting to be spawned
-				int distanceX = (int)(Math.abs(Math.round(a.getPosition().getX()) - Math.round(aircraft.getFlightPlan()
-						.getRoute()[0]
-						.getLocation()
-						.getX())));
-				
-				int distanceY = (int)(Math.abs(Math.round(a.getPosition().getY()) - Math.round(aircraft.getFlightPlan()
-						.getRoute()[0]
-						.getLocation()
-						.getY())));
-				
-				int distanceFromEachPlane = (int)Math.sqrt((int)Math.pow(distanceX, 2) + (int) Math.pow(distanceY, 2));
-				
-				// if the distance is less than certain amount then aircraft is too close to be spawned
-				if (distanceFromEachPlane <= 100) {
-					isTooClose = true;
-				}				
-			}			
-			
-			if (!isTooClose) { // Continue only if aricraft is not too close
-				if (aircraft.getFlightPlan().getOriginName().equals(airport.name)) {
-					orders_box.addOrder("<<< " + aircraft.getName() 
-							+ " is awaiting take off from " 
-							+ aircraft.getFlightPlan().getOriginName()
-							+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
-					airport.addToHangar(aircraft);
-				} else {
-					orders_box.addOrder("<<< " + aircraft.getName() 
-							+ " incoming from " + aircraft.getFlightPlan().getOriginName() 
-							+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
-					aircraft_in_airspace.add(aircraft);
-				}
-			}
-			
-		}
-	}
-	
-	/**
-	 * Handle nitty gritty of aircraft creating
-	 * including randomisation of entry, exit, altitude, etc.
-	 * @return the created aircraft object
-	 */
-	private Aircraft createAircraft() {
-		// Origin and Destination
-		String destination_name;
-		String origin_name = "";
-		Waypoint origin_point;
-		Waypoint destination_point;
-	
-		// Chooses two waypoints randomly and then checks if they satisfy the rules, if not, it tries until it finds good ones. 	
-		java.util.ArrayList<Waypoint> available_origins = getAvailableEntryPoints();
-		
-		if (available_origins.isEmpty()) {
-			if (airport.aircraft_hangar.size() == airport.getHangarSize()) {
-				return null;
-			} else {
-				origin_point = airport;
-				origin_name = airport.name;
-			}
-		} else {
-			origin_point = available_origins.get(RandomNumber.randInclusiveInt(0, available_origins.size()-1));
-			for (int i = 0; i < location_waypoints.length; i++) {
-				if (location_waypoints[i].equals(origin_point)) {
-					origin_name = location_waypoints[i].getName();
-					break;
-				}
-			}
-		}
-		
-		// Work out destination
-		int destination = RandomNumber.randInclusiveInt(0, location_waypoints.length - 1);
-		destination_name = location_waypoints[destination].getName();
-		destination_point = location_waypoints[destination];
-		
-		while (location_waypoints[destination].getName() == origin_name) {
-			destination = RandomNumber.randInclusiveInt(0, location_waypoints.length - 1);
-			destination_name = location_waypoints[destination].getName();
-			destination_point = location_waypoints[destination];
-		}			
-		
-		// Name
-		String name = "";
-		boolean name_is_taken = true;
-		while (name_is_taken) {
-			name = "Flight " + (int)(900 * Math.random() + 100);
-			name_is_taken = false;
-			for (Aircraft a : aircraft_in_airspace) {
-				if (a.getName() == name) name_is_taken = true;
-			}
-		}
-		return new Aircraft(name, destination_name, origin_name, destination_point, origin_point, aircraft_image, 32 + (int)(10 * Math.random()), airspace_waypoints, difficulty);
-	}
-	
 
 	/** cleanly exit by stopping the scene's music */
 	@Override
@@ -221,16 +111,7 @@ public class Demo extends Scene {
 				deselectAircraft();
 			}	
 		}
-		
-		time_since_flight_generation += time_difference;
-		if(time_since_flight_generation >= getFlightGenerationInterval()) {
-			time_since_flight_generation -= getFlightGenerationInterval();
-			if (aircraft_in_airspace.size() < getMaxAircraft()) {
-				generateFlight();
-			}
-		}
-		if (aircraft_in_airspace.size() == 0)
-			generateFlight();
+
 	}
 	
 	
