@@ -748,6 +748,34 @@ public class GameWindow implements EventHandler{
 	}
 	
 	
+	private boolean manualOverridePressed(int gameX, int gameY) {
+		return manualOverrideButton.isMouseOver(gameX, gameY);
+	}
+
+
+	private boolean waypointInFlightplanClicked(int gameX, int gameY, Aircraft a) {
+		if (a != null) {
+			FlightPlan plan = a.getFlightPlan();
+			for (Waypoint w : airspaceWaypoints) {
+				if (plan.indexOfWaypoint(w) > -1 && w.isMouseOver(gameX, gameY)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	
+	private Waypoint findClickedWaypoint(int gameX, int gameY) {
+		for (Waypoint w : airspaceWaypoints) {
+			if (w.isMouseOver(gameX, gameY)) {
+				return w;
+			}
+		}
+		return null;
+	}
+	
+	
 	public double getTime() {
 		return timeElapsed;
 	}

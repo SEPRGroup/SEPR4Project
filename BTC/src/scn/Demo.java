@@ -141,28 +141,7 @@ public class Demo extends Scene {
 		game.draw();
 	}
 
-
-	private boolean waypointInFlightplanClicked(int x, int y, Aircraft a) {
-		if (a != null) {
-			for (Waypoint w : airspace_waypoints) {
-				if (w.isMouseOver(x-airspace_view_offset_x, y-airspace_view_offset_y) && a.getFlightPlan().indexOfWaypoint(w) > -1) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 	
-	private Waypoint findClickedWaypoint(int x, int y) {
-		for (Waypoint w : airspace_waypoints) {
-			if (w.isMouseOver(x-airspace_view_offset_x, y-airspace_view_offset_y)) {
-				return w;
-			}
-		}
-		return null;
-	}
-	
-
 	/** Handle mouse input */
 	@Override
 	public void mousePressed(int key, int x, int y) {
@@ -215,9 +194,6 @@ public class Demo extends Scene {
 		}
 	}
 	
-	private boolean manualOverridePressed(int x, int y) {
-		return manual_override_button.isMouseOver(x - airspace_view_offset_x, y - airspace_view_offset_y);
-	}
 
 	@Override
 	public void mouseReleased(int key, int x, int y) {
