@@ -51,8 +51,6 @@ public class Demo extends Scene {
 	public void start() {	
 		music = audio.newMusic("sfx" + File.separator + "Gypsy_Shoegazer.ogg");
 		music.play();
-
-		compass_clicked = false;
 	}
 
 
@@ -63,10 +61,7 @@ public class Demo extends Scene {
 	}
 	
 	
-	/**
-	 * Update game state and handle any game over state
-	 * {!}Generate a new flight if flight generation interval has been exceeded.
-	 */
+	/** Update game state and handle any game over state */
 	@Override
 	public void update(double time_difference) {
 		game.update(time_difference);

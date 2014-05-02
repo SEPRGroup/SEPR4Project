@@ -66,9 +66,9 @@ public class GameWindow implements EventHandler{
 	private Waypoint clickedWaypoint= null;
 	private int selectedPathPoint = -1; // Selected path point, in an aircraft's route, used for altering the route
 	/** Tracks if manual heading compass of a manually controlled aircraft has been clicked*/
-	private boolean compassClicked;
+	private boolean compassClicked = false;
 	/** Tracks if waypoint of a manually controlled aircraft has been clicked*/
-	private boolean waypointClicked;
+	private boolean waypointClicked = false;
 	/** The time elapsed since the last flight was generated*/
 	private double timeSinceFlightGeneration = 0;
 	
@@ -148,12 +148,27 @@ public class GameWindow implements EventHandler{
 
 	
 	/**
+	 * Manage recentlyDepartedAircraft
 	 * Update all game objects, ie aircraft, orders box altimeter.
 	 * Cause collision detection to occur
-	 * Manages recentlyDepartedAircraft
+	 * Generate a new flight if flight generation interval has been exceeded.
 	 */
 	public void update(double timeDifference){
 		timeElapsed += timeDifference;
+		
+		{	//manage recentlyDepartedAircraft
+			double currentTime = System.currentTimeMillis(); // Current (system) time
+			ArrayList<Aircraft> aircraftToRemove = new ArrayList<Aircraft>();
+			for (Aircraft d : recentlyDepartedAircraft) {
+				double 
+					departure_time = d.getTimeOfDeparture(), // Time when the plane successfully left airspace 
+					leftAirspaceFor = currentTime -departure_time; // How long since the plane left airspace
+				if (leftAirspaceFor > SCORE_LABEL_DISPLAY) {
+					aircraftToRemove.add(d);
+				}				
+			}
+			recentlyDepartedAircraft.removeAll(aircraftToRemove);
+		}
 		
 		//handle controlled aircraft
 		if (selectedAircraft != null) {
@@ -191,21 +206,7 @@ public class GameWindow implements EventHandler{
 			a.update(timeDifference);
 		
 		checkCollisions();
-		
-		{	//manage recentlyDepartedAircraft
-			double currentTime = System.currentTimeMillis(); // Current (system) time
-			ArrayList<Aircraft> aircraftToRemove = new ArrayList<Aircraft>();
-			for (Aircraft d : recentlyDepartedAircraft) {
-				double 
-					departure_time = d.getTimeOfDeparture(), // Time when the plane successfully left airspace 
-					leftAirspaceFor = currentTime -departure_time; // How long since the plane left airspace
-				if (leftAirspaceFor > SCORE_LABEL_DISPLAY) {
-					aircraftToRemove.add(d);
-				}				
-			}
-			recentlyDepartedAircraft.removeAll(aircraftToRemove);
-		}
-		
+				
 		//check for and handle aircraft that have completed their route
 		for (int i = aircraftInAirspace.size()-1; i >= 0; i--) {
 			Aircraft a = aircraftInAirspace.get(i);
