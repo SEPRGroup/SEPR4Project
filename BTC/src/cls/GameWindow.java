@@ -967,7 +967,21 @@ public class GameWindow implements EventHandler{
 
 	@Override
 	public void keyReleased(int key) {
+		switch (key) {		
+		case input.KEY_SPACE :
+			toggleManualControl();
+			break;
 
+		case input.KEY_LCRTL :	//{!} for debug only
+			generateFlight();
+			break;
+
+		case input.KEY_F5 :	//{!} for debug only
+			crashedAircraft.add(createAircraft());
+			crashedAircraft.add(createAircraft());
+			gameOver = true;
+			break;
+		}
 	}
-	
+
 }

@@ -122,39 +122,16 @@ public class Demo extends Scene {
 	@Override
 	/** handle keyboard input */
 	public void keyReleased(int key) {
-		switch (key) {		
-			case input.KEY_SPACE :
-				toggleManualControl();
-			break;
-			
-			case input.KEY_LCRTL :	//{!} for debug only
-				generateFlight();
-			break;
-			
+		game.keyReleased(key);
+		
+		switch (key) {
 			case input.KEY_ESCAPE :
-				aircraft_in_airspace.clear();
-				airport.clear();
 				main.closeScene();
-			break;
-			
-			case input.KEY_F5 :	//{!} for debug only
-				Aircraft a1 = createAircraft();
-				Aircraft a2 = createAircraft();
-				gameOver(a1, a2);
 			break;
 		}
 	}
 	
 	// Necessary for testing	
-	/**
-	 * This method should only be used for unit testing (avoiding instantiation of main class). Its purpose is to initialize array where
-	 * aircraft are stored. 
-	 */	
-	@Deprecated
-	public void initializeAircraftArray() {
-		aircraft_in_airspace = new java.util.ArrayList<Aircraft>();
-	}
-		 
 	/**
 	 * This constructor should only be used for unit testing. Its purpose is to allow an instance
 	 * of demo class to be created without an instance of Main class (effectively launching the game)
