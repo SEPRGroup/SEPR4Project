@@ -864,7 +864,7 @@ public class GameWindow implements EventHandler{
 
 	@Override
 	public void mousePressed(int key, int x, int y) {
-		//transform for coordinate system for drawing
+		//transform for coordinate system used for drawing
 		int	intX = x -this.x,
 			intY = y -this.y,
 			gameX = intX -gameArea.x,
@@ -922,7 +922,42 @@ public class GameWindow implements EventHandler{
 
 	@Override
 	public void mouseReleased(int key, int x, int y) {
-	
+		//transform for coordinate system used for drawing
+		int	intX = x -this.x,
+			intY = y -this.y,
+			gameX = intX -gameArea.x,
+			gameY = intY -gameArea.y;
+		
+		airport.mouseReleased(key, gameX, gameY);
+		airportControl.mouseReleased(key, intX, intY);
+		altimeter.mouseReleased(key, x, y);
+		
+		switch (key){
+		case input.MOUSE_LEFT: 
+			if (manualOverridePressed(gameX, gameY)) {
+				manualOverrideButton.act();
+			} else if (selectedAircraft != null && waypointClicked) {
+				Waypoint newWaypoint = findClickedWaypoint(gameX, gameY);
+				if (newWaypoint != null) {
+					selectedAircraft.alterPath(selectedPathPoint, newWaypoint);
+					orders.addOrder(">>> " + selectedAircraft.getName() + " please alter your course.");
+					orders.addOrder("<<< Roger that. Altering course now.");
+				}
+				selectedPathPoint = -1;
+			}
+			clickedWaypoint = null; // Fine to set to null now as will have been dealt with
+			break;
+		case input.MOUSE_RIGHT:
+			if (selectedAircraft != null && compassClicked) {
+				Vector pos = selectedAircraft.getPosition();
+				double 
+					dx = gameX -pos.getX(),
+					dy = gameY -pos.getY();
+				double newBearing = Math.atan2(dy, dx);
+				selectedAircraft.setBearing(newBearing);
+			}
+			break;
+		}
 	}
 
 

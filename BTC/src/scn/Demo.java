@@ -111,34 +111,7 @@ public class Demo extends Scene {
 
 	@Override
 	public void mouseReleased(int key, int x, int y) {
-		airport.mouseReleased(key, x, y);
-		airport_control_box.mouseReleased(key, x, y);
-		altimeter.mouseReleased(key, x, y);
-		
-		switch (key){
-		case input.MOUSE_LEFT: 
-			if (manualOverridePressed(x, y)) {
-				manual_override_button.act();
-			} else if (waypoint_clicked && selected_aircraft != null) {
-				Waypoint newWaypoint = findClickedWaypoint(x, y);
-				if (newWaypoint != null) {
-					selected_aircraft.alterPath(selected_path_point, newWaypoint);
-					orders_box.addOrder(">>> " + selected_aircraft.getName() + " please alter your course.");
-					orders_box.addOrder("<<< Roger that. Altering course now.");
-				}
-				selected_path_point = -1;
-			}
-			clicked_waypoint = null; // Fine to set to null now as will have been dealt with
-			break;
-		case input.MOUSE_RIGHT:
-			if (compass_clicked && selected_aircraft != null) {
-				double dx = input.mouseX() - selected_aircraft.getPosition().getX() + airspace_view_offset_x;
-				double dy = input.mouseY() - selected_aircraft.getPosition().getY() + airspace_view_offset_y;
-				double newBearing = Math.atan2(dy, dx);
-				selected_aircraft.setBearing(newBearing);
-			}
-			break;
-		}
+		game.mouseReleased(key, x, y);
 	}
 
 	@Override
