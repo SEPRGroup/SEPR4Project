@@ -65,6 +65,10 @@ public class GameWindow implements EventHandler{
 	private Aircraft selectedAircraft = null;
 	private Waypoint clickedWaypoint= null;
 	private int selectedPathPoint = -1; // Selected path point, in an aircraft's route, used for altering the route
+	/** Tracks if manual heading compass of a manually controlled aircraft has been clicked*/
+	private boolean compassClicked;
+	/** Tracks if waypoint of a manually controlled aircraft has been clicked*/
+	private boolean waypointClicked;
 	/** The time elapsed since the last flight was generated*/
 	private double timeSinceFlightGeneration = 0;
 	
@@ -859,7 +863,59 @@ public class GameWindow implements EventHandler{
 
 	@Override
 	public void mousePressed(int key, int x, int y) {
-	
+		//transform for coordinate system for drawing
+		int	intX = x -this.x,
+			intY = y -this.y,
+			gameX = intX -gameArea.x,
+			gameY = intY -gameArea.y;
+		
+		airportControl.mousePressed(key, intX, intY);
+		altimeter.mousePressed(key, intX, intY);
+		if (key == input.MOUSE_LEFT) {
+			if (aircraftClicked(gameX, gameY)) {
+				Aircraft clickedAircraft = findClickedAircraft(gameX, gameY);
+				deselectAircraft();
+				selectedAircraft = clickedAircraft;
+				altimeter.show(selectedAircraft);
+				
+			} else if (waypointInFlightplanClicked(gameX, gameY, selectedAircraft) && !selectedAircraft.isManuallyControlled()) {
+				clickedWaypoint = findClickedWaypoint(gameX, gameY);
+				if (clickedWaypoint != null) {
+					waypointClicked = true; // Flag to mouseReleased
+					selectedPathPoint = selectedAircraft.getFlightPlan().indexOfWaypoint(clickedWaypoint);					
+				}
+			}
+			
+			if (selectedAircraft != null && isArrivalsClicked(gameX, gameY)) {
+				if (selectedAircraft.is_waiting_to_land && selectedAircraft.current_target.equals(airport.getLocation())) {
+					airport.mousePressed(key, intX, intX);
+					selectedAircraft.land();
+					deselectAircraft();
+				}
+			} else if (isDeparturesClicked(gameX, gameY)) {
+				if (airport.aircraft_hangar.size() > 0) {
+					airport.mousePressed(key, gameX, gameY);
+					airport.signalTakeOff();
+				}
+			}
+		} else if (key == input.MOUSE_RIGHT) {
+			if (aircraftClicked(gameX, gameY)) {
+				selectedAircraft = findClickedAircraft(gameX, gameY);
+			}
+			if (selectedAircraft != null) {
+				if (compassClicked(gameX, gameY)) {
+					compassClicked = true; // Flag to mouseReleased
+					if (!selectedAircraft.isManuallyControlled())
+						toggleManualControl();
+				} else {
+					if (selectedAircraft.isManuallyControlled()) {
+						toggleManualControl();
+					} else {
+						deselectAircraft();					
+					}
+				}
+			}
+		}
 	}
 
 

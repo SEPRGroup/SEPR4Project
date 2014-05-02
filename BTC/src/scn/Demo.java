@@ -22,15 +22,6 @@ public class Demo extends Scene {
 	private audio.Music music;
 	
 	private final cls.GameWindow game;
-	
-	
-	//****** REBUILD PROGRESS MARKER ******
-	
-
-	/** Tracks if manual heading compass of a manually controlled aircraft has been clicked*/
-	private boolean compass_clicked;
-	/** Tracks if waypoint of a manually controlled aircraft has been clicked*/
-	private boolean waypoint_clicked;
 
 
 
@@ -119,53 +110,7 @@ public class Demo extends Scene {
 	/** Handle mouse input */
 	@Override
 	public void mousePressed(int key, int x, int y) {
-		airport_control_box.mousePressed(key, x, y);
-		altimeter.mousePressed(key, x, y);
-		if (key == input.MOUSE_LEFT) {
-			if (aircraftClicked(x, y)) {
-				Aircraft clickedAircraft = findClickedAircraft(x, y);
-				deselectAircraft();
-				selected_aircraft = clickedAircraft;
-				altimeter.show(selected_aircraft);
-				
-			} else if (waypointInFlightplanClicked(x, y, selected_aircraft) && !selected_aircraft.isManuallyControlled()) {
-				clicked_waypoint = findClickedWaypoint(x, y);
-				if (clicked_waypoint != null) {
-					waypoint_clicked = true; // Flag to mouseReleased
-					selected_path_point = selected_aircraft.getFlightPlan().indexOfWaypoint(clicked_waypoint);					
-				}
-			}
-			
-			if (isArrivalsClicked(x, y) && selected_aircraft != null) {
-				if (selected_aircraft.is_waiting_to_land && selected_aircraft.current_target.equals(airport.getLocation())) {
-					airport.mousePressed(key, x, y);
-					selected_aircraft.land();
-					deselectAircraft();
-				}
-			} else if (isDeparturesClicked(x, y)) {
-				if (airport.aircraft_hangar.size() > 0) {
-					airport.mousePressed(key, x, y);
-					airport.signalTakeOff();
-				}
-			}
-		} else if (key == input.MOUSE_RIGHT) {
-			if (aircraftClicked(x, y)) {
-				selected_aircraft = findClickedAircraft(x, y);
-			}
-			if (selected_aircraft != null) {
-				if (compassClicked()) {
-					compass_clicked = true; // Flag to mouseReleased
-					if (!selected_aircraft.isManuallyControlled())
-						toggleManualControl();
-				} else {
-					if (selected_aircraft.isManuallyControlled()) {
-						toggleManualControl();
-					} else {
-						deselectAircraft();					
-					}
-				}
-			}
-		}
+		game.mousePressed(key, x, y);
 	}
 	
 
