@@ -1,10 +1,16 @@
 package cls;
 
+import java.io.Serializable;
+
 /**
  * Simplified 3D vector class with basic operations
  * @author Huw Taylor
  */
-public class Vector {
+public class Vector implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 263196102956223519L;
 	private double x, y, z;
 	
 	/**
