@@ -1,6 +1,5 @@
 package cls;
 
-import scn.Demo;
 import lib.jog.graphics;
 import lib.jog.input;
 import lib.jog.input.EventHandler;
@@ -32,12 +31,10 @@ public class AirportControlBox implements EventHandler{
 		division_height = height / number_of_divisions;
 	}
 	
-	/**
-	 * Draws the box to the screen
-	 */
-	public void draw() {
+	/** Draws the box to the screen */
+	public void draw(double current_time) {
 		drawBoxOutline();
-		drawLabels();
+		drawLabels(current_time);
 		if (clicked) {
 			graphics.setColour(graphics.green);
 			graphics.rectangle(true, x_position, y_position +height -division_height, width, division_height);
@@ -61,10 +58,8 @@ public class AirportControlBox implements EventHandler{
 		}
 	}
 	
-	/**
-	 * Draws the flight names and time bars, as well as the text on the button either "TAKE OFF" or "AIRPORT BUSY" 
-	 */
-	private void drawLabels() {
+	/** Draws the flight names and time bars, as well as the text on the button either "TAKE OFF" or "AIRPORT BUSY"	*/
+	private void drawLabels(double current_time) {
 		// Draw take off button
 		int opacity = (airport.is_active || airport.aircraft_hangar.size() == 0) ? 128 : 256; // Grey out if not clickable
 		graphics.setColour(0, 128, 0, opacity);
@@ -85,7 +80,7 @@ public class AirportControlBox implements EventHandler{
 			graphics.setColour(graphics.green);
 			graphics.print(airport.aircraft_hangar.get(i).getName(), x_position + ((width - 70)/2), y_position - 3);
 			
-			percentage_complete = barProgress(airport.time_entered.get(i));
+			percentage_complete = barProgress(airport.time_entered.get(i), current_time);
 			
 			if (percentage_complete == 1) {
 				graphics.setColour(graphics.red);
@@ -103,7 +98,7 @@ public class AirportControlBox implements EventHandler{
 	 * @return a value between 0 and 1 which is used to calculate the ratio of the "progress bar" to draw
 	 */
 	public double barProgress(double time_entered, double current_time) {
-		double time_elapsed = current_time - time_entered;
+		double time_elapsed = current_time -time_entered;
 		if (time_elapsed > 5) {
 			return 1;
 		} else if (time_elapsed < 0) {
@@ -145,13 +140,8 @@ public class AirportControlBox implements EventHandler{
 
 
 	@Override
-	public void keyPressed(int key) {
-		
-	}
-
+	public void keyPressed(int key) {}
 
 	@Override
-	public void keyReleased(int key) {
-		
-	}
+	public void keyReleased(int key) {}
 }

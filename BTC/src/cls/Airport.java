@@ -2,12 +2,7 @@ package cls;
 
 import java.io.File;
 
-import scn.Demo;
-
 import lib.jog.graphics;
-import lib.jog.input;
-import lib.jog.input.EventHandler;
-import lib.jog.window;
 
 public class Airport extends Waypoint {
 
@@ -62,7 +57,15 @@ public class Airport extends Waypoint {
 	}
 	
 	@Override
-	public void draw() { 
+	@Deprecated
+	public void draw(){
+		super.draw();
+		System.out.println("call to Airport.draw(); this is deprecated. "
+				+"\nUse Airport.draw(double current_time) to properly display the airport.");
+	}
+	
+	/** draw function with extra parameters to allow extra functionality */
+	public void draw(double current_time) { 
 		// Draw the airport image
 		graphics.setColour(128, 128, 128, 128);
 		graphics.draw(airport, x_location-airport.width()/2, y_location-airport.height()/2);
@@ -75,19 +78,17 @@ public class Airport extends Waypoint {
 		// Draw the hangar button if plane is waiting (departing flights)
 		if (aircraft_hangar.size() > 0) {
 			// Colour fades from green (fine) to red (danger) over 5 seconds as plane is waiting
-			int time_waiting = (int)(Demo.getTime() - time_entered.get(0));
+			int time_waiting = (int)(current_time -time_entered.get(0));
 			// Assume it hasn't been waiting
-			int green_now = green_fine; 
-			int red_now = red_fine;
-			if (time_waiting > 0) { // Prevent division by 0
-				if (time_waiting >= 5) { // Cap at 5 seconds
-					green_now = green_danger;
-					red_now = red_danger;
-				} else {
-					// Colour between fine and danger, scaled by time_waiting
-					green_now = green_fine - (int)(Math.abs(green_fine-green_danger) * (time_waiting/5.0)); 
-					red_now = (int)(Math.abs(red_fine-red_danger) * (time_waiting/5.0));
-				}
+			int	green_now = green_fine, 
+				red_now = red_fine;
+			if (time_waiting >= 5) { // Cap at 5 seconds
+				green_now = green_danger;
+				red_now = red_danger;
+			} else {
+				// Colour between fine and danger, scaled by time_waiting
+				green_now = green_fine - (int)(Math.abs(green_fine-green_danger) * (time_waiting/5.0)); 
+				red_now = (int)(Math.abs(red_fine-red_danger) * (time_waiting/5.0));
 			}
 
 			// Draw border, draw as filled if clicked

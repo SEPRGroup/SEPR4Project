@@ -321,7 +321,7 @@ public class GameWindow implements EventHandler{
 		//draw control panels
 		drawPlaneInfo();
 		altimeter.draw();
-		airportControl.draw();
+		airportControl.draw(timeElapsed);
 		orders.draw();	
 				
 		//System.out.println("restore GameWindow");
@@ -390,7 +390,7 @@ public class GameWindow implements EventHandler{
 		}
 		//draw airports
 		graphics.setColour(255, 255, 255, 96);
-		airport.draw();
+		airport.draw(timeElapsed);
 		
 		//draw transfer waypoint labels
 		graphics.setColour(graphics.green);
