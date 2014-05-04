@@ -702,7 +702,7 @@ public class GameWindow implements EventHandler{
 		
 		//precalculate score, game, control position increments
 		int spacing = 8,
-			sX = 256 +spacing,
+			sX = 192 +spacing,
 			sWidth = width -sX -spacing -150,
 			sHeight = 48,
 			gHeight = (int)(scale * 784),

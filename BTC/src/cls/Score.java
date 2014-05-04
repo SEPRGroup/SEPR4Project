@@ -250,9 +250,11 @@ public class Score {
 		int start_x = segment_number*segment_width; 
 		int end_x = start_x + segment_width;
 		
-		if (meter_fill >= start_x && meter_fill < end_x) { // Partially fill segment
-			graphics.rectangle(true, bar_x_offset, bar_y_offset, (meter_fill - start_x), segment_height);
-		} else if (meter_fill >= end_x) { // Fill whole segment
+		int scale_meter_fill = (bar_segments*segment_width *meter_fill)/256;
+		
+		if (scale_meter_fill >= start_x && scale_meter_fill < end_x) { // Partially fill segment
+			graphics.rectangle(true, bar_x_offset, bar_y_offset, (scale_meter_fill -start_x), segment_height);
+		} else if (scale_meter_fill >= end_x) { // Fill whole segment
 			graphics.rectangle(true, bar_x_offset, bar_y_offset, segment_width, segment_height);
 		}
 	}
