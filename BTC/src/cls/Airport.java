@@ -47,12 +47,12 @@ public class Airport extends Waypoint {
 		departures_x_location = x_location + 2;
 		departures_y_location = y_location + 50;
 		
-		if(airport == null){
+		if (airport == null){
 			loadImage();
 		}
 	}
 	
-	public void loadImage() {
+	private static void loadImage() {
 		airport = graphics.newImage("gfx" +File.separator +"Airport.png");
 	}
 	
@@ -60,7 +60,7 @@ public class Airport extends Waypoint {
 	@Deprecated
 	public void draw(){
 		super.draw();
-		System.out.println("call to Airport.draw(); this is deprecated. "
+		System.out.println("call to Airport.draw(); this is deprecated."
 				+"\nUse Airport.draw(double current_time) to properly display the airport.");
 	}
 	

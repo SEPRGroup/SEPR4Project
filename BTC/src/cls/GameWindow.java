@@ -26,19 +26,21 @@ public class GameWindow implements EventHandler{
 	private double scale;
 	private final Rectangle
 		scoreArea, gameArea, manualOverrideBox,
-		planeInfo, altimeterBox, airportControlBox, ordersBox;
+		planeInfo, altimeterBox, ordersBox;
+	private final Rectangle[]
+		airportControlBoxes;
 	
 	private cls.Score score;
 	private boolean shownAircraftWaitingMessage = false;
 	private cls.Altimeter altimeter;
-	private cls.AirportControlBox airportControl;
+	private cls.AirportControlBox[] airportControls;
 	private cls.OrdersBox orders;
 		
 	/** A button to start and end manual control of an aircraft*/
 	private lib.ButtonText manualOverrideButton;
 	
 	/** instance of the airport class*/
-	private Airport airport;
+	private Airport[] airports;
 	/** The set of waypoints in the airspace which are origins / destinations */
 	public Waypoint[] locationWaypoints;
 	/** All waypoints in the airspace, INCLUDING locationWaypoints. */
@@ -96,18 +98,22 @@ public class GameWindow implements EventHandler{
 		manualOverrideBox = new Rectangle();
 		planeInfo = new Rectangle();
 		altimeterBox = new Rectangle();
-		airportControlBox = new Rectangle();
+		airportControlBoxes = new Rectangle[]{
+			new Rectangle(), new Rectangle()};
 		ordersBox = new Rectangle();
 		setAreas();
 		
 		//create waypoints
-		airport = new Airport("Mosbear Airport", 600*scale, 200*scale);
+		airports = new Airport[] {
+				new Airport("Mosbear Airport", 600*scale, 200*scale),
+				new Airport("Airport", 600*scale,500*scale)
+		};
 		locationWaypoints = new Waypoint[] { 
 				new Waypoint(8, 8, true, "North West Top Leftonia"), // top left
 				new Waypoint(8, gameArea.height-8, true, "100 Acre Woods"), // bottom left
 				new Waypoint(gameArea.width-8, 8, true, "City of Rightson"), // top right
 				new Waypoint(gameArea.width-8, gameArea.height -8, true, "South Sea"), // bottom right
-				airport
+				airports[0], airports[1]
 		};	
 		airspaceWaypoints = new Waypoint[] {		
 				//All waypoints in the airspace, including location Way Points
@@ -127,13 +133,19 @@ public class GameWindow implements EventHandler{
 				locationWaypoints[1],
 				locationWaypoints[2],
 				locationWaypoints[3],
-				locationWaypoints[4]
+				locationWaypoints[4],
+				locationWaypoints[5]
 		};
 		
 		//generate sized components
 		score = new cls.Score(scoreArea.width, scoreArea.height);
-		airportControl = new cls.AirportControlBox(airportControlBox.x, airportControlBox.y, 
-				airportControlBox.width, airportControlBox.height, airport, this);
+		airportControls = new AirportControlBox[2];
+		for (int i=0; i<airports.length; i++){
+			Rectangle box = airportControlBoxes[i];
+			airportControls[i] = new cls.AirportControlBox(box.x, box.y, 
+					box.width, box.height, airports[i], this);
+		}
+				
 		orders = new cls.OrdersBox(ordersBox.x, ordersBox.y, 
 				ordersBox.width, ordersBox.height, 6);
 		altimeter = new cls.Altimeter(altimeterBox.x, altimeterBox.y,
@@ -251,19 +263,27 @@ public class GameWindow implements EventHandler{
 		}
 		
 		//update airports
-		airport.update(aircraftInAirspace);
-		
-		//handle if Aircraft are waiting to take off
-		if (airport.getLongestTimeInHangar(timeElapsed) > 5) {
-			score.increaseMeterFill(-1);
-			if (!shownAircraftWaitingMessage) {
-				orders.addOrder(">>> Plane waiting to take off, multiplier decreasing");
-				shownAircraftWaitingMessage = true;
+		for (Airport a : airports )
+			a.update(aircraftInAirspace);
+
+		{	//handle if Aircraft are waiting to take off
+			boolean waiting = false;
+			for (Airport a: airports){
+				if (a.getLongestTimeInHangar(timeElapsed) > 5) {
+					score.increaseMeterFill(-1);	//decrease meter per Airport
+					waiting = true;
+				}
 			}
-		} else {
-			shownAircraftWaitingMessage = false;
+			if (waiting) {
+				if (!shownAircraftWaitingMessage) {
+					orders.addOrder(">>> Plane waiting to take off, multiplier decreasing");
+					shownAircraftWaitingMessage = true;
+				}
+			} else {
+				shownAircraftWaitingMessage = false;
+			}
 		}
-		
+ 		
 		{	//generate Flights
 			timeSinceFlightGeneration += timeDifference;
 			int interval = getFlightGenerationInterval();
@@ -337,7 +357,8 @@ public class GameWindow implements EventHandler{
 		//draw control panels
 		drawPlaneInfo();
 		altimeter.draw(intX, intY);
-		airportControl.draw(timeElapsed);
+		for (AirportControlBox ac : airportControls)
+			ac.draw(timeElapsed);
 		orders.draw();	
 				
 		//System.out.println("restore GameWindow");
@@ -361,7 +382,9 @@ public class GameWindow implements EventHandler{
 		
 		if (gameOver){
 			aircraftInAirspace.clear();
-			airport.clear();
+			for (Airport a : airports){
+				a.clear();
+			}
 		}
 	}
 	
@@ -406,7 +429,8 @@ public class GameWindow implements EventHandler{
 		}
 		//draw airports
 		graphics.setColour(255, 255, 255, 96);
-		airport.draw(timeElapsed);
+		for (Airport a : airports)
+			a.draw(timeElapsed);
 		
 		//draw transfer waypoint labels
 		graphics.setColour(graphics.green);
@@ -532,7 +556,7 @@ public class GameWindow implements EventHandler{
 		aircraftInAirspace.add(aircraft);
 		// Space to implement some animation features?
 	}
-	
+
 	
 	/**
 	 * Creates a new aircraft object and introduces it to the airspace.
@@ -557,6 +581,7 @@ public class GameWindow implements EventHandler{
 				// if the distance is less than certain amount then aircraft is too close to be spawned
 				if (distance <= 100*scale) {
 					isTooClose = true;
+					break;
 				}				
 			}			
 			
@@ -594,15 +619,17 @@ public class GameWindow implements EventHandler{
 		{	//attempt to find a valid origin
 			ArrayList<Waypoint> availableOrigins = getAvailableEntryPoints();	
 			if (availableOrigins.isEmpty()) {
-				//then try to spawn in hangar instead
-				if (airport.aircraft_hangar.size() == airport.getHangarSize()) {
-					return null;	//no space to generate
-				} else {
-					originPoint = airport;
+				//then consider hangars as a spawn point
+				for (Airport a : airports){
+					if (a.aircraft_hangar.size() < a.getHangarSize()){
+						availableOrigins.add(a);
+					}
 				}
-			} else {
-				originPoint = availableOrigins.get(RandomNumber.randInclusiveInt(0, availableOrigins.size()-1));
-			}
+				if (availableOrigins.size() == 0){
+					return null; //no space to generate
+				}
+			} 
+			originPoint = availableOrigins.get(RandomNumber.randInclusiveInt(0, availableOrigins.size()-1));
 		}
 
 		{	//find valid destination
@@ -654,15 +681,23 @@ public class GameWindow implements EventHandler{
 	}
 	
 	
-	private boolean isArrivalsClicked(int gameX, int gameY) {
-		return airport.isWithinArrivals(new Vector(gameX,gameY,0))
-				&& !airport.is_active;
+	private Airport getArrivalsClicked(int gameX, int gameY) {
+		for (Airport a : airports){
+			if(a.isWithinArrivals(new Vector(gameX,gameY,0)) && !a.is_active){
+				return a;
+			}
+		}
+		return null;
 	}
 	
 	
-	private boolean isDeparturesClicked(int gameX, int gameY) {
-		return airport.isWithinDepartures(new Vector(gameX,gameY,0))
-				&& !airport.is_active;
+	private Airport getDeparturesClicked(int gameX, int gameY) {
+		for (Airport a : airports){
+			if(a.isWithinDepartures(new Vector(gameX,gameY,0)) && !a.is_active){
+				return a;
+			}
+		}
+		return null;
 	}
 	
 	
@@ -710,7 +745,11 @@ public class GameWindow implements EventHandler{
 			bWidth = 112,
 			bHeight = 32,
 			bY = 32,
-			cWidth = width -3*spacing,	//total width available to controls
+			piWidth = 312,
+			alWidth = 200,
+			cWidth = width -(2+airportControlBoxes.length)*spacing -piWidth -alWidth,	//total width available to resizeable controls
+			acWidth = cWidth / (2+airportControlBoxes.length),
+			orWidth = cWidth*2 / (2+airportControlBoxes.length),
 			cHeight = height -sHeight -gHeight -2*spacing,
 			cY = sHeight +gHeight +2*spacing;
 		scoreArea.setRect(sX, 0,
@@ -720,13 +759,15 @@ public class GameWindow implements EventHandler{
 		manualOverrideBox.setRect((width -bWidth)/2, bY,	//relative to gameArea
 				bWidth, bHeight);
 		planeInfo.setRect(1, cY,
-				cWidth/4 -1, cHeight );
-		altimeterBox.setRect(spacing +cWidth/4, cY, 
-				cWidth/5, cHeight );
-		airportControlBox.setRect(spacing*2 +(cWidth*9/20), cY, 
-				cWidth/5, cHeight );
-		ordersBox.setRect(spacing*3 +(cWidth*13/20), cY, 
-				cWidth*7/20, cHeight );
+				piWidth-1, cHeight );
+		altimeterBox.setRect(spacing +piWidth, cY, 
+				alWidth, cHeight );
+		for (int i=0; i<airportControlBoxes.length; i++){
+			airportControlBoxes[i].setRect(spacing*2 +piWidth +alWidth +i*(spacing +acWidth), cY,
+				acWidth, cHeight);
+		}
+		ordersBox.setRect(spacing*2 +piWidth +alWidth +airportControlBoxes.length*(spacing +acWidth), cY, 
+				orWidth, cHeight );
 	}
 	
 	
@@ -879,7 +920,9 @@ public class GameWindow implements EventHandler{
 			gameX = intX -gameArea.x,
 			gameY = intY -gameArea.y;
 		
-		airportControl.mousePressed(key, intX, intY);
+		for (AirportControlBox ac : airportControls){
+			ac.mousePressed(key, intX, intY);
+		}
 		altimeter.mousePressed(key, intX, intY);
 		if (key == input.MOUSE_LEFT) {
 			if (aircraftClicked(gameX, gameY)) {
@@ -896,16 +939,19 @@ public class GameWindow implements EventHandler{
 				}
 			}
 			
-			if (selectedAircraft != null && isArrivalsClicked(gameX, gameY)) {
-				if (selectedAircraft.is_waiting_to_land && selectedAircraft.current_target.equals(airport.getLocation())) {
-					airport.arrivalsTriggered();
+			Airport
+				a = getArrivalsClicked(gameX, gameY),
+				b = getDeparturesClicked(gameX, gameY);
+			if (a != null && selectedAircraft != null) {
+				if (selectedAircraft.is_waiting_to_land && selectedAircraft.current_target.equals(a.getLocation())) {
+					a.arrivalsTriggered();
 					selectedAircraft.land();
 					deselectAircraft();
 				}
-			} else if (isDeparturesClicked(gameX, gameY)) {
-				Aircraft a = airport.signalTakeOff();
-				if (a != null){
-					takeOffSequence(a);
+			} else if (b != null) {	//should not be possible to click two
+				Aircraft aircraft = b.signalTakeOff();
+				if (aircraft != null){
+					takeOffSequence(aircraft);
 				}
 			}
 		} else if (key == input.MOUSE_RIGHT) {
@@ -937,8 +983,10 @@ public class GameWindow implements EventHandler{
 			gameX = intX -gameArea.x,
 			gameY = intY -gameArea.y;
 		
-		airport.releaseTriggered();
-		airportControl.mouseReleased(key, intX, intY);
+		for (Airport a : airports)
+			a.releaseTriggered();
+		for (AirportControlBox ac : airportControls)
+			ac.mouseReleased(key, intX, intY);
 		altimeter.mouseReleased(key, intX, intY);
 		
 		switch (key){
@@ -988,6 +1036,9 @@ public class GameWindow implements EventHandler{
 		case input.KEY_F5 :	//{!} for debug only
 			crashedAircraft.add(createAircraft());
 			crashedAircraft.add(createAircraft());
+			aircraftInAirspace.clear();
+			for (Airport a : airports)
+				a.clear();
 			gameOver = true;
 			break;
 		}

@@ -351,13 +351,14 @@ public class Aircraft {
 			} else { // Gone too low, land it now
 				//Demo.airport.is_active = false;
 				//has_finished = true;
+				//{!} landing autopilot
 			}
 		} else if(is_takeoff){
 			if(velocity.magnitude() >= takeoff_velocity){
 				setAltitudeState(ALTITUDE_CLIMB);
 				climb();
 			}
-		} else {
+		} else {	//not takeoff or landing
 			switch (altitude_state) {
 			case ALTITUDE_FALL:
 				fall();				
@@ -368,7 +369,7 @@ public class Aircraft {
 				climb();				
 				break;
 			}
-			
+	
 			if (flight_plan.getOrigin() instanceof Airport){
 				if(position.getZ() < min_altitude){
 					setAltitudeState(ALTITUDE_CLIMB);
@@ -398,7 +399,7 @@ public class Aircraft {
 			} else if (isAt(current_target)) {
 				current_route_stage++;
 				// Next target is the destination if you're at the end of the plan, otherwise it's the next waypoint
-				current_target = current_route_stage >= flight_plan.getRoute().length ? flight_plan.getDestination().getLocation() : flight_plan.getRoute()[current_route_stage].getLocation();
+				current_target = (current_route_stage >= flight_plan.getRoute().length) ? flight_plan.getDestination().getLocation() : flight_plan.getRoute()[current_route_stage].getLocation();
 			}
 			if(is_landing){
 				if(flight_plan.getDestination() instanceof Airport){
@@ -410,7 +411,6 @@ public class Aircraft {
 				}else{
 					//current_target = new Vector(Demo.airport.getLocation().getX()+,Demo.airport.getLocation().getX(),0);
 					turnTowardsTarget(time_difference);
-
 				}
 				
 			}else{
@@ -418,11 +418,11 @@ public class Aircraft {
 					turnTowardsTarget(time_difference);
 				}
 			}
-		}else{
+		}else{	//is during takeoff
 			//checks to move flight out of is_takeoff
 			if(velocity.magnitude() >= takeoff_velocity){
-				((Airport)getFlightPlan().getOrigin()).is_active = false;	
 				if(position.getZ()> 2000){
+					((Airport)getFlightPlan().getOrigin()).is_active = false;
 					is_takeoff = false;
 					is_manually_controlled = false;
 				}
