@@ -159,10 +159,10 @@ public class Airport extends Waypoint {
 	 * will only add the aircraft if the current size is less than the maximum denoted by hangar_size
 	 * @param aircraft
 	 */
-	public void addToHangar(Aircraft aircraft) {
+	public void addToHangar(Aircraft aircraft, double time) {
 		if (aircraft_hangar.size() < hangar_size) {
 			aircraft_hangar.add(aircraft);
-			time_entered.add(Demo.getTime());
+			time_entered.add(time);
 		}
 	}
 	

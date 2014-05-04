@@ -1,20 +1,13 @@
 package scn;
 
-import java.awt.Rectangle;
 import java.io.File;
 import java.util.List;
 
-import lib.RandomNumber;
 import lib.jog.audio;
-import lib.jog.graphics;
 import lib.jog.input;
 import lib.jog.window;
 import cls.Aircraft;
-import cls.Airport;
-import cls.AirportControlBox;
 import cls.GameWindow;
-import cls.Vector;
-import cls.Waypoint;
 import btc.Main;
 
 public class Demo extends Scene {

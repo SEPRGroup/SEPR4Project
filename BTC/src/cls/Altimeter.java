@@ -42,9 +42,7 @@ public class Altimeter implements EventHandler {
 		}
 	}
 	
-	/**
-	 * Makes the altimeter invisible
-	 */
+	/** Makes the altimeter invisible */
 	public void hide() {
 		currentAircraft = null;
 		isVisible = false;
@@ -60,22 +58,19 @@ public class Altimeter implements EventHandler {
 		return (mx >= positionX && mx <= positionX + width && my >= positionY && my <= positionY + height);
 	}
 	
+	@Deprecated
 	public boolean isMouseOver() { 
 		return isMouseOver(input.mouseX(), input.mouseY()); 
 	}
 
 	@Override
-	/**
-	 * Handler for mouse clicks
-	 */
+	/** Handler for mouse clicks */
 	public void mousePressed(int key, int x, int y) {
 		if (!isVisible) return;
 	}
 
 	@Override
-	/**
-	 * Handler for mouse releases
-	 */
+	/** Handler for mouse releases */
 	public void mouseReleased(int key, int mx, int my) {
 		if (!isVisible) return;
 		if (key == input.MOUSE_LEFT) {
@@ -97,9 +92,7 @@ public class Altimeter implements EventHandler {
 	@Override
 	public void keyReleased(int key) { }
 		
-	/**
-	 * Draws the altimeter to the screen
-	 */
+	/** Draws the altimeter to the screen */
 	public void draw() {
 		drawOutline();
 		if (isVisible) {
@@ -109,9 +102,7 @@ public class Altimeter implements EventHandler {
 		}
 	}
 	
-	/**
-	 * Draws the box around the altimeter
-	 */
+	/** Draws the box around the altimeter */
 	private void drawOutline() {
 		graphics.setColour(graphics.green);
 		graphics.rectangle(false, positionX, positionY, width, height);

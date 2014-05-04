@@ -556,7 +556,7 @@ public class GameWindow implements EventHandler{
 							+ " is awaiting take off from " 
 							+ aircraft.getFlightPlan().getOriginName()
 							+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
-					((Airport) w).addToHangar(aircraft);
+					((Airport) w).addToHangar(aircraft, timeElapsed);
 				} else {
 					orders.addOrder("<<< " + aircraft.getName() 
 							+ " incoming from " + aircraft.getFlightPlan().getOriginName() 
