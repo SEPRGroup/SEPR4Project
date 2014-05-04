@@ -936,7 +936,7 @@ public class GameWindow implements EventHandler{
 		
 		airport.releaseTriggered();
 		airportControl.mouseReleased(key, intX, intY);
-		altimeter.mouseReleased(key, x, y);
+		altimeter.mouseReleased(key, intX, intY);
 		
 		switch (key){
 		case input.MOUSE_LEFT: 
