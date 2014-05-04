@@ -286,6 +286,12 @@ public class GameWindow implements EventHandler{
 
 	/** Draw the GUI and all game objects, e.g. aircraft and waypoints */
 	public void draw() {
+		//transformed mouse position for coordinate system used for drawing
+		int	intX = input.mouseX() -this.x,
+			intY = input.mouseY() -this.y,
+			gameX = intX -gameArea.x,
+			gameY = intY -gameArea.y;
+		
 		//System.out.println("set GameWindow");
 		graphics.setViewport(x, y, width, height);
 		
@@ -316,7 +322,7 @@ public class GameWindow implements EventHandler{
 				drawRect(true, manualOverrideBox);
 				graphics.setColour(graphics.green);
 				drawRect(false, manualOverrideBox);
-				manualOverrideButton.draw();
+				manualOverrideButton.draw(gameX, gameY);
 			}
 			
 			//draw border
@@ -706,8 +712,8 @@ public class GameWindow implements EventHandler{
 			sHeight = 32,
 			gHeight = (int)(scale * 784),
 			gY = sHeight +spacing,
-			bWidth = 128,
-			bHeight = 64,
+			bWidth = 112,
+			bHeight = 32,
 			bY = 32,
 			cWidth = width -3*spacing,	//total width available to controls
 			cHeight = height -sHeight -gHeight -2*spacing,

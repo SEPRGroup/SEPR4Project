@@ -50,6 +50,7 @@ public class ButtonText {
 		return (mx >= x && mx <= x + width && my >= y && my <= y + height);
 	}
 	
+	@Deprecated
 	public boolean isMouseOver() { 
 		return isMouseOver(input.mouseX(), input.mouseY()); 
 	}
@@ -71,11 +72,24 @@ public class ButtonText {
 			action.action();
 	}
 	
+	@Deprecated
 	public void draw() {
 		if (!is_available) {
 			graphics.setColour(unavailable_colour);
 		}
 		else if (isMouseOver()) {
+			graphics.setColour(hover_colour);
+		} else {
+			graphics.setColour(default_colour);
+		}
+		graphics.print(text, x + ox, y + oy);
+	}
+	
+	public void draw(int mouseX, int mouseY) {
+		if (!is_available) {
+			graphics.setColour(unavailable_colour);
+		}
+		else if (isMouseOver(mouseX, mouseY)) {
 			graphics.setColour(hover_colour);
 		} else {
 			graphics.setColour(default_colour);
