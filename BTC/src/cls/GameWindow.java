@@ -500,7 +500,7 @@ public class GameWindow implements EventHandler{
 			if (scoreTextX < 40) scoreTextX += 50;
 			if (scoreTextY < 40) scoreTextY += 50;
 			if (scoreTextX > (gameArea.width-240)) scoreTextX -= 50;
-			if (scoreTextY > (gameArea.width-240)) scoreTextY -= 50;
+			if (scoreTextY > (gameArea.height-100)) scoreTextY -= 50;
 			
 			// Drawing the score
 			graphics.setColour(255, 255, 255, scoreTextAlpha);

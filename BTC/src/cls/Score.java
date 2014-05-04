@@ -240,7 +240,7 @@ public class Score {
 		graphics.setColour(graphics.green);
 		
 		// Print multiplier e.g. x 10
-		x += 16;
+		x += 8;
 		String mul_var = String.format("%d", multiplier);
 		graphics.print("x", x, 18, 3);
 		graphics.print(mul_var, x +32, 4, 5);
