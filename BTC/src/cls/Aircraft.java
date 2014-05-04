@@ -1,8 +1,6 @@
 package cls;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Random;
 
 import lib.RandomNumber;
 import lib.jog.audio;
@@ -731,7 +729,6 @@ public class Aircraft {
 		is_manually_controlled = true;
 		is_takeoff = true;
 		velocity = new Vector(1, 0, 0);
-		Demo.takeOffSequence(this);
 		creation_time = System.currentTimeMillis() / 1000; // Reset creation time
 	}
 

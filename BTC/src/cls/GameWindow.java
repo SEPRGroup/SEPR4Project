@@ -517,7 +517,7 @@ public class GameWindow implements EventHandler{
 	 * adds the aircraft passed to the airspace, where it begins its flight plan starting at the airport
 	 * @param aircraft
 	 */
-	public void takeOffSequence(Aircraft aircraft) {
+	private void takeOffSequence(Aircraft aircraft) {
 		aircraftInAirspace.add(aircraft);
 		// Space to implement some animation features?
 	}
@@ -901,8 +901,9 @@ public class GameWindow implements EventHandler{
 					deselectAircraft();
 				}
 			} else if (isDeparturesClicked(gameX, gameY)) {
-				if (airport.aircraft_hangar.size() > 0) {
-					airport.signalTakeOff();
+				Aircraft a = airport.signalTakeOff();
+				if (a != null){
+					takeOffSequence(a);
 				}
 			}
 		} else if (key == input.MOUSE_RIGHT) {

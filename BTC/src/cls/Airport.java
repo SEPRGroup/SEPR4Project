@@ -167,12 +167,18 @@ public class Airport extends Waypoint {
 		}
 	}
 	
-	public void signalTakeOff() {
+	/** 
+	 * Causes the oldest Aircraft in the hangar to take off, if any.
+	 * @return that Aircraft instance, else null
+	 */
+	public Aircraft signalTakeOff() {
 		if (!aircraft_hangar.isEmpty()) {
 			Aircraft aircraft = aircraft_hangar.remove(0);
 			time_entered.remove(0);
 			aircraft.takeOff();
-		}	
+			return aircraft;
+		}
+		else return null;
 	}
 	  
 	/** 
