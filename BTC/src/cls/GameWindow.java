@@ -78,8 +78,8 @@ public class GameWindow implements EventHandler{
 
 	
 	public static void start(){
-		aircraftImage = graphics.newImage("gfx" + File.separator + "plane.png");
-		backgroundImage = graphics.newImage("gfx" + File.separator + "background_base.png");
+		aircraftImage = graphics.newImage("gfx" +File.separator +"plane.png");
+		backgroundImage = graphics.newImage("gfx" +File.separator +"new" +File.separator +"background_base.png");
 	}
 	
 	
@@ -114,7 +114,7 @@ public class GameWindow implements EventHandler{
 		}
 
 		//create waypoints
-		airport = new Airport("Mosbear Airport");
+		airport = new Airport("Mosbear Airport", 600*scale, 200*scale);
 		locationWaypoints = new Waypoint[] { 
 				new Waypoint(8, 8, true, "North West Top Leftonia"), // top left
 				new Waypoint(8, gameArea.height-8, true, "100 Acre Woods"), // bottom left
@@ -195,7 +195,7 @@ public class GameWindow implements EventHandler{
 				}
 			}
 			
-			if (selectedAircraft.isOutOfAirspaceBounds()) {
+			if (isOutOfAirspaceBounds(selectedAircraft)) {
 				orders.addOrder(">>> " + selectedAircraft.getName() + " out of bounds, returning to route");
 				deselectAircraft();
 			}	
@@ -284,7 +284,7 @@ public class GameWindow implements EventHandler{
 		graphics.setViewport();
 		drawAdditional();
 		
-		{//draw game area
+		{	//draw game area
 			//System.out.println("set GameWindow.gameArea");
 			setViewportRect(gameArea);
 			
@@ -297,7 +297,9 @@ public class GameWindow implements EventHandler{
 			if (selectedAircraft != null){
 				//Compass
 				if (selectedAircraft.isManuallyControlled() && !selectedAircraft.is_takeoff()) {
-					selectedAircraft.drawCompass();
+					int	mouseX = input.mouseX() -x -gameArea.x,
+						mouseY = input.mouseY() -y -gameArea.y;
+					selectedAircraft.drawCompass(mouseX, mouseY);
 				}
 				// Override Button
 				graphics.setColour(graphics.black);
@@ -378,12 +380,11 @@ public class GameWindow implements EventHandler{
 	private void drawMap() {	
 		//draw background
 		graphics.setColour(255, 255, 255, 96);
-		graphics.draw(backgroundImage, gameArea.x, 
-				gameArea.y, scale);
+		graphics.draw(backgroundImage, 0, 0, scale);
 		
 		//draw waypoints excluding airports
 		for (Waypoint w : airspaceWaypoints) {
-			if (! (w instanceof Airport)) {
+			if ( !(w instanceof Airport) ) {
 				w.draw();
 			}
 		}
@@ -480,13 +481,13 @@ public class GameWindow implements EventHandler{
 			
 			String planeScoreValue = String.valueOf(a.getScore() * score.getMultiplier());
 			
-			Vector position = a.getFlightPlan().getDestination();
+			Vector position = a.getFlightPlan().getDestination().getLocation();
 			//constrain label position
-			int scoreTextX = (int) position.getX(),
-					scoreTextY = (int) position.getY();
+			int	scoreTextX = (int) position.getX(),
+				scoreTextY = (int) position.getY();
 			if (scoreTextX < 40) scoreTextX += 50;
 			if (scoreTextY < 40) scoreTextY += 50;
-			if (scoreTextX > (gameArea.width-240))scoreTextX -= 50;
+			if (scoreTextX > (gameArea.width-240)) scoreTextX -= 50;
 			if (scoreTextY > (gameArea.width-240)) scoreTextY -= 50;
 			
 			// Drawing the score
@@ -533,7 +534,7 @@ public class GameWindow implements EventHandler{
 		if (aircraft != null) {
 			//check all the aircraft currently in the airspace
 			boolean isTooClose = false;
-			Vector originPos = aircraft.getFlightPlan().getOrigin().getPosition();
+			Vector originPos = aircraft.getFlightPlan().getOrigin().getLocation();
 			for (Aircraft a : aircraftInAirspace) {
 				Vector pos = a.getPosition();
 				// check the distance from the aircraft and the aircraft waiting to be spawned
@@ -549,12 +550,13 @@ public class GameWindow implements EventHandler{
 			}			
 			
 			if (!isTooClose) { // Continue only if aircraft are not too close
-				if (aircraft.getFlightPlan().getOrigin() instanceof Airport) {
+				Waypoint w = aircraft.getFlightPlan().getOrigin();
+				if (w instanceof Airport){
 					orders.addOrder("<<< " + aircraft.getName() 
 							+ " is awaiting take off from " 
 							+ aircraft.getFlightPlan().getOriginName()
 							+ " heading towards " + aircraft.getFlightPlan().getDestinationName() + ".");
-					airport.addToHangar(aircraft);
+					((Airport) w).addToHangar(aircraft);
 				} else {
 					orders.addOrder("<<< " + aircraft.getName() 
 							+ " incoming from " + aircraft.getFlightPlan().getOriginName() 
@@ -575,8 +577,8 @@ public class GameWindow implements EventHandler{
 	private Aircraft createAircraft() {
 		// Origin and Destination
 		String name;
-		String originName, destinationName;
-		Waypoint originPoint, destinationPoint;
+		Waypoint 
+			originPoint, destinationPoint;
 			
 		{	//attempt to find a valid origin
 			ArrayList<Waypoint> availableOrigins = getAvailableEntryPoints();	
@@ -586,11 +588,9 @@ public class GameWindow implements EventHandler{
 					return null;	//no space to generate
 				} else {
 					originPoint = airport;
-					originName = airport.name;
 				}
 			} else {
 				originPoint = availableOrigins.get(RandomNumber.randInclusiveInt(0, availableOrigins.size()-1));
-				originName = originPoint.getName();
 			}
 		}
 
@@ -598,8 +598,7 @@ public class GameWindow implements EventHandler{
 			do {
 				int destination = RandomNumber.randInclusiveInt(0, locationWaypoints.length -1);
 				destinationPoint = locationWaypoints[destination];
-				destinationName = destinationPoint.getName();
-			} while (destinationName == originName);
+			} while (destinationPoint == originPoint);
 		}
 	
 		
@@ -617,7 +616,7 @@ public class GameWindow implements EventHandler{
 			} while (nameIsTaken);
 		}
 		
-		return new Aircraft(name, destinationName, originName, 
+		return new Aircraft(name, 
 				destinationPoint, originPoint, 
 				aircraftImage, RandomNumber.randInclusiveInt(32, 41)*scale, 
 				airspaceWaypoints, difficulty);
@@ -758,6 +757,14 @@ public class GameWindow implements EventHandler{
 	}
 	
 	
+	private boolean isOutOfAirspaceBounds(Aircraft a) {
+		Vector pos = a.getPosition();
+		double x = pos.getX(), y = pos.getY();
+		int r = Aircraft.RADIUS;
+		return (x < r || x > gameArea.width +r || y < r || y > gameArea.height +r);
+	}
+	
+	
 	/**
 	 * This method provides maximum number of planes using value of multiplier
 	 * @return maximum number of planes
@@ -889,13 +896,12 @@ public class GameWindow implements EventHandler{
 			
 			if (selectedAircraft != null && isArrivalsClicked(gameX, gameY)) {
 				if (selectedAircraft.is_waiting_to_land && selectedAircraft.current_target.equals(airport.getLocation())) {
-					airport.mousePressed(key, intX, intX);
+					airport.arrivalsTriggered();
 					selectedAircraft.land();
 					deselectAircraft();
 				}
 			} else if (isDeparturesClicked(gameX, gameY)) {
 				if (airport.aircraft_hangar.size() > 0) {
-					airport.mousePressed(key, gameX, gameY);
 					airport.signalTakeOff();
 				}
 			}
@@ -928,7 +934,7 @@ public class GameWindow implements EventHandler{
 			gameX = intX -gameArea.x,
 			gameY = intY -gameArea.y;
 		
-		airport.mouseReleased(key, gameX, gameY);
+		airport.releaseTriggered();
 		airportControl.mouseReleased(key, intX, intY);
 		altimeter.mouseReleased(key, x, y);
 		

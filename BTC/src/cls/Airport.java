@@ -9,30 +9,25 @@ import lib.jog.input;
 import lib.jog.input.EventHandler;
 import lib.jog.window;
 
-public class Airport extends Waypoint implements EventHandler {
-	// Put the airport in the middle of the airspace
-	private static double x_location = window.width()/2;
-	private static double y_location = window.height()/2;		
+public class Airport extends Waypoint {
 
+	private static graphics.Image airport;
 	// All location values are absolute and based on the current version of the airport image.
-	private static double arrivals_x_location = x_location + 90;
-	private static double arrivals_y_location = y_location + 83;
-	private static double arrivals_width = 105;
-	private static double arrivals_height = 52;
+	private static double 
+		arrivals_width = 105, arrivals_height = 52,
+		departures_width = 50, departures_height = 36;
 	
-	private static double runway_end_x_location = x_location + 120;
-	private static double runway_end_y_location = y_location - 65;
-	
-	private static double departures_x_location = x_location + 2;
-	private static double departures_y_location = y_location + 50;
-	private static double departures_width = 50;
-	private static double departures_height = 36;
-	
+	private double
+		x_location, y_location,
+		arrivals_x_location, arrivals_y_location,
+		runway_end_x_location, runway_end_y_location, 
+		departures_x_location, departures_y_location;
+
 	public boolean is_active = false; // True if there is an aircraft Landing/Taking off
-	private boolean is_arrivals_clicked = false;
-	private boolean is_departures_clicked = false;
-		
-	private graphics.Image airport;
+	
+	private boolean 
+		is_arrivals_clicked = false,
+		is_departures_clicked = false;
 	
 	public java.util.ArrayList<Aircraft> aircraft_waiting_to_land = new java.util.ArrayList<Aircraft>();
 	/**
@@ -41,25 +36,41 @@ public class Airport extends Waypoint implements EventHandler {
 	 */
 	public java.util.ArrayList<Aircraft> aircraft_hangar = new java.util.ArrayList<Aircraft>();
 	public java.util.ArrayList<Double> time_entered = new java.util.ArrayList<Double>();
-	private int hangar_size = 3;
+	private final int hangar_size = 3;
 	
-	public Airport(String name) {
+	
+	public Airport(String name, double x_location, double y_location) {
 		super(x_location, y_location, true, name);
+		this.x_location = x_location;
+		this.y_location = y_location;
+		arrivals_x_location = x_location + 90;
+		arrivals_y_location = y_location + 83;
+		
+		runway_end_x_location = x_location + 120;
+		runway_end_y_location = y_location - 65;
+		
+		departures_x_location = x_location + 2;
+		departures_y_location = y_location + 50;
+		
+		if(airport == null){
+			loadImage();
+		}
 	}
 	
 	public void loadImage() {
-		airport = graphics.newImage("gfx" + File.separator + "Airport.png");
+		airport = graphics.newImage("gfx" +File.separator +"Airport.png");
 	}
 	
 	@Override
 	public void draw() { 
 		// Draw the airport image
+		graphics.setColour(128, 128, 128, 128);
 		graphics.draw(airport, x_location-airport.width()/2, y_location-airport.height()/2);
-		
-		int green_fine = 128;
-		int green_danger = 0;
-		int red_fine = 0;
-		int red_danger = 128;
+				
+		int	green_fine = 128,
+			green_danger = 0,
+			red_fine = 0,
+			red_danger = 128;
 		
 		// Draw the hangar button if plane is waiting (departing flights)
 		if (aircraft_hangar.size() > 0) {
@@ -104,8 +115,8 @@ public class Airport extends Waypoint implements EventHandler {
 			graphics.setColour(255, 255, 255, 128);
 			graphics.print(Integer.toString(aircraft_waiting_to_land.size()), arrivals_x_location-airport.width()/2 + 50, arrivals_y_location-airport.height()/2 + 26);
 		}	
-		graphics.setColour(255, 255, 255, 128);
-		graphics.print(Integer.toString(1), x_location+120, y_location-65);
+		//graphics.setColour(255, 255, 255, 128);
+		//graphics.print(Integer.toString(1), x_location+120, y_location-65);
 	}
 	
 	public double getLongestTimeInHangar(double currentTime) {
@@ -114,11 +125,13 @@ public class Airport extends Waypoint implements EventHandler {
 	
 	/**
 	 *  Arrivals is the portion of the airport image which is used to issue the land command
-	 * @param position is the point to be tested
+	 * @param gamePosition is the point to be tested
 	 * @return true if point is within the rectangle that defines the arrivals portion of the airport
 	 */
-	public boolean isWithinArrivals(Vector position) {
-		return isWithinRect((int)position.getX(), (int)position.getY(),(int)(arrivals_x_location-airport.width()/2) + Demo.airspace_view_offset_x, (int)(arrivals_y_location-airport.height()/2) + Demo.airspace_view_offset_y, (int)arrivals_width, (int)arrivals_height);
+	public boolean isWithinArrivals(Vector gamePosition) {
+		return isWithinRect((int)gamePosition.getX(), (int)gamePosition.getY(),
+				(int)(arrivals_x_location-airport.width()/2), (int)(arrivals_y_location-airport.height()/2),
+				(int)arrivals_width, (int)arrivals_height);
 	}
 	
 	// Used for calculating if an aircraft is within the airspace for landing - offset should not be applied
@@ -128,11 +141,13 @@ public class Airport extends Waypoint implements EventHandler {
 	
 	/**
 	 * Departures is the portion of the airport image which is used to issue the take off command
-	 * @param position is the point to be tested
+	 * @param gamePosition is the point to be tested
 	 * @return true if point is within the rectangle that defines the departures portion of the airport
 	 */
-	public boolean isWithinDepartures(Vector position) {
-		return isWithinRect((int)position.getX(), (int)position.getY(), (int)(departures_x_location-airport.width()/2) + Demo.airspace_view_offset_x, (int)(departures_y_location-airport.height()/2) + Demo.airspace_view_offset_y, (int)departures_width, (int)departures_height);
+	public boolean isWithinDepartures(Vector gamePosition) {
+		return isWithinRect((int)gamePosition.getX(), (int)gamePosition.getY(),
+				(int)(departures_x_location-airport.width()/2), (int)(departures_y_location-airport.height()/2), 
+				(int)departures_width, (int)departures_height);
 	}
 	
 	public boolean isWithinRect(int test_x, int test_y, int x, int y, int width, int height) {
@@ -178,34 +193,26 @@ public class Airport extends Waypoint implements EventHandler {
 	public Vector getRunwayLocation(){
 		return new Vector(runway_end_x_location, runway_end_y_location, 0);
 	}
-
-	@Override
-	public void mousePressed(int key, int x, int y) {
-		if (key == input.MOUSE_LEFT) { 
-			if (isWithinArrivals(new Vector(x, y, 0))) {
-				is_arrivals_clicked = true;
-			} else if (isWithinDepartures(new Vector(x, y, 0))) {
-				is_departures_clicked = true;
-			}
-		}
+	
+	/** notify this instance that the arrivals zone has received input
+	 * (for use with {@link isWithinArrivals(Vector)} */
+	public void arrivalsTriggered(){
+		is_arrivals_clicked = true;
+	}
+	
+	/** notify this instance that the departures zone has received input
+	 * (for use with {@link isWithinDepartures(Vector)) */
+	public void departuresTriggered(){
+		is_departures_clicked = true;
 	}
 
 
-	@Override
-	public void mouseReleased(int key, int x, int y) {
+	/** notify this instance that any trigger has been removed */
+	public void releaseTriggered(){
 		is_arrivals_clicked = false;
 		is_departures_clicked = false;
 	}
-
-	@Override
-	public void keyPressed(int key) {
-				
-	}
-
-	@Override
-	public void keyReleased(int key) {
-		
-	}
+	
 	
 	// Used in testing avoiding the need to have a demo instance
 	@Deprecated

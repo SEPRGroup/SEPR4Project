@@ -150,8 +150,8 @@ public class GameOver extends Scene {
 		if (explosion_animation.hasFinished()) {
 			text_box.draw();
 		} else {
-			crashed_plane_1.draw((int) crashed_plane_1.getPosition().getZ());
-			crashed_plane_2.draw((int) crashed_plane_1.getPosition().getZ());
+			crashed_plane_1.draw();
+			crashed_plane_2.draw();
 			Vector midPoint = crash_position.add(crashed_plane_2.getPosition()).scaleBy(0.5);
 			double radius = 20; // Radius of explosion
 			graphics.setColour(graphics.red);
