@@ -338,7 +338,7 @@ public abstract class graphics {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		views = new Stack<Viewport>();
-		setViewport(0,0, window.width(),window.height());
+		views.push(new Viewport("base", 0,0, window.width(),window.height()));
 	}
 
 	/**
@@ -396,14 +396,15 @@ public abstract class graphics {
 	 * @param height the height of the new viewport, in pixels.
 	 */
 	static public void setViewport(int x, int y, int width, int height) {
-		Viewport v = new Viewport(String.valueOf(views.size()), x,y, width, height);
+		Viewport 
+			c = views.peek(),
+			v = new Viewport(String.valueOf(views.size()), x +c.x, y +c.y, width, height);
 		if (views.size() == 1) glEnable(GL_SCISSOR_TEST);
 		views.push(v);
 		//System.out.println("\tSET " +v.toString());
 		glPushMatrix();
 		glTranslated(x, -y, 0);
-		y = window.height() - y;
-		glScissor(x, y - height, width, height);
+		glScissor(v.x, window.height() -height -v.y, width, height);
 	}
 	
 	/**
@@ -417,7 +418,7 @@ public abstract class graphics {
 			glDisable(GL_SCISSOR_TEST);
 		else {
 			Viewport v = views.peek();
-			glScissor(v.x, v.y -v.height, v.width, v.height);
+			glScissor(v.x, window.height() -v.height -v.y, v.width, v.height);
 		}
 	}
 

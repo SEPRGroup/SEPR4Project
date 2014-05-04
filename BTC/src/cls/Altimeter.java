@@ -179,6 +179,7 @@ public class Altimeter implements EventHandler {
 		return (my <= positionY + 16);
 	}
 	
+	@Deprecated
 	private boolean mouseOverTopArrow() { 
 		return mouseOverTopArrow(input.mouseX(), input.mouseY()); 
 	}
@@ -190,6 +191,7 @@ public class Altimeter implements EventHandler {
 		return (my >= positionY + height - 16);
 	}
 	
+	@Deprecated
 	private boolean mouseOverBottomArrow() { 
 		return mouseOverBottomArrow(input.mouseX(), input.mouseY()); 
 	}
