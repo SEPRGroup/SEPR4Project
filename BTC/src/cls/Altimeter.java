@@ -1,5 +1,7 @@
 package cls;
 
+import org.newdawn.slick.Color;
+
 import lib.jog.graphics;
 import lib.jog.input;
 import lib.jog.input.EventHandler;
@@ -9,10 +11,20 @@ import lib.jog.input.EventHandler;
  * @author Huw Taylor
  */
 public class Altimeter implements EventHandler {
+	
+	private static final int 
+		NONE = 0, TOP = 1, BOTTOM = 2;
+	
+	private double 
+		positionX, positionY,
+		width, height;
 	private boolean isVisible; // Whether or not the Altimeter should be drawn
-	private cls.Aircraft currentAircraft; // The current aircraft associated with the altimeter	
-	private double positionX, positionY, width, height;	
+	
+	private cls.Aircraft currentAircraft; // The current aircraft associated with the altimeter
 	private cls.OrdersBox ordersBox;
+
+	private int mouseDownState = NONE;
+	
 	
 	/**
 	 * Constructor for the altimeter
@@ -31,6 +43,7 @@ public class Altimeter implements EventHandler {
 		hide();
 	}
 	
+
 	/**
 	 * Makes the altimeter visible
 	 * @param aircraft The aircraft to associate with the altimeter
@@ -38,7 +51,8 @@ public class Altimeter implements EventHandler {
 	public void show(cls.Aircraft aircraft) {
 		if (aircraft != null) {
 			currentAircraft = aircraft;
-			isVisible = true;			
+			isVisible = true;
+			mouseDownState = NONE;
 		}
 	}
 	
@@ -58,15 +72,11 @@ public class Altimeter implements EventHandler {
 		return (mx >= positionX && mx <= positionX + width && my >= positionY && my <= positionY + height);
 	}
 	
-	@Deprecated
-	public boolean isMouseOver() { 
-		return isMouseOver(input.mouseX(), input.mouseY()); 
-	}
-
 	@Override
 	/** Handler for mouse clicks */
 	public void mousePressed(int key, int x, int y) {
 		if (!isVisible) return;
+		mouseDownState = getMouseState(x, y);
 	}
 
 	@Override
@@ -74,15 +84,26 @@ public class Altimeter implements EventHandler {
 	public void mouseReleased(int key, int mx, int my) {
 		if (!isVisible) return;
 		if (key == input.MOUSE_LEFT) {
-			if (mouseOverTopArrow(mx, my) && currentAircraft.getAltitudeState() != Aircraft.ALTITUDE_CLIMB) {
-				currentAircraft.setAltitudeState(Aircraft.ALTITUDE_CLIMB);
-			} else if (mouseOverBottomArrow(mx, my) && currentAircraft.getAltitudeState() != Aircraft.ALTITUDE_FALL) {
-				currentAircraft.setAltitudeState(Aircraft.ALTITUDE_FALL);
-			} else {
-				return; // Don't print messages
+			int mouseUpState = getMouseState(mx, my);
+			
+			if (mouseUpState == mouseDownState){
+				switch (mouseUpState){
+				case TOP:
+					if (currentAircraft.getAltitudeState() != Aircraft.ALTITUDE_CLIMB)
+						currentAircraft.setAltitudeState(Aircraft.ALTITUDE_CLIMB);
+					break;
+				case BOTTOM:
+					if (currentAircraft.getAltitudeState() != Aircraft.ALTITUDE_FALL)
+						currentAircraft.setAltitudeState(Aircraft.ALTITUDE_FALL);
+					break;
+				case NONE:
+					//nothing, and skip orders printing
+					return;
+				}
+				mouseDownState = NONE;	//clear mouse state
+				ordersBox.addOrder(">>> " + currentAircraft.getName() + ", please adjust your altitude.");
+				ordersBox.addOrder("<<< Roger that. Altering altitude now.");
 			}
-			ordersBox.addOrder(">>> " + currentAircraft.getName() + ", please adjust your altitude.");
-			ordersBox.addOrder("<<< Roger that. Altering altitude now.");
 		}
 	}
 
@@ -92,13 +113,14 @@ public class Altimeter implements EventHandler {
 	@Override
 	public void keyReleased(int key) { }
 		
+
 	/** Draws the altimeter to the screen */
-	public void draw() {
+	public void draw(int mouseX, int mouseY) {
 		drawOutline();
 		if (isVisible) {
 			drawPlaneIcon();
 			drawAltitudes();
-			drawAltitudeArrows();
+			drawAltitudeArrows(mouseX, mouseY);
 		}
 	}
 	
@@ -162,13 +184,17 @@ public class Altimeter implements EventHandler {
 	/**
 	 * Draws the altitude arrow buttons, used for changing altitude
 	 */
-	private void drawAltitudeArrows() {
+	private void drawAltitudeArrows(int mouseX, int mouseY) {
+		int mouseState = getMouseState(mouseX, mouseY);
 		int midX = (int)( positionX + (width / 2) );
-		graphics.setColour(graphics.green);
-		if (mouseOverTopArrow()) { graphics.setColour(graphics.white); }
+		Color 
+			defaultColor = graphics.green,
+			selectedColor = (mouseState == mouseDownState) ? graphics.white : graphics.green_transp;
+
+		graphics.setColour( (mouseState == TOP) ? selectedColor : defaultColor);
 		graphics.triangle(true, midX - 10, positionY + 10, midX, positionY + 4, midX + 10, positionY + 10);
-		graphics.setColour(graphics.green);
-		if (mouseOverBottomArrow()) { graphics.setColour(graphics.white); }
+		
+		graphics.setColour((mouseState == BOTTOM) ? selectedColor : defaultColor);
 		graphics.triangle(true, midX - 10, positionY + height - 10, midX, positionY + height - 4, midX + 10, positionY + height - 10);
 	}
 	
@@ -179,11 +205,6 @@ public class Altimeter implements EventHandler {
 		return (my <= positionY + 16);
 	}
 	
-	@Deprecated
-	private boolean mouseOverTopArrow() { 
-		return mouseOverTopArrow(input.mouseX(), input.mouseY()); 
-	}
-
 	private boolean mouseOverBottomArrow(int mx, int my) {
 		if (!isVisible) return false;
 		if (mx < positionX || mx > positionX + width) return false;
@@ -191,9 +212,14 @@ public class Altimeter implements EventHandler {
 		return (my >= positionY + height - 16);
 	}
 	
-	@Deprecated
-	private boolean mouseOverBottomArrow() { 
-		return mouseOverBottomArrow(input.mouseX(), input.mouseY()); 
+	
+	private int getMouseState(int mouseX, int mouseY){
+		if (mouseOverTopArrow(mouseX, mouseY))
+			return TOP;
+		else if (mouseOverBottomArrow(mouseX, mouseY))
+			return BOTTOM;
+		else 
+			return NONE; 
 	}
 	
 }

@@ -336,7 +336,7 @@ public class GameWindow implements EventHandler{
 
 		//draw control panels
 		drawPlaneInfo();
-		altimeter.draw();
+		altimeter.draw(intX, intY);
 		airportControl.draw(timeElapsed);
 		orders.draw();	
 				
