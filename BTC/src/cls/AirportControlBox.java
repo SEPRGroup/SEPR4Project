@@ -5,7 +5,8 @@ import lib.jog.input;
 import lib.jog.input.EventHandler;
 
 public class AirportControlBox implements EventHandler{
-	private Airport airport;	
+	private final Airport airport;
+	private final GameWindow game;
 	private int number_of_divisions;	
 	private double 
 		x_position, y_position,
@@ -21,12 +22,14 @@ public class AirportControlBox implements EventHandler{
 	 * @param h the height of the box
 	 * @param airport The airport the box controls
 	 */
-	public AirportControlBox(double x, double y, double w, double h, Airport airport) {
+	public AirportControlBox(double x, double y, double w, double h, Airport airport, GameWindow owner) {
 		x_position = x;
 		y_position = y;
 		width = w;
 		height = h;
 		this.airport = airport;
+		game = owner;
+		
 		number_of_divisions = airport.getHangarSize() + 1;
 		division_height = height / number_of_divisions;
 	}
@@ -133,7 +136,10 @@ public class AirportControlBox implements EventHandler{
 		clicked = false;
 		if (key == input.MOUSE_LEFT && isMouseOverTakeOffButton(x, y)) {
 			if (!airport.is_active) {
-				airport.signalTakeOff();
+				Aircraft a = airport.signalTakeOff();
+				if (a != null){
+					game.takeOffSequence(a);
+				}
 			}
 		}
 	}

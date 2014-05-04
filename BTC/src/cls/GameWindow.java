@@ -133,7 +133,7 @@ public class GameWindow implements EventHandler{
 		//generate sized components
 		score = new cls.Score(scoreArea.width, scoreArea.height);
 		airportControl = new cls.AirportControlBox(airportControlBox.x, airportControlBox.y, 
-				airportControlBox.width, airportControlBox.height, airport);
+				airportControlBox.width, airportControlBox.height, airport, this);
 		orders = new cls.OrdersBox(ordersBox.x, ordersBox.y, 
 				ordersBox.width, ordersBox.height, 6);
 		altimeter = new cls.Altimeter(altimeterBox.x, altimeterBox.y,
@@ -528,7 +528,7 @@ public class GameWindow implements EventHandler{
 	 * adds the aircraft passed to the airspace, where it begins its flight plan starting at the airport
 	 * @param aircraft
 	 */
-	private void takeOffSequence(Aircraft aircraft) {
+	public void takeOffSequence(Aircraft aircraft) {
 		aircraftInAirspace.add(aircraft);
 		// Space to implement some animation features?
 	}
