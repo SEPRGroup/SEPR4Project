@@ -14,7 +14,7 @@ public class FlightPlanTest {
 	@Before
 	public void setUp() {
 		flight_plan = new FlightPlan(new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), new Waypoint(25, 75, false), new Waypoint(75, 25, false), new Waypoint(50, 50, false)}, 
-				 new Waypoint(100, 100, true), new Waypoint(0, 0, true));
+				 new Waypoint(100, 100, true, "Dublin"), new Waypoint(0, 0, true, "Berlin"));
 	}
 	
 	@Test

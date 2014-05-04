@@ -2,8 +2,11 @@ package tst;
 
 import static org.junit.Assert.*;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.Before;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
 
 import scn.Demo;
 import cls.Aircraft;
@@ -12,12 +15,17 @@ import cls.Waypoint;
 
 @SuppressWarnings("deprecation")
 
+
 public class ScoreTest {
 	Aircraft test_aircraft;
 	Score test_score;
 	
 	@Before
 	public void setUp() {
+		try {
+			org.lwjgl.opengl.Display.create();
+			lib.jog.graphics.initialise();
+		} catch (LWJGLException e) {e.printStackTrace();}
 		Waypoint[] waypoint_list = new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), new Waypoint(25, 75, false), new Waypoint(75, 25, false), new Waypoint(50,50, false)};
 		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypoint_list, 1);
 		test_score = new Score();
@@ -29,7 +37,9 @@ public class ScoreTest {
 
 	@Test
 	public void testScore() {
-		Demo testDemo = new Demo(1);
+		
+		
+		Demo testDemo = new scn.Demo(1);
 		testDemo.initializeAircraftArray();
 		testDemo.getAircraftList().add(test_aircraft);
 		Aircraft plane = testDemo.getAircraftList().get(0);
@@ -132,4 +142,10 @@ public class ScoreTest {
 		assertTrue(test_score.getMultiplier() == 10);
 		assertTrue(test_score.getMeterFill() == 256);
 	}
+	
+	@After
+	public void tearDown() {
+		org.lwjgl.opengl.Display.destroy();
+	}
+	
 }
