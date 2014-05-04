@@ -386,9 +386,9 @@ public class Aircraft {
 		
 		currently_turning_by = 0;
 		if(!is_takeoff){
-			
+
 			// Update target
-			if (current_target.equals(flight_plan.getDestination().getLocation()) && isAtDestination())
+			if (current_target.equals(flight_plan.getDestination().getLocation()) && isAtDestination()){
 				if (!is_waiting_to_land) { // Ready to land
 					has_finished = true;
 					if (flight_plan.getDestination() instanceof Airport) { // Landed at airport
@@ -403,19 +403,15 @@ public class Aircraft {
 			if(is_landing){
 				if(flight_plan.getDestination() instanceof Airport){
 					current_target = ((Airport)flight_plan.getDestination()).getRunwayLocation().add(new Vector(100,50,0));
-			}
-			// Update bearing
-			if(is_landing){
+				}
+				// Update bearing
 				if(position.getZ() > 500){
 					turnTowardsTarget(time_difference);
 				}else{
 					//current_target = new Vector(Demo.airport.getLocation().getX()+,Demo.airport.getLocation().getX(),0);
 					turnTowardsTarget(time_difference);
-					
-					
-					//this.t
+
 				}
-				
 				
 			}else{
 				if (Math.abs(angleToTarget() - getBearing()) > 0.01) {
@@ -423,7 +419,6 @@ public class Aircraft {
 				}
 			}
 		}else{
-			
 			//checks to move flight out of is_takeoff
 			if(velocity.magnitude() >= takeoff_velocity){
 				((Airport)getFlightPlan().getOrigin()).is_active = false;	
@@ -435,7 +430,7 @@ public class Aircraft {
 				double velocity_mag = velocity.magnitude();
 				velocity = velocity.normalise().scaleBy(velocity_mag + 0.05);
 			}
-			
+
 		}
 	}
 

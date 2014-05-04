@@ -90,7 +90,7 @@ public class GameWindow implements EventHandler{
 		this.height = height;	
 		this.difficulty= difficulty;
 		
-		//set up window controls
+		//set up window control sizings
 		scoreArea = new Rectangle();
 		gameArea = new Rectangle();
 		manualOverrideBox = new Rectangle();
@@ -99,20 +99,7 @@ public class GameWindow implements EventHandler{
 		airportControlBox = new Rectangle();
 		ordersBox = new Rectangle();
 		setAreas();
-		{
-			lib.ButtonText.Action manual = new lib.ButtonText.Action() {
-				@Override
-				public void action() {
-					// _selectedAircraft.manuallyControl();
-					toggleManualControl();
-				}
-			};
-			manualOverrideButton = new lib.ButtonText(" Take Control", manual,
-					manualOverrideBox.x, manualOverrideBox.y,
-					manualOverrideBox.width, manualOverrideBox.height,
-					0, 0);
-		}
-
+		
 		//create waypoints
 		airport = new Airport("Mosbear Airport", 600*scale, 200*scale);
 		locationWaypoints = new Waypoint[] { 
@@ -143,6 +130,29 @@ public class GameWindow implements EventHandler{
 				locationWaypoints[4]
 		};
 		
+		//generate sized components
+		score = new cls.Score(scoreArea.width, scoreArea.height);
+		airportControl = new cls.AirportControlBox(airportControlBox.x, airportControlBox.y, 
+				airportControlBox.width, airportControlBox.height, airport);
+		orders = new cls.OrdersBox(ordersBox.x, ordersBox.y, 
+				ordersBox.width, ordersBox.height, 6);
+		altimeter = new cls.Altimeter(altimeterBox.x, altimeterBox.y,
+				altimeterBox.width, altimeterBox.height, orders);
+		{
+			lib.ButtonText.Action manual = new lib.ButtonText.Action() {
+				@Override
+				public void action() {
+					// _selectedAircraft.manuallyControl();
+					toggleManualControl();
+				}
+			};
+			manualOverrideButton = new lib.ButtonText(" Take Control", manual,
+					manualOverrideBox.x, manualOverrideBox.y,
+					manualOverrideBox.width, manualOverrideBox.height,
+					0, 0);
+		}
+
+		//set up GUI
 		altimeter.hide();
 	}
 
@@ -716,15 +726,6 @@ public class GameWindow implements EventHandler{
 				cWidth/5, cHeight );
 		ordersBox.setRect(spacing*3 +(cWidth*13/20), cY, 
 				cWidth*7/20, cHeight );
-		
-		//regenerate sized control components
-		score = new cls.Score(scoreArea.width, scoreArea.height);
-		airportControl = new cls.AirportControlBox(airportControlBox.x, airportControlBox.y, 
-				airportControlBox.width, airportControlBox.height, airport);
-		orders = new cls.OrdersBox(ordersBox.x, ordersBox.y, 
-				ordersBox.width, ordersBox.height, 6);
-		altimeter = new cls.Altimeter(altimeterBox.x, altimeterBox.y,
-				altimeterBox.width, altimeterBox.height, orders);
 	}
 	
 	
