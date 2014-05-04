@@ -704,7 +704,7 @@ public class GameWindow implements EventHandler{
 		int spacing = 8,
 			sX = 192 +spacing,
 			sWidth = width -sX -spacing -150,
-			sHeight = 48,
+			sHeight = 32,
 			gHeight = (int)(scale * 784),
 			gY = sHeight +spacing,
 			bWidth = 112,

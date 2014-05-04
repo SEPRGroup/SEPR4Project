@@ -211,10 +211,10 @@ public class Score {
 		
 		// Prints the unused score digits as 0s, and the current score.
 		graphics.setColour(graphics.green_transp);
-		graphics.print(zeros, 0, 3, 5);
+		graphics.print(zeros, 0, -4, 5);
 		graphics.setColour(graphics.green);
 		if (getTotalScore() != 0) 
-			graphics.printRight(String.valueOf(getTotalScore()),  280, 3, 5, 0);		
+			graphics.printRight(String.valueOf(getTotalScore()),  280, -4, 5, 0);		
 	}
 	
 	private void drawMultiplier() {
@@ -242,8 +242,8 @@ public class Score {
 		// Print multiplier e.g. x 10
 		x += 8;
 		String mul_var = String.format("%d", multiplier);
-		graphics.print("x", x, 18, 3);
-		graphics.print(mul_var, x +32, 4, 5);
+		graphics.print("x", x, 9, 3);
+		graphics.print(mul_var, x +24, -4, 5);
 	}
 
 	private void drawMultiplierSegment(int meter_fill, int segment_number, int bar_x_offset, int bar_y_offset, int segment_width, int segment_height) {
