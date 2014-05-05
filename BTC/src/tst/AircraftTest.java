@@ -1,6 +1,7 @@
 package tst;
 
 import static org.junit.Assert.*;
+import lib.jog.window;
 
 import org.junit.Test;
 import org.junit.Before;
@@ -18,7 +19,7 @@ public class AircraftTest {
 	public void setUp() {
 		Waypoint[] waypoints = new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), new Waypoint(25, 75, false), new Waypoint(75, 25, false), new Waypoint(50,50, false)};
 		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypoints, 1);
-		test_score = new Score();
+		test_score = new Score(0, 0);
 	}
 	
 	// Test get functions
@@ -71,10 +72,17 @@ public class AircraftTest {
 	}
 	
 	@Test
-	public void testOutOfAirspaceBounds() {
-		Waypoint[] waypoints = new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), new Waypoint(25, 75, false), new Waypoint(75, 25, false), new Waypoint(50,50, false)};
+	public void testIsAt() {
+		Waypoint[] waypoints = new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), 
+				new Waypoint(25, 75, false), new Waypoint(75, 25, false), new Waypoint(50,50, false)};
 		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypoints, 1);
-		assertTrue("Out of bounds = false", test_aircraft.isOutOfAirspaceBounds());
+		
+		//double x = test_aircraft.getPosition().getX();
+		// y = test_aircraft.getPosition().getY();
+		//int radius = 16;
+		//boolean outOfBounds = (x < radius || x > window.width() + radius - 32 || y < radius || y > window.height() + radius - 176);
+		
+		assertTrue("Original position = true", test_aircraft.isAt(new Vector(0,0,0)));
 	}
 	
 	// Test set methods

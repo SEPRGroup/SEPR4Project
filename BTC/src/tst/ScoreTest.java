@@ -10,6 +10,7 @@ import org.lwjgl.opengl.Display;
 
 import scn.Demo;
 import cls.Aircraft;
+import cls.GameWindow;
 import cls.Score;
 import cls.Waypoint;
 
@@ -22,13 +23,16 @@ public class ScoreTest {
 	
 	@Before
 	public void setUp() {
+		// Initialise graphics to prevent images not loading
+		
 		try {
 			org.lwjgl.opengl.Display.create();
 			lib.jog.graphics.initialise();
 		} catch (LWJGLException e) {e.printStackTrace();}
+		
 		Waypoint[] waypoint_list = new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), new Waypoint(25, 75, false), new Waypoint(75, 25, false), new Waypoint(50,50, false)};
 		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypoint_list, 1);
-		test_score = new Score();
+		test_score = new Score(0, 0);
 	}
 
 	// Test is simplified (assuming difficulty sections had been implemented correctly)
@@ -39,8 +43,7 @@ public class ScoreTest {
 	public void testScore() {
 		
 		
-		Demo testDemo = new scn.Demo(1);
-		testDemo.initializeAircraftArray();
+		GameWindow testDemo = new scn.Demo(1).getGame();
 		testDemo.getAircraftList().add(test_aircraft);
 		Aircraft plane = testDemo.getAircraftList().get(0);
 
@@ -61,8 +64,7 @@ public class ScoreTest {
 	// Tests the multiplier meter will not decrease below 0 at multiplier_level 1
 	@Test
 	public void testMeterLowerBound() {
-		Demo testDemo = new Demo(1);
-		testDemo.initializeAircraftArray();
+		GameWindow testDemo = new Demo(1).getGame();
 		testDemo.getAircraftList().add(test_aircraft);
 			
 		assertTrue(test_score.getMultiplierLevel() == 1);
@@ -145,6 +147,8 @@ public class ScoreTest {
 	
 	@After
 	public void tearDown() {
+		
+		// cannot have more than one window open
 		org.lwjgl.opengl.Display.destroy();
 	}
 	

@@ -134,4 +134,9 @@ public class Demo extends Scene {
 	public Demo(int difficulty) {
 		game = new GameWindow(16,48, window.width() - 32 -1, window.height() - 176 -1, difficulty);
 	}
+	
+	@Deprecated
+	public GameWindow getGame() {
+		return game;
+	}
 }
