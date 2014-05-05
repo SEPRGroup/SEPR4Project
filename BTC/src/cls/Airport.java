@@ -67,7 +67,7 @@ public class Airport extends Waypoint {
 	/** draw function with extra parameters to allow extra functionality */
 	public void draw(double current_time) { 
 		// Draw the airport image
-		graphics.setColour(128, 128, 128, 128);
+		graphics.setColour(255, 255, 255);
 		graphics.draw(airport, x_location-airport.width()/2, y_location-airport.height()/2);
 				
 		int	green_fine = 128,

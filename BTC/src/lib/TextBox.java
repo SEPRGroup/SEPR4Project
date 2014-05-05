@@ -181,7 +181,7 @@ public class TextBox {
 	 * Prints the currently available characters of the TextBox.
 	 */
 	public void draw() {
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		for (int i = 0; i < linesBeingUsed(); i ++) {
 			graphics.print(orders[i], x + 4, y + 4 + (i * (height-8) / LINES));
 		}

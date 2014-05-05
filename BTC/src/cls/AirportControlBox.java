@@ -39,7 +39,7 @@ public class AirportControlBox implements EventHandler{
 		drawBoxOutline();
 		drawLabels(current_time);
 		if (clicked) {
-			graphics.setColour(graphics.green);
+			graphics.setColour(graphics.white);
 			graphics.rectangle(true, x_position, y_position +height -division_height, width, division_height);
 		}
 	}
@@ -50,7 +50,7 @@ public class AirportControlBox implements EventHandler{
 	 */
 	private void drawBoxOutline() {
 		// Outline
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		graphics.rectangle(false, x_position, y_position, width, height);
 		
 		// Inner lines
@@ -72,7 +72,7 @@ public class AirportControlBox implements EventHandler{
 		} else {
 			graphics.print("AIRPORT BUSY", x_position + ((width - 100)/2), y + 9);
 		}
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		
 		// Draw aircraft in hangar
 		double y_position = y + 12;
@@ -80,7 +80,7 @@ public class AirportControlBox implements EventHandler{
 		for (int i = 0; i < airport.aircraft_hangar.size(); i++) {
 			y_position -= division_height;
 			
-			graphics.setColour(graphics.green);
+			graphics.setColour(graphics.white);
 			graphics.print(airport.aircraft_hangar.get(i).getName(), x_position + ((width - 70)/2), y_position - 3);
 			
 			percentage_complete = barProgress(airport.time_entered.get(i), current_time);

@@ -25,9 +25,9 @@ public class ButtonText {
 		height = h;
 		this.ox = ox; // x position to print text
 		this.oy = oy; // y position to print text
-		default_colour = new org.newdawn.slick.Color(0, 128, 0);
-		hover_colour = new org.newdawn.slick.Color(128, 128, 128);
-		unavailable_colour = new org.newdawn.slick.Color(64, 64, 64);
+		default_colour = new org.newdawn.slick.Color(255, 255, 255);
+		hover_colour = new org.newdawn.slick.Color(150, 150, 255);
+		unavailable_colour = new org.newdawn.slick.Color(255, 255, 255);
 		is_available = true;
 	}
 	
@@ -40,9 +40,9 @@ public class ButtonText {
 		height = h;
 		this.ox = (w - (text.length() * 8)) / 2;
 		this.oy = (h - 8) / 2;
-		default_colour = new org.newdawn.slick.Color(0, 128, 0);
-		hover_colour = new org.newdawn.slick.Color(128, 128, 128);
-		unavailable_colour = new org.newdawn.slick.Color(64, 64, 64);
+		default_colour = new org.newdawn.slick.Color(255, 255, 255);
+		hover_colour = new org.newdawn.slick.Color(100, 100, 255);
+		unavailable_colour = new org.newdawn.slick.Color(255, 255, 255);
 		is_available = true;
 	}
 	

@@ -478,16 +478,15 @@ public class Aircraft {
 	 * @param The altitude to highlight aircraft at
 	 */
 	public void draw() {
-		double alpha = 192;
 		
-		double scale = 2*(position.getZ()+20000)/30000; // Planes with lower altitude are smaller
+		double scale = (position.getZ()+20000)/30000; // Planes with lower altitude are smaller
 		
 		// Draw plane image
-		graphics.setColour(128, 128, 128, alpha);
+		graphics.setColour(255, 255, 255);
 		graphics.draw(image, scale, position.getX(), position.getY(), getBearing(), image.width()/2, image.height()/2);
 		
 		// Draw altitude label
-		graphics.setColour(128, 128, 128, alpha/2.5);
+		graphics.setColour(255, 255, 255);
 		graphics.print(String.format("%.0f", position.getZ()) + "£", position.getX()+8, position.getY()-8); // £ displayed as ft
 		drawWarningCircles();
 	}
@@ -496,7 +495,7 @@ public class Aircraft {
 	 * Draws the compass around this plane - Used for manual control
 	 */
 	public void drawCompass(int gameMouseX, int gameMouseY) {
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		
 		// Centre positions of aircraft
 		Double xpos = position.getX(); 
@@ -559,9 +558,9 @@ public class Aircraft {
 	 */
 	public void drawFlightPath(boolean is_selected) {
 		if (is_selected) {
-			graphics.setColour(0, 128, 128);
+			graphics.setColour(255, 255, 255);
 		} else {
-			graphics.setColour(0, 128, 128, 128);
+			graphics.setColour(255, 255, 255, 128);
 		}
 
 		Waypoint[] route = flight_plan.getRoute();
