@@ -126,7 +126,7 @@ public class Altimeter implements EventHandler {
 	
 	/** Draws the box around the altimeter */
 	private void drawOutline() {
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		graphics.rectangle(false, positionX, positionY, width, height);
 	}
 	
@@ -153,7 +153,7 @@ public class Altimeter implements EventHandler {
 		graphics.line(x, y, x + wingLength * Math.cos(r), y + wingLength * Math.sin(r));
 		graphics.setColour(graphics.black);
 		graphics.circle(true, x, y, 4);
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		graphics.circle(false, x, y, 4);
 		graphics.printCentred(String.format("%.0f", currentAircraft.getPosition().getZ()), positionX, y+32, 1, width);
 	}
@@ -178,7 +178,7 @@ public class Altimeter implements EventHandler {
 		}
 		//System.out.println("restore Altimeter");
 		graphics.setViewport();
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 	}
 	
 	/**

@@ -144,7 +144,7 @@ public class GameOver extends Scene {
 	 */
 	@Override
 	public void draw() {
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		graphics.printCentred(crashed_plane_1.getName() + " crashed into " + crashed_plane_2.getName() + ".", 0, 32, 2, window.width());
 		graphics.printCentred("Total score: " + String.valueOf(score), 0, 64, 4, window.width());
 		if (explosion_animation.hasFinished()) {

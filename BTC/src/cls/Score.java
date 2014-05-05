@@ -212,7 +212,7 @@ public class Score {
 		// Prints the unused score digits as 0s, and the current score.
 		graphics.setColour(graphics.green_transp);
 		graphics.print(zeros, 0, -4, 5);
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		if (getTotalScore() != 0) 
 			graphics.printRight(String.valueOf(getTotalScore()),  280, -4, 5, 0);		
 	}
@@ -237,7 +237,7 @@ public class Score {
 			// Go to next segment
 			x += bar_segment_dif;
 		}
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		
 		// Print multiplier e.g. x 10
 		x += 8;

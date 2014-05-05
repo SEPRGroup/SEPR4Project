@@ -1,5 +1,7 @@
 package scn;
 
+import java.io.File;
+
 import lib.TextBox;
 import lib.jog.audio.Sound;
 import lib.jog.graphics;
@@ -28,6 +30,11 @@ public class DifficultySelect extends Scene {
 	private final int HARD_BUTTON_Y = EASY_BUTTON_Y;
 	private final int HARD_BUTTON_WIDTH = EASY_BUTTON_WIDTH;
 	private final int HARD_BUTTON_HEIGHT = EASY_BUTTON_HEIGHT;
+	
+	/**
+	 * Background image for difficulty selection
+	 */
+	private static graphics.Image backgroundImage;
 	
 	
 	private lib.ButtonText[] buttons;
@@ -83,6 +90,7 @@ public class DifficultySelect extends Scene {
 	 * Initialises scene variables, buttons, text box.
 	 */
 	public void start() {
+		backgroundImage = graphics.newImage("gfx" +File.separator + "mainBackgroundBlurred.png");
 		buttons = new lib.ButtonText[3];
 		lib.ButtonText.Action easy = new lib.ButtonText.Action() {
 			@Override
@@ -147,7 +155,8 @@ public class DifficultySelect extends Scene {
 	 */
 	@Override
 	public void draw() {
-		graphics.setColour(graphics.green);
+		graphics.draw(backgroundImage, 0, 0, window.scale());
+		graphics.setColour(graphics.white);
 		graphics.printCentred("Select the difficulty:", window.width()/2, window.height()/2 + 50, 1, 100);
 		graphics.rectangle(false, EASY_BUTTON_X, EASY_BUTTON_Y, EASY_BUTTON_WIDTH, EASY_BUTTON_HEIGHT);
 		graphics.rectangle(false, MEDIUM_BUTTON_X, MEDIUM_BUTTON_Y, MEDIUM_BUTTON_WIDTH, MEDIUM_BUTTON_HEIGHT);

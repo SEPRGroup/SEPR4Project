@@ -81,7 +81,7 @@ public class GameWindow implements EventHandler{
 	
 	public static void start(){
 		aircraftImage = graphics.newImage("gfx" +File.separator +"plane.png");
-		backgroundImage = graphics.newImage("gfx" +File.separator +"new" +File.separator +"background_base.png");
+		backgroundImage = graphics.newImage("gfx" +File.separator + "background_base.png");
 	}
 	
 	
@@ -340,13 +340,13 @@ public class GameWindow implements EventHandler{
 				// Override Button
 				graphics.setColour(graphics.black);
 				drawRect(true, manualOverrideBox);
-				graphics.setColour(graphics.green);
+				graphics.setColour(graphics.white);
 				drawRect(false, manualOverrideBox);
 				manualOverrideButton.draw(gameX, gameY);
 			}
 			
 			//draw border
-			graphics.setColour(graphics.green);
+			graphics.setColour(graphics.white);
 			graphics.rectangle(false, 1, 1,
 					gameArea.width-1, gameArea.height-1);
 			
@@ -418,7 +418,7 @@ public class GameWindow implements EventHandler{
 	 */
 	private void drawMap() {	
 		//draw background
-		graphics.setColour(255, 255, 255, 96);
+		graphics.setColour(255, 255, 255, 255);
 		graphics.draw(backgroundImage, 0, 0, scale);
 		
 		//draw waypoints excluding airports
@@ -428,12 +428,12 @@ public class GameWindow implements EventHandler{
 			}
 		}
 		//draw airports
-		graphics.setColour(255, 255, 255, 96);
+		graphics.setColour(255, 255, 255, 255);
 		for (Airport a : airports)
 			a.draw(timeElapsed);
 		
 		//draw transfer waypoint labels
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		graphics.print(locationWaypoints[0].getName(), locationWaypoints[0].getLocation().getX() + 9, locationWaypoints[0].getLocation().getY() - 6);
 		graphics.print(locationWaypoints[1].getName(), locationWaypoints[1].getLocation().getX() + 9, locationWaypoints[1].getLocation().getY() - 6);
 		graphics.print(locationWaypoints[2].getName(), locationWaypoints[2].getLocation().getX() - 141, locationWaypoints[2].getLocation().getY() - 6);
@@ -457,7 +457,7 @@ public class GameWindow implements EventHandler{
 		if (selectedAircraft != null) {
 			// Flight Path
 			selectedAircraft.drawFlightPath(true);
-			graphics.setColour(graphics.green);
+			graphics.setColour(graphics.white);
 			
 			//draw flightplan of selected flight
 			selectedAircraft.drawFlightPath(true);
@@ -472,7 +472,7 @@ public class GameWindow implements EventHandler{
 	
 	/** Draw the info of a selected plane in the scene GUI */
 	private void drawPlaneInfo() {
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		graphics.rectangle(false, planeInfo.x, planeInfo.y, planeInfo.width, planeInfo.height);
 		if (selectedAircraft != null) {
 			//System.out.println("set Demo.planeInfo");
@@ -541,7 +541,7 @@ public class GameWindow implements EventHandler{
 		java.text.DecimalFormat df = new java.text.DecimalFormat("00.00");
 		String timePlayed = String.format("%d:%02d:", hours, minutes) + df.format(seconds);
 		
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		graphics.printRight(timePlayed, width, 8, 1, -1);
 		int planes = aircraftInAirspace.size();
 		graphics.print(String.valueOf(planes) + " plane" + (planes == 1 ? "" : "s") + " in the sky.", 16, 8);

@@ -31,6 +31,11 @@ public class Title extends Scene {
 	private double angle;
 	
 	/**
+	 * Background image for menu
+	 */
+	private static graphics.Image backgroundImage;
+	
+	/**
 	 * Constructor for the Title Scene
 	 * @param main the main holding the scene
 	 */
@@ -47,6 +52,9 @@ public class Title extends Scene {
 		beep = audio.newSoundEffect("sfx" + File.separator + "beep.ogg");
 		beep.setVolume(0.2f);
 		angle = 0;
+		
+		backgroundImage = graphics.newImage("gfx" +File.separator + "mainBackground.png");
+		
 		
 		buttons = new lib.ButtonText[4];
 		{// Demo Button
@@ -150,7 +158,9 @@ public class Title extends Scene {
 	 */
 	@Override
 	public void draw() {
-		drawRadar();
+		
+		graphics.draw(backgroundImage, 0, 0, window.scale());
+		//drawRadar();
 		drawMenu();
 	}
 	
@@ -160,14 +170,14 @@ public class Title extends Scene {
 	private void drawRadar() {
 		// Radar
 		// Set of circles for radar 'screen'
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		graphics.circle(false, window.height()/2, window.height()/2, window.height()/2 - 32, 100);
 		graphics.setColour(0, 128, 0, 32);
 		graphics.circle(false, window.height()/2, window.height()/2, window.height()/3, 100);
 		graphics.circle(false, window.height()/2, window.height()/2, window.height()/4 - 16, 100);
 		graphics.circle(false, window.height()/2, window.height()/2, window.height()/9, 100);
 		graphics.circle(false, window.height()/2, window.height()/2, 2, 100);
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		// Sweep of radar
 		double radarAngle = (angle * 4) % (2 * Math.PI);
 		int w = (int)( Math.cos(radarAngle) * (window.height()/2 - 32) );
@@ -215,7 +225,7 @@ public class Title extends Scene {
 	 */
 	private void drawMenu() {
 		// Draw Extras e.g. Date, Time, Credits
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		graphics.line(window.height(), 16, window.height(), window.height() - 16);
 		java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd");
 		java.text.DateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm:ss");
@@ -230,7 +240,7 @@ public class Title extends Scene {
 		// Draw Buttons
 		for (lib.ButtonText button : buttons) 
 			button.draw();
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		graphics.line(window.height(), window.height()/2 + 90, window.width() - 16, window.height()/2 + 90);
 		graphics.line(window.height(), window.height()/2 + 120, window.width() - 16, window.height()/2 + 120);
 		graphics.line(window.height(), window.height()/2 + 150, window.width() - 16, window.height()/2 + 150);

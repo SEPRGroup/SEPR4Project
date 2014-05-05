@@ -25,6 +25,11 @@ public class Credits extends Scene {
 	 * Music to play during the credits
 	 */
 	private audio.Music music;
+	
+	/**
+	 * Background image for credits
+	 */
+	private static graphics.Image backgroundImage;
 
 	/**
 	 * Constructor
@@ -61,6 +66,7 @@ public class Credits extends Scene {
 	 */
 	@Override
 	public void start() {
+		backgroundImage = graphics.newImage("gfx" +File.separator + "mainBackgroundBlurred.png");
 		speed = 1f;
 		scroll_position = -window.height();
 		music = audio.newMusic("sfx" + File.separator + "piano.ogg");
@@ -86,9 +92,10 @@ public class Credits extends Scene {
 	 */
 	@Override
 	public void draw() {
+		graphics.draw(backgroundImage, 0, 0, window.scale());
 		int gap = 64;
 		int currentHeight = 0;
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		graphics.push();
 		graphics.translate(0, scroll_position);
 		currentHeight += gap;
@@ -158,6 +165,17 @@ public class Credits extends Scene {
 		graphics.printCentred("Kevin MacLeod", 0, currentHeight, 2, window.width()/3);
 		graphics.printCentred("Partners in Rhyme", 2*window.width()/3, currentHeight, 2, window.width()/3);
 		graphics.printCentred("FreeSound", window.width()/3, currentHeight, 2, window.width()/3);
+		
+		currentHeight += gap * 2;
+		
+		graphics.printCentred("Graphics", 0, currentHeight, 2, window.width());
+		graphics.printCentred("________", 0, currentHeight + 8, 2, window.width());
+		graphics.printCentred("_______", 4, currentHeight + 8, 2, window.width());
+		currentHeight += gap;
+		graphics.printCentred("Plane landing", 0, currentHeight, 2, window.width()/3);
+		graphics.printCentred("Luc Gibson", window.width()/3, currentHeight, 2, window.width()/3);
+		graphics.printCentred("gibsondesigns.co.uk", 2*window.width()/3, currentHeight, 2, window.width()/3);
+		
 		currentHeight += gap * 2;
 		
 		graphics.printCentred("External Libraries", 0, currentHeight, 2, window.width());
