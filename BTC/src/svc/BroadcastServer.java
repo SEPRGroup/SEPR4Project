@@ -19,73 +19,81 @@ import java.util.logging.Logger;
  *
  ***************************************************************************************/
 public class BroadcastServer implements Runnable {
+	public static final int PORT = 10008;
+	public static final String VALIDATION_CONFIRM = "SEPR_PSA_VALIDRESPONSE_12345";
 
 	DatagramSocket socket;
 	private boolean alive = false;
 	LobbyInfo info;
-	public static final int port = 10008;
 
 
 	public BroadcastServer(LobbyInfo info) {
 		super();
 		this.info = info;
 	}
+	
+	
 	public void kill(){
 		alive = false;
 	}
+	
+	
 	@Override
 	public void run() {
-
-		//Keep a socket open to listen to all the UDP trafic that is destined for this port
+		
+		//Keep a socket open to listen to all the UDP traffic that is destined for this port
 		try {
-			socket = new DatagramSocket(port, InetAddress.getByName("0.0.0.0"));
+			socket = new DatagramSocket(PORT, InetAddress.getByName("0.0.0.0"));
 			socket.setBroadcast(true);
 			socket.setSoTimeout(1000);
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
+			socket.close();
 			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return;
 		}
-		
-	
-		alive = true;
-		System.out.println(getClass().getName() + ">>>Ready to receive broadcast packets!");
-		while (alive) {
 
-			
-			try {
-				//Receive a packet
-				byte[] recvBuf = new byte[150000];
-				DatagramPacket packet = new DatagramPacket(recvBuf, recvBuf.length);
-				socket.receive(packet);
+		//listen
+		try {
+			System.out.println(getClass().getName() + ">>>Ready to receive broadcast packets!");
+			alive = true;
+			byte[] recvBuf = new byte[150000];
+			DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
+			byte[] sendData = (VALIDATION_CONFIRM +info.getCommandString()).getBytes();
 
-
-
+			while (alive) {
+				try {
+					socket.receive(receivePacket); //Receive a packet
+				} catch (SocketTimeoutException ex) {
+					continue;	//timeout; perform check and continue
+				}
 
 				//See if the packet holds the right command (message)
-				String message = new String(packet.getData()).trim();
-				if (message.equals("SEPR_PSA_REQUEST_54321")) {
-
-					byte[] sendData = ("SEPR_PSA_VALIDRESPONSE_12345@"+ info.toString()).getBytes();
-
+				String message = new String(receivePacket.getData()).trim();
+				if (message.equals(BroadcastClient.VALIDATION_REQUEST)) {
 					//Packet received
-					System.out.println(getClass().getName() + ">>>Discovery packet received from: " + packet.getAddress().getHostAddress());
-					System.out.println(getClass().getName() + ">>>Packet received; data: " + new String(packet.getData()));
+					System.out.println(getClass().getName() + ">>>Discovery packet received from: " + receivePacket.getAddress().getHostAddress());
+					System.out.println(getClass().getName() + ">>>Packet received; data: " +new String(receivePacket.getData()));
 					//Send a response
-					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, packet.getAddress(), packet.getPort());
-					socket.send(sendPacket);
-
-					System.out.println(getClass().getName() + ">>>Sent packet to: " + sendPacket.getAddress().getHostAddress());
+					DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
+					try {
+						socket.send(sendPacket);
+						System.out.println(getClass().getName() + ">>>Sent packet to: " + sendPacket.getAddress().getHostAddress());
+					} catch (IOException e) {
+						System.out.println(">>>Failed sending packet to: " + sendPacket.getAddress().getHostAddress());
+					}
 				}
-			} catch (IOException ex) {
-				//Logger.getLogger(BroadcastServer.class.getName()).log(Level.SEVERE, null, ex);
+
 			}
 		}
-		System.out.println(getClass().getName() + ">>>Stopped receiving broadcast packets!");
-
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		finally {
+			socket.close();
+			System.out.println(getClass().getName() + ">>>Stopped receiving broadcast packets!");
+		}
 	}
+	
 	public static void main(String[] args){
 		LobbyInfo test = new LobbyInfo("name","destination",1);
 		BroadcastServer server = new BroadcastServer(test);
