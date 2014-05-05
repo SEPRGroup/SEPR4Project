@@ -914,6 +914,9 @@ public class GameWindow implements EventHandler{
 
 	@Override
 	public void mousePressed(int key, int x, int y) {
+		// N/A if not controllable; end here 
+		if (!controllable) return;
+		
 		//transform for coordinate system used for drawing
 		int	intX = x -this.x,
 			intY = y -this.y,
@@ -977,6 +980,9 @@ public class GameWindow implements EventHandler{
 
 	@Override
 	public void mouseReleased(int key, int x, int y) {
+		// N/A if not controllable; end here 
+		if (!controllable) return;
+		
 		//transform for coordinate system used for drawing
 		int	intX = x -this.x,
 			intY = y -this.y,
