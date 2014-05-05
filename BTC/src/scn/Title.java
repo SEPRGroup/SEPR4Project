@@ -4,6 +4,8 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
+import scn.mult.HostOrFind;
+
 import lib.jog.audio;
 import lib.jog.audio.Sound;
 import lib.jog.graphics;
@@ -12,29 +14,30 @@ import btc.Main;
 
 public class Title extends Scene {
 	private final static String HELP_FILE_PATH = System.getProperty("user.dir") + "/user_manual.pdf";
-	
+
 	/**
 	 * The 'beep' played as the radar makes a sweep
 	 */
 	private audio.Sound beep;
-	
+
 	/**
 	 * A List of buttons, to hold declared buttons in the scene
 	 */
 	private lib.ButtonText[] buttons;
-	
+
 	/**
 	 * Holds the angle to draw the radar sweep at.
 	 * Also used to play the beep sound as the radar sweeps the BTC title string
 	 * Updated regularly during Title's update()
 	 */
 	private double angle;
-	
 	/**
 	 * Background image for menu
 	 */
 	private static graphics.Image backgroundImage;
-	
+
+	/**
+
 	/**
 	 * Constructor for the Title Scene
 	 * @param main the main holding the scene
@@ -54,22 +57,32 @@ public class Title extends Scene {
 		angle = 0;
 		
 		backgroundImage = graphics.newImage("gfx" +File.separator + "mainBackground.png");
-		
-		
-		buttons = new lib.ButtonText[4];
-		{// Demo Button
+
+		buttons = new lib.ButtonText[5];
+		{// Single player Button
 			lib.ButtonText.Action demo = new lib.ButtonText.Action() {
 				@Override
 				public void action() {
 					main.setScene(new DifficultySelect(main, DifficultySelect.CREATE_DEMO));
 				}
 			};
-			buttons[0] = new lib.ButtonText("Play Demo", demo, 
+			buttons[0] = new lib.ButtonText("Single Player", demo, 
 					window.height(), window.height()/2 + 96,
 					window.width() - window.height(), 24,
 					8, 6);
 		}
-	
+		{// Multiplayer Button
+			lib.ButtonText.Action multiPlayer = new lib.ButtonText.Action() {
+				@Override
+				public void action() {
+					main.setScene(new HostOrFind(main));
+				}
+			};
+			buttons[1] = new lib.ButtonText("Multiplayer", multiPlayer,
+					window.height(), window.height()/2 + 126, 
+					window.width() - window.height(), 24,
+					8, 6);
+		}
 		{// Credits Button
 			lib.ButtonText.Action credits = new lib.ButtonText.Action() {
 				@Override
@@ -77,12 +90,12 @@ public class Title extends Scene {
 					main.setScene(new Credits(main));
 				}
 			};
-			buttons[1] = new lib.ButtonText("Credits", credits,
-					window.height(), window.height()/2 + 126, 
+			buttons[2] = new lib.ButtonText("Credits", credits,
+					window.height(), window.height()/2 + 156, 
 					window.width() - window.height(), 24,
 					8, 6);
 		}
-		
+
 		{// Help Button
 			lib.ButtonText.Action help = new lib.ButtonText.Action() {
 				@Override
@@ -94,12 +107,12 @@ public class Title extends Scene {
 					}
 				}
 			};
-			buttons[2] = new lib.ButtonText("Help        (Opens user manual PDF)", help,
-					window.height(), window.height()/2 + 156,
+			buttons[3] = new lib.ButtonText("Help        (Opens user manual PDF)", help,
+					window.height(), window.height()/2 + 186,
 					window.width() - window.height(), 24, 
 					8, 6);
 		}
-		
+
 		{// Exit Button
 			lib.ButtonText.Action exit = new lib.ButtonText.Action() {
 				@Override
@@ -107,14 +120,14 @@ public class Title extends Scene {
 					main.quit();
 				}
 			};
-			buttons[3] = new lib.ButtonText("Exit", exit,
-					window.height(), window.height()/2 + 186,
+			buttons[4] = new lib.ButtonText("Exit", exit,
+					window.height(), window.height()/2 + 216,
 					window.width() - window.height(), 24,
 					8, 6);
 		}
 	}
 
-	
+
 	/**
 	 * Updates all objects in the title scene
 	 * Called by Main class
@@ -123,7 +136,7 @@ public class Title extends Scene {
 	@Override
 	public void update(double time_difference) {
 		angle += time_difference; // Increase the angle of the radar sweep
-		
+
 		// Check the angle of the radar sweep;
 		// If approaching the BTC title string, play the beep
 		double beepTimer = (angle * 4) + (Math.PI * 4 / 5); 
@@ -132,7 +145,7 @@ public class Title extends Scene {
 			playSound(beep);
 		}
 	}
-	
+
 	@Override
 	public void mousePressed(int key, int x, int y) { }
 
@@ -158,12 +171,11 @@ public class Title extends Scene {
 	 */
 	@Override
 	public void draw() {
-		
 		graphics.draw(backgroundImage, 0, 0, window.scale());
 		//drawRadar();
 		drawMenu();
 	}
-	
+
 	/**
 	 * Draws the radar arc and title string
 	 */
@@ -219,7 +231,7 @@ public class Title extends Scene {
 			graphics.print(subtitle.substring(i, i+1), 94*4.5 + i * 14, 364, 1.8);
 		}
 	}
-	
+
 	/**
 	 * Draws menu boxes, boxes around buttons, and strings
 	 */
@@ -236,7 +248,7 @@ public class Title extends Scene {
 		graphics.print("Created by: Team FLR", window.height() + 8, 56);
 		graphics.print("Improved by: Team MQV", window.height() + 8, 68);
 		graphics.print("Perfected by: Team PSA", window.height() + 8, 80);
-		
+
 		// Draw Buttons
 		for (lib.ButtonText button : buttons) 
 			button.draw();
@@ -246,13 +258,14 @@ public class Title extends Scene {
 		graphics.line(window.height(), window.height()/2 + 150, window.width() - 16, window.height()/2 + 150);
 		graphics.line(window.height(), window.height()/2 + 180, window.width() - 16, window.height()/2 + 180);
 		graphics.line(window.height(), window.height()/2 + 210, window.width() - 16, window.height()/2 + 210);
+		graphics.line(window.height(), window.height()/2 + 240, window.width() - 16, window.height()/2 + 240);
 	}
-	
+
 	@Override
 	public void close() {
 
 	}
-	
+
 	@Override
 	public void playSound(Sound sound) {
 		sound.stop();
