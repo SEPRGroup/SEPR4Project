@@ -93,7 +93,7 @@ class Multiplayer extends Scene {
 	
 	@Override
 	public void mouseReleased(int key, int x, int y) {
-		game1.mousePressed(key, x, y);
+		game1.mouseReleased(key, x, y);
 
 	}
 
