@@ -172,9 +172,13 @@ public class Credits extends Scene {
 		graphics.printCentred("________", 0, currentHeight + 8, 2, window.width());
 		graphics.printCentred("_______", 4, currentHeight + 8, 2, window.width());
 		currentHeight += gap;
-		graphics.printCentred("Plane landing", 0, currentHeight, 2, window.width()/3);
+		graphics.printCentred("Landing Plane", 0, currentHeight, 2, window.width()/3);
 		graphics.printCentred("Luc Gibson", window.width()/3, currentHeight, 2, window.width()/3);
 		graphics.printCentred("gibsondesigns.co.uk", 2*window.width()/3, currentHeight, 2, window.width()/3);
+		currentHeight += gap / 2;
+		graphics.printCentred("Plane Design", 0, currentHeight, 2, window.width()/3);
+		graphics.printCentred("Jeremy Sallee", window.width()/3, currentHeight, 2, window.width()/3);
+		graphics.printCentred("salleedesign.com", 2*window.width()/3, currentHeight, 2, window.width()/3);
 		
 		currentHeight += gap * 2;
 		
