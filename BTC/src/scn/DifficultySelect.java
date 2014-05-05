@@ -7,6 +7,11 @@ import lib.jog.input;
 import lib.jog.window;
 import btc.Main;
 
+import static cls.GameWindow.DIFFICULTY_EASY;
+import static cls.GameWindow.DIFFICULTY_MEDIUM;
+import static cls.GameWindow.DIFFICULTY_HARD;
+
+
 public class DifficultySelect extends Scene {
 	
 	private final int EASY_BUTTON_X = window.width()/4;
@@ -84,7 +89,7 @@ public class DifficultySelect extends Scene {
 			public void action() {
 				switch (scene){
 				case DifficultySelect.CREATE_DEMO:
-					main.setScene(new Demo(main, Demo.DIFFICULTY_EASY));
+					main.setScene(new Demo(main, DIFFICULTY_EASY));
 					break;
 				}
 			}
@@ -96,7 +101,7 @@ public class DifficultySelect extends Scene {
 			public void action() {
 				switch (scene){
 				case DifficultySelect.CREATE_DEMO:
-					main.setScene(new Demo(main, Demo.DIFFICULTY_MEDIUM));
+					main.setScene(new Demo(main, DIFFICULTY_MEDIUM));
 					break;
 				}
 			}
@@ -108,7 +113,7 @@ public class DifficultySelect extends Scene {
 			public void action() {
 				switch (scene){
 				case DifficultySelect.CREATE_DEMO:
-					main.setScene(new Demo(main, Demo.DIFFICULTY_HARD));
+					main.setScene(new Demo(main, DIFFICULTY_HARD));
 					break;
 				}
 			}

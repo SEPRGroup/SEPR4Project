@@ -6,12 +6,11 @@ import lib.jog.graphics;
 
 public class Score {
 	
+	private int width, height;
 	
 	private final int MAX_SCORE = 9999999;
 	private final int MAX_DIGITS_IN_SCORE = (int)Math.log10(MAX_SCORE) + 1;
-	
-	private int current_digits_in_score;
-	
+
 	private int total_score = 0; // Records the total score the user has achieved at a given time.
 	private int target_score = 0;
 
@@ -29,7 +28,7 @@ public class Score {
 	 */
 	private int meter_fill = 0;	
 	private int target_meter_fill = 0;
-	
+
 	/**
 	 * This variable determines the current level of the multiplier. Each level has an associated multiplier value
 	 * e.g. multiplier_level = 1 -> multiplier = 1, multiplier_level = 2 -> multiplier = 3, multiplier_level = 3 -> multiplier = 5.
@@ -37,14 +36,31 @@ public class Score {
 	 * Also used in Demo to vary max_aircraft and aircraft_spawn rates.
 	 */
 	private int multiplierLevel = 1;
-
+	
 	// Variables used in multiplier bar
-	int bar_segments = 16;
-	int bar_segment_dif = 24;
-	int bar_x_offset = 608;
-	int bar_y_offset = 8;
-	int segment_width = 16;
-	int segment_height = 32;
+	private int	
+		bar_segments = 16,
+		bar_segment_dif,
+		bar_x_offset = 280 +8,
+		bar_y_offset = 0,
+		bar_segment_width,
+		bar_segment_height;
+	
+	
+	public Score(int width, int height) {
+		this.width = width;
+		this.height = height;
+		setSize();
+	}
+	
+	/** set up positioning based on width, height */
+	private void setSize(){
+		int bar_width = width -bar_x_offset -64;
+		bar_segment_dif = bar_width / bar_segments;
+		bar_segment_width = bar_segment_dif *2 /3;
+		bar_segment_height = height;
+	}
+	
 	
 	public int getTotalScore() {
 		if (total_score > MAX_SCORE)
@@ -87,9 +103,8 @@ public class Score {
 	public int calculateAircraftScore(Aircraft aircraft) {
 		double efficiency = efficiencyFactor(aircraft);
 		int base_score = aircraft.getBaseScore();
-		int bonus = (int)((base_score/3) * efficiency);
-		int aircraft_score = base_score + bonus;
-		return aircraft_score;
+		int bonus = (int)((base_score*efficiency)/3);
+		return base_score +bonus;
 	}
 	
 	/**
@@ -105,9 +120,7 @@ public class Score {
 		return efficiency;
 	}
 	
-	/**
-	 * Resets the multiplier_level to 1 and empties the meter.
-	 */	
+	/** Resets the multiplier_level to 1 and empties the meter. */	
 	public void resetMultiplier() {
 		multiplierLevel = 1;
 		multiplier = 1;
@@ -121,7 +134,6 @@ public class Score {
 			multiplierLevel += 1;
 			setMultiplier();
 		}
-		
 	}
 	
 	// This method should only be used publically for unit testing
@@ -191,17 +203,18 @@ public class Score {
 	
 	private void drawScore() {
 		// Takes the maximum possible digits in the score and calculates how many of them are currently 0
-		current_digits_in_score = getTotalScore() != 0 ? (int)Math.log10(getTotalScore()) + 1 : 0; // Don't do log10(0) as it's undefined and gives an exception
-		char[] chars = new char[MAX_DIGITS_IN_SCORE - current_digits_in_score];
+		int current_digits_in_score = 
+				getTotalScore() != 0 ? (int)Math.log10(getTotalScore()) + 1 : 0; // Don't do log10(0) as it's undefined and gives an exception
+		char[] chars = new char[MAX_DIGITS_IN_SCORE -current_digits_in_score];
 		Arrays.fill(chars, '0');
 		String zeros = new String(chars);
 		
 		// Prints the unused score digits as 0s, and the current score.
 		graphics.setColour(graphics.green_transp);
-		graphics.print(zeros, 264, 3, 5);
+		graphics.print(zeros, 0, -4, 5);
 		graphics.setColour(graphics.green);
 		if (getTotalScore() != 0) 
-			graphics.printRight(String.valueOf(getTotalScore()), 544, 3, 5, 0);		
+			graphics.printRight(String.valueOf(getTotalScore()),  280, -4, 5, 0);		
 	}
 	
 	private void drawMultiplier() {
@@ -211,34 +224,37 @@ public class Score {
 		if (meter_draining) { // Make it red
 			red = 128;
 			green = 0;
-		}
+		}		
+		
+		int x = bar_x_offset;	//temporary variable for positioning
 		for (int i = 0; i < bar_segments; i++) { // Draw each segment
 			// Draw background
 			graphics.setColour(red, green, 0, 64);
-			graphics.rectangle(true, bar_x_offset, bar_y_offset, segment_width, segment_height);
+			graphics.rectangle(true, x, bar_y_offset, bar_segment_width, bar_segment_height);
 			graphics.setColour(red, green, 0);
 			// Draw inside
-			drawMultiplierSegment(meter_fill, i, bar_x_offset, bar_y_offset, segment_width, segment_height);
+			drawMultiplierSegment(meter_fill, i, x, bar_y_offset, bar_segment_width, bar_segment_height);
 			// Go to next segment
-			bar_x_offset += bar_segment_dif;
+			x += bar_segment_dif;
 		}
 		graphics.setColour(graphics.green);
 		
 		// Print multiplier e.g. x 10
-		bar_x_offset += 16;
+		x += 8;
 		String mul_var = String.format("%d", multiplier);
-		graphics.print("x", bar_x_offset, 18, 3);
-		graphics.print(mul_var, bar_x_offset + 32, 4, 5);
-		bar_x_offset = 608; // Reset x offset
+		graphics.print("x", x, 9, 3);
+		graphics.print(mul_var, x +24, -4, 5);
 	}
 
 	private void drawMultiplierSegment(int meter_fill, int segment_number, int bar_x_offset, int bar_y_offset, int segment_width, int segment_height) {
 		int start_x = segment_number*segment_width; 
 		int end_x = start_x + segment_width;
 		
-		if (meter_fill >= start_x && meter_fill < end_x) { // Partially fill segment
-			graphics.rectangle(true, bar_x_offset, bar_y_offset, (meter_fill - start_x), segment_height);
-		} else if (meter_fill >= end_x) { // Fill whole segment
+		int scale_meter_fill = (bar_segments*segment_width *meter_fill)/256;
+		
+		if (scale_meter_fill >= start_x && scale_meter_fill < end_x) { // Partially fill segment
+			graphics.rectangle(true, bar_x_offset, bar_y_offset, (scale_meter_fill -start_x), segment_height);
+		} else if (scale_meter_fill >= end_x) { // Fill whole segment
 			graphics.rectangle(true, bar_x_offset, bar_y_offset, segment_width, segment_height);
 		}
 	}

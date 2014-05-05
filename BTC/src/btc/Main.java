@@ -4,6 +4,8 @@ import java.io.File;
 
 import org.lwjgl.Sys;
 
+import cls.GameWindow;
+
 import lib.jog.*;
 
 /**
@@ -64,6 +66,8 @@ public class Main implements input.EventHandler {
 		graphics.initialise();
 		graphics.Font font = graphics.newBitmapFont("gfx" + File.separator + "font.png", "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz1234567890.,_-!?()[]><#~:;/\\^'\"{}£$@@@@@@@@");
 		graphics.setFont(font);
+		
+		GameWindow.start();
 		
 		scene_stack = new java.util.Stack<scn.Scene>();
 		setScene(new scn.Title(this));

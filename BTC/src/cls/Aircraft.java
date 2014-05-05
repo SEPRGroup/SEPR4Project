@@ -1,20 +1,18 @@
 package cls;
 
 import java.io.File;
-import java.util.ArrayList;
-import scn.Demo;
+
 import lib.RandomNumber;
 import lib.jog.audio;
 import lib.jog.graphics;
 import lib.jog.input;
-import lib.jog.window;
 
 /**
  * <h1>Aircraft</h1>
  * <p>Represents an aircraft. Calculates velocity, route-following, etc.</p>
  */
 public class Aircraft {
-	private final static int RADIUS = 16; // The physical size of the plane in pixels. This determines crashes.
+	public final static int RADIUS = 16; // The physical size of the plane in pixels. This determines crashes.
 	private final static int MOUSE_LENIANCY = 32;  // How far away (in pixels) the mouse can be from the plane but still select it.
 	public final static int COMPASS_RADIUS = 64; // How large to draw the bearing circle.
 	private final static audio.Sound WARNING_SOUND = audio.newSoundEffect("sfx" + File.separator + "beep.ogg"); // Used during separation violation
@@ -219,34 +217,34 @@ public class Aircraft {
 		
 		position = origin_point.getLocation();
 		current_target = flight_plan.getRoute()[0].getLocation();
-		
+	
 		if (startAtAirport) {
 			position = position.add(new Vector(-80, -50, 0)); // Start at departures
 			position.setZ(0);
 			//point down runway
 			velocity = new Vector(0, 0, 0);
-		}else{
+		} 
+		else {
 			last_altitude = (RandomNumber.randInclusiveInt(min_altitude, max_altitude)/1000) *1000;
 			position.setZ(last_altitude);
-			
-			
+
 			// Calculate initial velocity (direction)
-			double x = current_target.getX() - position.getX();
-			double y = current_target.getY() - position.getY();
+			double 
+				x = current_target.getX() - position.getX(),
+				y = current_target.getY() - position.getY();
 			velocity = new Vector(x, y, 0).normalise().scaleBy(speed);
 		}
-
-	
-		if(flight_plan.getDestination() instanceof Airport){
+		
+		if (flight_plan.getDestination() instanceof Airport){
 			is_waiting_to_land = true;
 		}
-		
+
 		// Speed up plane for higher difficulties
 		switch (difficulty) {
 		// Adjust the aircraft's attributes according to the difficulty of the parent scene
 		// 0 has the easiest attributes (slower aircraft, more forgiving separation rules)
 		// 2 has the hardest attributes (faster aircraft, least forgiving separation rules)
-		case Demo.DIFFICULTY_EASY:
+		case GameWindow.DIFFICULTY_EASY:
 			minimum_separation_distance = 64;
 			turn_speed = Math.PI / 4;
 			altitude_change_speed = 500;
@@ -254,7 +252,7 @@ public class Aircraft {
 			optimal_time = flight_plan.getTotalDistance() / speed;
 		break;
 
-		case Demo.DIFFICULTY_MEDIUM:
+		case GameWindow.DIFFICULTY_MEDIUM:
 			minimum_separation_distance = 96;
 			velocity = velocity.scaleBy(2);
 			turn_speed = Math.PI / 3;
@@ -263,7 +261,7 @@ public class Aircraft {
 			optimal_time = flight_plan.getTotalDistance() / (speed * 2);
 		break;
 			
-		case Demo.DIFFICULTY_HARD:
+		case GameWindow.DIFFICULTY_HARD:
 			minimum_separation_distance = 128;
 			velocity = velocity.scaleBy(3);
 			// At high velocities, the aircraft is allowed to turn faster - this helps keep the aircraft on track.
@@ -290,12 +288,6 @@ public class Aircraft {
 		} else {
 			return Math.atan2(current_target.getY() - position.getY(), current_target.getX() - position.getX());
 		}
-	}
-
-	public boolean isOutOfAirspaceBounds() {
-		double x = position.getX();
-		double y = position.getY();
-		return (x < RADIUS || x > window.width() + RADIUS - 32 || y < RADIUS || y > window.height() + RADIUS - 176);
 	}
 
 	public boolean isAt(Vector point) {
@@ -335,13 +327,6 @@ public class Aircraft {
 		return dx * dx + dy * dy < MOUSE_LENIANCY * MOUSE_LENIANCY;
 	}
 
-	/**
-	 * Calls {@link isMouseOver()} using {@link input.mouseX()} and {@link input.mouseY()} as the arguments.
-	 * @return true, if the mouse is close enough to this plane. False, otherwise.
-	 */
-	public boolean isMouseOver() {
-		return isMouseOver(input.mouseX() - Demo.airspace_view_offset_x, input.mouseY() - Demo.airspace_view_offset_y);
-	}
 	
 	public boolean isAtDestination() {
 		if (flight_plan.getDestination() instanceof Airport) { // At airport
@@ -366,13 +351,14 @@ public class Aircraft {
 			} else { // Gone too low, land it now
 				//Demo.airport.is_active = false;
 				//has_finished = true;
+				//{!} landing autopilot
 			}
 		} else if(is_takeoff){
 			if(velocity.magnitude() >= takeoff_velocity){
 				setAltitudeState(ALTITUDE_CLIMB);
 				climb();
 			}
-		} else {
+		} else {	//not takeoff or landing
 			switch (altitude_state) {
 			case ALTITUDE_FALL:
 				fall();				
@@ -383,9 +369,9 @@ public class Aircraft {
 				climb();				
 				break;
 			}
-			
-			if(flight_plan.getOrigin() instanceof Airport){
-				if(position.getZ() <= 10000){
+	
+			if (flight_plan.getOrigin() instanceof Airport){
+				if(position.getZ() < min_altitude){
 					setAltitudeState(ALTITUDE_CLIMB);
 					climb();
 				} else{
@@ -393,7 +379,6 @@ public class Aircraft {
 					climb();
 				}
 			}
-			
 		}
 		
 		// Update position
@@ -402,9 +387,9 @@ public class Aircraft {
 		
 		currently_turning_by = 0;
 		if(!is_takeoff){
-			
-			// Update target	
-			if (current_target.equals(flight_plan.getDestination().getLocation()) && isAtDestination()) { // At finishing point
+
+			// Update target
+			if (current_target.equals(flight_plan.getDestination().getLocation()) && isAtDestination()){
 				if (!is_waiting_to_land) { // Ready to land
 					has_finished = true;
 					if (flight_plan.getDestination() instanceof Airport) { // Landed at airport
@@ -414,40 +399,30 @@ public class Aircraft {
 			} else if (isAt(current_target)) {
 				current_route_stage++;
 				// Next target is the destination if you're at the end of the plan, otherwise it's the next waypoint
-				current_target = current_route_stage >= flight_plan.getRoute().length ? flight_plan.getDestination().getLocation() : flight_plan.getRoute()[current_route_stage].getLocation();
+				current_target = (current_route_stage >= flight_plan.getRoute().length) ? flight_plan.getDestination().getLocation() : flight_plan.getRoute()[current_route_stage].getLocation();
 			}
-			
 			if(is_landing){
 				if(flight_plan.getDestination() instanceof Airport){
 					current_target = ((Airport)flight_plan.getDestination()).getRunwayLocation().add(new Vector(100,50,0));
-
 				}
-			}
-			// Update bearing
-			if(is_landing){
+				// Update bearing
 				if(position.getZ() > 500){
 					turnTowardsTarget(time_difference);
 				}else{
 					//current_target = new Vector(Demo.airport.getLocation().getX()+,Demo.airport.getLocation().getX(),0);
 					turnTowardsTarget(time_difference);
-					
-					
-					//this.t
 				}
-				
 				
 			}else{
 				if (Math.abs(angleToTarget() - getBearing()) > 0.01) {
 					turnTowardsTarget(time_difference);
 				}
 			}
-		}else{
-			
+		}else{	//is during takeoff
 			//checks to move flight out of is_takeoff
 			if(velocity.magnitude() >= takeoff_velocity){
-				((Airport)getFlightPlan().getOrigin()).is_active = false;
-				
 				if(position.getZ()> 2000){
+					((Airport)getFlightPlan().getOrigin()).is_active = false;
 					is_takeoff = false;
 					is_manually_controlled = false;
 				}
@@ -455,7 +430,7 @@ public class Aircraft {
 				double velocity_mag = velocity.magnitude();
 				velocity = velocity.normalise().scaleBy(velocity_mag + 0.05);
 			}
-			
+
 		}
 	}
 
@@ -503,7 +478,7 @@ public class Aircraft {
 	 * @param The altitude to highlight aircraft at
 	 */
 	public void draw() {
-		double alpha = 128;	
+		double alpha = 128;
 		
 		double scale = 2*(position.getZ()/30000); // Planes with lower altitude are smaller
 		if (scale < 1){ //caps the size of planes so they don't get infinitely small
@@ -522,12 +497,12 @@ public class Aircraft {
 	/**
 	 * Draws the compass around this plane - Used for manual control
 	 */
-	public void drawCompass() {
+	public void drawCompass(int gameMouseX, int gameMouseY) {
 		graphics.setColour(graphics.green);
 		
 		// Centre positions of aircraft
-		Double xpos = position.getX()-image.width()/2 + Demo.airspace_view_offset_x; 
-		Double ypos = position.getY()-image.height()/2 + Demo.airspace_view_offset_y;
+		Double xpos = position.getX()-image.width()/2; 
+		Double ypos = position.getY()-image.height()/2;
 		
 		// Draw the compass circle
 		graphics.circle(false, xpos, ypos, COMPASS_RADIUS, 30);
@@ -546,7 +521,7 @@ public class Aircraft {
 		double x, y;
 		if (is_manually_controlled && input.isMouseDown(input.MOUSE_RIGHT)) {
 			graphics.setColour(graphics.green_transp);
-			double r = Math.atan2(input.mouseY() - position.getY(), input.mouseX() - position.getX());
+			double r = Math.atan2(gameMouseY -position.getY(), gameMouseX -position.getX());
 			x = xpos + (COMPASS_RADIUS * Math.cos(r));
 			y = ypos + (COMPASS_RADIUS * Math.sin(r));
 			// Draw several lines to make the line thicker
@@ -637,12 +612,11 @@ public class Aircraft {
 
 	/**
 	 * Updates the number of planes that are violating the separation rule. Also checks for crashes.
-	 * @param time_difference the time elapsed since the last frame.
 	 * @param aircraftList all aircraft in the airspace
 	 * @param global score object used to decrement score if separation is breached
 	 * @return index of plane breaching separation distance with this plane, or -1 if no planes are in violation.
 	 */
-	public int updateCollisions(double time_difference,	ArrayList<Aircraft> aircraftList, Score score) {
+	public int updateCollisions(java.util.List<Aircraft> aircraftList, Score score) {
 		planes_too_near.clear();
 		for (int i = 0; i < aircraftList.size(); i++) {
 			Aircraft plane = aircraftList.get(i);
@@ -743,7 +717,6 @@ public class Aircraft {
 		is_waiting_to_land = false;
 		is_landing = true;
 		is_manually_controlled = false;
-		
 	}
 
 	public void takeOff() {
@@ -751,7 +724,6 @@ public class Aircraft {
 		is_manually_controlled = true;
 		is_takeoff = true;
 		velocity = new Vector(1, 0, 0);
-		Demo.takeOffSequence(this);
 		creation_time = System.currentTimeMillis() / 1000; // Reset creation time
 	}
 

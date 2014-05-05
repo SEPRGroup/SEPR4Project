@@ -1,15 +1,17 @@
 package cls;
 
-import scn.Demo;
 import lib.jog.graphics;
 import lib.jog.input;
-import lib.jog.window;
 import lib.jog.input.EventHandler;
 
 public class AirportControlBox implements EventHandler{
-	private Airport airport;	
+	private final Airport airport;
+	private final GameWindow game;
 	private int number_of_divisions;	
-	private double x_position, y_position, width, height;	
+	private double 
+		x_position, y_position,
+		width, height,
+		division_height;	
 	private boolean clicked = false;
 	
 	/**
@@ -20,24 +22,25 @@ public class AirportControlBox implements EventHandler{
 	 * @param h the height of the box
 	 * @param airport The airport the box controls
 	 */
-	public AirportControlBox(double x, double y, double w, double h, Airport airport) {
+	public AirportControlBox(double x, double y, double w, double h, Airport airport, GameWindow owner) {
 		x_position = x;
 		y_position = y;
 		width = w;
 		height = h;
 		this.airport = airport;
+		game = owner;
+		
 		number_of_divisions = airport.getHangarSize() + 1;
+		division_height = height / number_of_divisions;
 	}
 	
-	/**
-	 * Draws the box to the screen
-	 */
-	public void draw() {
+	/** Draws the box to the screen */
+	public void draw(double current_time) {
 		drawBoxOutline();
-		drawLabels();
+		drawLabels(current_time);
 		if (clicked) {
 			graphics.setColour(graphics.green);
-			graphics.rectangle(true, x_position, (y_position + height) - (height /number_of_divisions), width, height/number_of_divisions);
+			graphics.rectangle(true, x_position, y_position +height -division_height, width, division_height);
 		}
 	}
 	
@@ -51,21 +54,19 @@ public class AirportControlBox implements EventHandler{
 		graphics.rectangle(false, x_position, y_position, width, height);
 		
 		// Inner lines
-		double y =  (window.height() - height / number_of_divisions) - (window.height() - (y_position + height)); 
+		double y = y_position +height -division_height;
 		for (int i = 0; i < number_of_divisions; i++) {
 			graphics.line(x_position, y, x_position + width, y);
-			y -= height / number_of_divisions;
+			y -= division_height;
 		}
 	}
 	
-	/**
-	 * Draws the flight names and time bars, as well as the text on the button either "TAKE OFF" or "AIRPORT BUSY" 
-	 */
-	private void drawLabels() {
+	/** Draws the flight names and time bars, as well as the text on the button either "TAKE OFF" or "AIRPORT BUSY"	*/
+	private void drawLabels(double current_time) {
 		// Draw take off button
 		int opacity = (airport.is_active || airport.aircraft_hangar.size() == 0) ? 128 : 256; // Grey out if not clickable
 		graphics.setColour(0, 128, 0, opacity);
-		double y = (window.height() - height / number_of_divisions) - (window.height() - (y_position + height));
+		double y = y_position +height -division_height;
 		if (!airport.is_active) {
 			graphics.print("TAKE OFF", x_position + ((width - 70)/2), y + 9);
 		} else {
@@ -77,12 +78,12 @@ public class AirportControlBox implements EventHandler{
 		double y_position = y + 12;
 		double percentage_complete;
 		for (int i = 0; i < airport.aircraft_hangar.size(); i++) {
-			y_position -= (height / number_of_divisions);
+			y_position -= division_height;
 			
 			graphics.setColour(graphics.green);
 			graphics.print(airport.aircraft_hangar.get(i).getName(), x_position + ((width - 70)/2), y_position - 3);
 			
-			percentage_complete = barProgress(airport.time_entered.get(i));
+			percentage_complete = barProgress(airport.time_entered.get(i), current_time);
 			
 			if (percentage_complete == 1) {
 				graphics.setColour(graphics.red);
@@ -99,8 +100,8 @@ public class AirportControlBox implements EventHandler{
 	 * @param time_entered
 	 * @return a value between 0 and 1 which is used to calculate the ratio of the "progress bar" to draw
 	 */
-	public double barProgress(double time_entered) {
-		double time_elapsed = Demo.getTime() - time_entered;
+	public double barProgress(double time_entered, double current_time) {
+		double time_elapsed = current_time -time_entered;
 		if (time_elapsed > 5) {
 			return 1;
 		} else if (time_elapsed < 0) {
@@ -135,20 +136,18 @@ public class AirportControlBox implements EventHandler{
 		clicked = false;
 		if (key == input.MOUSE_LEFT && isMouseOverTakeOffButton(x, y)) {
 			if (!airport.is_active) {
-				airport.signalTakeOff();
+				Aircraft a = airport.signalTakeOff();
+				if (a != null){
+					game.takeOffSequence(a);
+				}
 			}
 		}
 	}
 
 
 	@Override
-	public void keyPressed(int key) {
-		
-	}
-
+	public void keyPressed(int key) {}
 
 	@Override
-	public void keyReleased(int key) {
-		
-	}
+	public void keyReleased(int key) {}
 }

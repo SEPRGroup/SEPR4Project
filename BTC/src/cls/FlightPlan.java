@@ -5,7 +5,8 @@ import java.util.Random;
 
 public class FlightPlan {	
 	private Waypoint[] route;
-	private Waypoint destination, origin;
+	private Waypoint
+		origin, destination;
 	
 	public FlightPlan(Waypoint[] route, Waypoint origin_point, Waypoint destination_point) {
 		this.route = findGreedyRoute(origin_point, destination_point, route);
@@ -15,6 +16,10 @@ public class FlightPlan {
 	
 	public Waypoint[] getRoute() {
 		return route;
+	}
+	
+	public Waypoint getOrigin() {
+		return origin;
 	}
 	
 	public Waypoint getDestination() {
@@ -29,9 +34,6 @@ public class FlightPlan {
 		return origin.getName();
 	}
 	
-	public Waypoint getOrigin(){
-		return origin;
-	}
 	/**
 	 * Edits the plane's path by changing the waypoint it will go to at a certain stage in its route.
 	 * @param routeStage the stage at which the new waypoint will replace the old.
