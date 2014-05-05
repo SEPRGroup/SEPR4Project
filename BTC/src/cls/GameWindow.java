@@ -745,11 +745,11 @@ public class GameWindow implements EventHandler{
 			bWidth = 112,
 			bHeight = 32,
 			bY = 32,
-			piWidth = 312,
-			alWidth = 200,
+			piWidth = 304,
+			alWidth = 232,
 			cWidth = width -(2+airportControlBoxes.length)*spacing -piWidth -alWidth,	//total width available to resizeable controls
-			acWidth = cWidth / (2+airportControlBoxes.length),
-			orWidth = cWidth*2 / (2+airportControlBoxes.length),
+			acWidth = cWidth / (3+airportControlBoxes.length),
+			orWidth = cWidth*3 / (3+airportControlBoxes.length),
 			cHeight = height -sHeight -gHeight -2*spacing,
 			cY = sHeight +gHeight +2*spacing;
 		scoreArea.setRect(sX, 0,
