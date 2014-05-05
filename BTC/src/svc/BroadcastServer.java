@@ -7,6 +7,14 @@ import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/***************************************************************************************
+*    Title: Network discovery using UDP Broadcast (Java)
+*    Author: Michiel De Mey 
+*    Date: 2014/05/05
+*    Code version: N/A
+*    Availability: http://michieldemey.be/blog/network-discovery-using-udp-broadcast/
+*
+***************************************************************************************/
 public class BroadcastServer implements Runnable {
 	DatagramSocket socket;
 
@@ -31,8 +39,8 @@ public class BroadcastServer implements Runnable {
 
 	        //See if the packet holds the right command (message)
 	        String message = new String(packet.getData()).trim();
-	        if (message.equals("DISCOVER_FUIFSERVER_REQUEST")) {
-	          byte[] sendData = "DISCOVER_FUIFSERVER_RESPONSE".getBytes();
+	        if (message.equals("SEPR_PSA_REQUEST_54321")) {
+	          byte[] sendData = "SEPR_PSA_VALIDRESPONSE_12345@I have 6 players".getBytes();
 
 	          //Send a response
 	          DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, packet.getAddress(), packet.getPort());
