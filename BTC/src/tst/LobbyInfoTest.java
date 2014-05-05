@@ -28,7 +28,7 @@ public class LobbyInfoTest {
 	@Test
 	public void testLobbyInfo() {
 		testLobbyInfo = new LobbyInfo();
-		String s = "LobbyInfo [name=null, description=null, difficultyto=-1]";
+		String s = "LobbyInfo [name=null, description=null, difficulty=-1]";
 		assertEquals(s, testLobbyInfo.toString());
 	}
 	
@@ -37,7 +37,7 @@ public class LobbyInfoTest {
 	@Test
 	public void testLobbyInfoString() throws Exception {
 		testLobbyInfo = new LobbyInfo("name@description@1");
-		String s = "LobbyInfo [name=name, description=description, difficultyto=1]";
+		String s = "LobbyInfo [name=name, description=description, difficulty=1]";
 		assertEquals(s, testLobbyInfo.toString());
 		
 		thrown.expect(Exception.class);
@@ -57,7 +57,7 @@ public class LobbyInfoTest {
 
 	@Test
 	public void testToString() {
-		String s = "LobbyInfo [name=testLobby, description=a Description, difficultyto=1]";
+		String s = "LobbyInfo [name=testLobby, description=a Description, difficulty=1]";
 		assertEquals(s, testLobbyInfo.toString()); 
 	}
 

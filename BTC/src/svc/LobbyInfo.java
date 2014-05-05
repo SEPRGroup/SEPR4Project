@@ -40,7 +40,7 @@ public class LobbyInfo {
 	@Override
 	public String toString() {
 		return "LobbyInfo [name=" +name +", description=" +description
-				+", difficultyto=" +difficulty +"]";
+				+", difficulty=" +difficulty +"]";
 	}
 
 }
