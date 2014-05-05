@@ -30,9 +30,9 @@ public class Demo extends Scene {
 	 */
 	public Demo(Main main, int difficulty) {
 		super(main);
+		music = audio.newMusic("sfx" + File.separator + "Gypsy_Shoegazer.ogg");
 		game = new GameWindow(16, 8, 
 				window.width() -32, window.height() -16, difficulty);
-		game.setControllable(true);
 	}
 
 	
@@ -42,8 +42,9 @@ public class Demo extends Scene {
 	 */
 	@Override
 	public void start() {	
-		music = audio.newMusic("sfx" + File.separator + "Gypsy_Shoegazer.ogg");
 		music.play();
+		
+		game.setControllable(true);
 	}
 
 
