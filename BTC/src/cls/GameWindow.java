@@ -636,7 +636,7 @@ public class GameWindow implements EventHandler{
 			do {
 				int destination = RandomNumber.randInclusiveInt(0, locationWaypoints.length -1);
 				destinationPoint = locationWaypoints[destination];
-			} while (destinationPoint == originPoint);
+			} while (destinationPoint.getLocation().equals(originPoint.getLocation()));
 		}
 	
 		
