@@ -478,15 +478,13 @@ public class Aircraft {
 	 * @param The altitude to highlight aircraft at
 	 */
 	public void draw() {
-		double alpha = 128;
+		double alpha = 192;
 		
-		double scale = 2*(position.getZ()/30000); // Planes with lower altitude are smaller
-		if (scale < 1){ //caps the size of planes so they don't get infinitely small
-			scale = 1;
-		}
+		double scale = 2*(position.getZ()+20000)/30000; // Planes with lower altitude are smaller
+		
 		// Draw plane image
 		graphics.setColour(128, 128, 128, alpha);
-		graphics.draw(image, scale, position.getX()-image.width()/2, position.getY()-image.height()/2, getBearing(), 8, 8);
+		graphics.draw(image, scale, position.getX(), position.getY(), getBearing(), image.width()/2, image.height()/2);
 		
 		// Draw altitude label
 		graphics.setColour(128, 128, 128, alpha/2.5);
@@ -501,8 +499,8 @@ public class Aircraft {
 		graphics.setColour(graphics.green);
 		
 		// Centre positions of aircraft
-		Double xpos = position.getX()-image.width()/2; 
-		Double ypos = position.getY()-image.height()/2;
+		Double xpos = position.getX(); 
+		Double ypos = position.getY();
 		
 		// Draw the compass circle
 		graphics.circle(false, xpos, ypos, COMPASS_RADIUS, 30);
@@ -571,10 +569,10 @@ public class Aircraft {
 		
 		if (current_target != destination && !is_landing) {
 			// Draw line from plane to next waypoint
-			graphics.line(position.getX()-image.width()/2, position.getY()-image.height()/2, route[current_route_stage].getLocation().getX(), route[current_route_stage].getLocation().getY());
+			graphics.line(position.getX(), position.getY(), route[current_route_stage].getLocation().getX(), route[current_route_stage].getLocation().getY());
 		} else {
 			// Draw line from plane to destination
-			graphics.line(position.getX()-image.width()/2, position.getY()-image.height()/2, destination.getX(), destination.getY());			
+			graphics.line(position.getX(), position.getY(), destination.getX(), destination.getY());			
 		}
 		
 		for (int i = current_route_stage; i < route.length-1; i++) { // Draw lines between successive waypoints
