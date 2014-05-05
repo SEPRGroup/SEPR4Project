@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 
 public class BroadcastClient implements Runnable {
+	public static final int port = 10008;
+	
 	DatagramSocket c;
+	public ArrayList<BroadcastResponse> pResponses = new ArrayList<BroadcastResponse>();
 
 	public static void main(String[] args){
 		BroadcastClient client = new BroadcastClient();
@@ -36,12 +39,13 @@ public class BroadcastClient implements Runnable {
 
 			//Try the 255.255.255.255 first
 			try {
-				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("255.255.255.255"), 8888);
+				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("255.255.255.255"), port);
 				c.send(sendPacket);
 				System.out.println(getClass().getName() + ">>> Request packet sent to: 255.255.255.255 (DEFAULT)");
 			} catch (Exception e) {
 			}
 
+			{
 			/*// Broadcast the message over all the network interfaces
 			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
 			while (interfaces.hasMoreElements()) {
@@ -59,7 +63,7 @@ public class BroadcastClient implements Runnable {
 
 					// Send the broadcast package!
 					try {
-						DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcast, 8888);
+						DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcast, port);
 						c.send(sendPacket);
 					} catch (Exception e) {
 					}
@@ -70,6 +74,8 @@ public class BroadcastClient implements Runnable {
 
 			System.out.println(getClass().getName() + ">>> Done looping over all network interfaces. Now waiting for a reply!");
 			*/
+			}
+			
 
 			//Wait for a response
 			ArrayList<DatagramPacket> responses = new ArrayList<DatagramPacket>(); 
@@ -89,7 +95,7 @@ public class BroadcastClient implements Runnable {
 			c.close();
 
 			//We have a response?
-			ArrayList<BroadcastResponse> pResponses = new ArrayList<BroadcastResponse>();
+			//ArrayList<BroadcastResponse> pResponses = new ArrayList<BroadcastResponse>();
 			for (DatagramPacket r : responses){
 				System.out.println(getClass().getName() + ">>> Broadcast response from server: " + r.getAddress().getHostAddress());
 				//Check if the message is correct
@@ -116,7 +122,7 @@ public class BroadcastClient implements Runnable {
 		}
 	}
 	
-	private class BroadcastResponse{
+	public class BroadcastResponse{
 		
 		public final InetAddress responder;
 		public final String[] response;

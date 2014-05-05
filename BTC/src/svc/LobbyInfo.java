@@ -13,9 +13,10 @@ public class LobbyInfo {
 		difficulty = -1;
 	};
 
-	public LobbyInfo(String name, String description) {
+	public LobbyInfo(String name, String description,int difficulty) {
 		this.name = name;
 		this.description = description;
+		this.difficulty  = difficulty;
 	}
 
 	public LobbyInfo(String commandString) throws Exception{
