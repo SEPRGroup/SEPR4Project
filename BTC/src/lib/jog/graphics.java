@@ -331,14 +331,19 @@ public abstract class graphics {
 	 * Intialises OpenGL with the appropriate matrix modes and orthographic dimensions. 
 	 */
 	static public void initialise() {
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(0, window.width(), 0, window.height(), -1, 1);
-		glMatrixMode(GL_MODELVIEW);
+		resize();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		views = new Stack<Viewport>();
 		views.push(new Viewport("base", 0,0, window.width(),window.height()));
+	}
+	
+	static public void resize() {
+		glViewport(0, 0, window.width(), window.height());
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, window.width(), 0, window.height(), -1, 1);
+		glMatrixMode(GL_MODELVIEW);
 	}
 
 	/**

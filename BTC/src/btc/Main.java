@@ -25,8 +25,9 @@ public class Main implements input.EventHandler {
 	}
 	
 	final private String TITLE = "Bear Traffic Controller: PSA Edition";
-	final private int TARGET_WIDTH = 1280;
-	final private int TARGET_HEIGHT = 960;
+	public static final int 
+		TARGET_WIDTH = 1280, TARGET_HEIGHT = 960;
+	
 	final private String[] ICON_FILENAMES = {
 		"gfx" + File.separator + "icon16.png",
 		"gfx" + File.separator + "icon32.png",

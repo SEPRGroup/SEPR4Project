@@ -109,4 +109,8 @@ public class Waypoint implements Serializable{
 		draw(waypoint_location.getX(), waypoint_location.getY());
 	}
 	
+	@Override
+	public String toString() {
+		return name;
+	}
 }
