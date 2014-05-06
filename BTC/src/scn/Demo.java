@@ -8,6 +8,7 @@ import lib.jog.input;
 import lib.jog.window;
 import cls.Aircraft;
 import cls.GameWindow;
+import cls.GameWindow.TransferBuffer;
 import btc.Main;
 
 public class Demo extends Scene {
@@ -59,6 +60,9 @@ public class Demo extends Scene {
 	@Override
 	public void update(double time_difference) {
 		game.update(time_difference);
+		
+		for (TransferBuffer tb : game.transfers)
+			tb.clearOut();
 		
 		if (game.isGameOver()){
 			List<Aircraft> crashed = game.getCrashedAircraft();

@@ -5,6 +5,7 @@ import java.io.File;
 import cls.Aircraft;
 import cls.GameWindow;
 import cls.TransferBar;
+import cls.GameWindow.TransferBuffer;
 import lib.RandomNumber;
 import lib.jog.audio;
 import lib.jog.audio.Sound;
@@ -53,7 +54,7 @@ class Multiplayer extends Scene {
 
 		game1 = new GameWindow(spacing, spacing, gw, gh, difficulty);
 		game2 = new GameWindow((w +spacing)/2, spacing, gw, gh, difficulty);
-		transfers = new TransferBar(spacing, gh +2*spacing, tw, th, 5000, difficulty);
+		transfers = new TransferBar(spacing, gh +2*spacing, tw, th, 2500, difficulty);
 		
 		music.play();
 		game1.setControllable(true);
@@ -79,17 +80,47 @@ class Multiplayer extends Scene {
 		
 		{	//manage transfers
 			double rand = Math.random();
-			if (rand < 0.1*timeDifference){
+			/*if (rand < 0.1*timeDifference){
 				java.util.List<Aircraft> c = game1.getAircraftList();
 				transfers.enterLeft(c.get(RandomNumber.randInclusiveInt(0, c.size()-1)));				
 			}
-			else if (rand < 0.2*timeDifference){
+			else*/ if (rand < 0.05*timeDifference){
 				java.util.List<Aircraft> c = game2.getAircraftList();
 				transfers.enterRight(c.get(RandomNumber.randInclusiveInt(0, c.size()-1)));				
 			}
 		}
 		
+		{	//handle transfers out
+			for (TransferBuffer tb : game1.transfers){
+				if (tb.name == "City of Rightson"){
+					Aircraft a = tb.pollOut();
+					while (a != null) {
+						System.out.println(a.getName() +" transferred out");
+						//{!} notify other player
+						transfers.enterLeft(a);
+						a = tb.pollOut();
+					};
+				}
+				else tb.clearOut();
+			}
+		}
 		transfers.update(timeDifference);
+		{	//handle transfers in
+			Aircraft a = transfers.pollLeft();
+			while (a != null) {
+				for (TransferBuffer tb : game1.transfers){
+					if (tb.name == "South Sea"){
+						System.out.println(a.getName() +" transferred in");
+						tb.transferIn(a);
+						break;
+					}
+				}
+				a = transfers.pollLeft();
+			}
+		}
+
+		/*a = transfers.pollRight();
+		if (a != null) System.out.println("Right:\t" +a.getName());*/
 		
 
 		//synchronize scores

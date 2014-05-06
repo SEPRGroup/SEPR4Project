@@ -3,7 +3,9 @@ package cls;
 import java.awt.Rectangle;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import lib.RandomNumber;
 import lib.jog.graphics;
@@ -55,15 +57,14 @@ public class GameWindow implements EventHandler{
 	private double timeElapsed = 0;
 	private Boolean controllable = false;
 	private Boolean gameOver = false;
+	public TransferBuffer[] transfers;	
 	
 	private int[] 
 			keysLeft = new int[] {input.KEY_LEFT, input.KEY_A},
 			keysRight = new int[] {input.KEY_RIGHT, input.KEY_D},
 			keysUp = new int[]{input.KEY_W, input.KEY_UP},
 			keysDown = new int[]{input.KEY_S, input.KEY_DOWN};
-			
-			
-		
+
 	private Aircraft selectedAircraft = null;
 	private Waypoint clickedWaypoint= null;
 	private int selectedPathPoint = -1; // Selected path point, in an aircraft's route, used for altering the route
@@ -163,6 +164,12 @@ public class GameWindow implements EventHandler{
 					manualOverrideBox.width, manualOverrideBox.height,
 					0, 0);
 		}
+		
+		{	//set up interface
+			transfers = new TransferBuffer[locationWaypoints.length];
+			for (int i=0; i<locationWaypoints.length; i++)
+				transfers[i] = new TransferBuffer(locationWaypoints[i].getName());
+		}
 
 		//set up GUI
 		altimeter.hide();
@@ -238,6 +245,12 @@ public class GameWindow implements EventHandler{
 				}
 				aircraftInAirspace.remove(i);
 				recentlyDepartedAircraft.add(a);
+				for (TransferBuffer tb : transfers){
+					if (tb.name == a.getFlightPlan().getDestinationName()){
+						tb.transferOut(a);
+						break;
+					}
+				}
 
 				a.setAdditionToMultiplier(score.getMultiplierLevel());
 				score.increaseMeterFill(a.getAdditionToMultiplier());
@@ -284,6 +297,7 @@ public class GameWindow implements EventHandler{
 			}
 		}
  		
+		checkTransfers();
 		{	//generate Flights
 			timeSinceFlightGeneration += timeDifference;
 			int interval = getFlightGenerationInterval();
@@ -407,6 +421,41 @@ public class GameWindow implements EventHandler{
 		if (selectedAircraft != null) {
 			selectedAircraft.toggleManualControl();
 			manualOverrideButton.setText( (selectedAircraft.isManuallyControlled() ? "Remove" : " Take") + " Control");
+		}
+	}
+
+	private void checkTransfers(){
+		for (int i=0; i<transfers.length; i++){
+			Aircraft a = transfers[i].pollIn();
+			while (a != null) {
+				Waypoint origin, destination;
+				//find corresponding origin point
+				origin = locationWaypoints[i];
+				//generate valid destination point
+				do {
+					destination = locationWaypoints[RandomNumber.randInclusiveInt(0, locationWaypoints.length -1)];
+				} while (destination.getLocation().equals(origin.getLocation()));
+				//clone Aircraft, generating new FlightPlan
+				Aircraft b = new Aircraft(a.getName(), destination, origin, aircraftImage,
+						scale, a.getSpeed(), airspaceWaypoints, difficulty);
+				a = null;
+				
+				b.getPosition().setZ( b.getPosition().getZ() );
+				//shunt the aircraft into the airspace
+				if (origin instanceof Airport){
+					orders.addOrder("<<< " + b.getName() 
+							+ " is awaiting take off from " 
+							+ origin.getName()
+							+ " heading towards " +destination.getName() + ".");
+					((Airport)origin).addToHangar(a, timeElapsed);
+				} else {
+					orders.addOrder("<<< " + b.getName() 
+							+ " transferred from " +origin.getName()
+							+ " heading towards " +destination.getName() + ".");
+					aircraftInAirspace.add(b);
+				}
+				a = transfers[i].pollIn();
+			}
 		}
 	}
 	
@@ -1047,6 +1096,38 @@ public class GameWindow implements EventHandler{
 				a.clear();
 			gameOver = true;
 			break;
+		}
+	}
+	
+	
+	public class TransferBuffer{
+		public final String name;
+		private final Queue<Aircraft> 
+			in = new LinkedList<Aircraft>(),
+			out = new LinkedList<Aircraft>();
+		
+		private TransferBuffer(String name){
+			this.name = name;
+		}
+		
+		public void transferIn(Aircraft a){
+			in.add(a);
+		}
+		
+		public Aircraft pollOut(){
+			return out.poll();
+		}
+		
+		private void transferOut(Aircraft a){
+			out.add(a);
+		}
+		
+		private Aircraft pollIn(){
+			return in.poll();
+		}
+		
+		public void clearOut(){
+			out.clear();
 		}
 	}
 
