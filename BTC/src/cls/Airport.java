@@ -72,10 +72,10 @@ public class Airport extends Waypoint {
 		graphics.setColour(255, 255, 255);
 		graphics.draw(airport, scale, x_location, y_location, 0,  airport.width()/2, airport.height()/2);
 				
-		int	green_fine = 128,
+		int	green_fine = 255,
 			green_danger = 0,
-			red_fine = 0,
-			red_danger = 128;
+			red_fine = 64,
+			red_danger = 196;
 		
 		// Draw the hangar button if plane is waiting (departing flights)
 		if (aircraft_hangar.size() > 0) {
