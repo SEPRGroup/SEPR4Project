@@ -46,6 +46,7 @@ public abstract class graphics {
 		
 		private String glyphs; // String containing the characters in the same order that the image has them.
 		private Image image;
+		private final static int FONTSCALE = 8; //Scales all the text in the game down by a constant
 		
 		/**
 		 * Constructor for a bitmap font.
@@ -66,6 +67,7 @@ public abstract class graphics {
 		 */
 		@Override
 		protected void print(double x, double y, String text, double size) {
+			size = size / FONTSCALE;
 			y = window.height() - y;
 			double w = image.height();
 			double h = -image.height();
@@ -105,6 +107,7 @@ public abstract class graphics {
 		 */
 		@Override
 		protected void printCentred(double x, double y, double width, String text, double size) {
+			size = size / FONTSCALE;
 			y = window.height() - y;
 			double w = image.height();
 			double h = -image.height();
@@ -138,6 +141,7 @@ public abstract class graphics {
 		 * Hacked above method that prints to the right of the x and y coordinates.
 		 */
 		protected void printRight(double x, double y, double width, String text, double size) {
+			size = size / FONTSCALE;
 			y = window.height() - y;
 			double w = image.height();
 			double h = -image.height();
@@ -197,6 +201,7 @@ public abstract class graphics {
  		 */
 		@Override
 		protected void print(double x, double y, String text, double size) {
+			size = size / FONTSCALE;
 			y = y - window.height();
 			
 			glPushMatrix();
@@ -215,6 +220,7 @@ public abstract class graphics {
 		 */
 		@Override
 		public void printCentred(double x, double y, double width, String text, double size) {
+			size = size / FONTSCALE;
 			y = y - window.height();
 			x += (width - _font.getWidth(text)) / 2;
 			
@@ -228,6 +234,7 @@ public abstract class graphics {
 		 * Hacked above method that prints to the right of the x and y coordinates.
 		 */
 		public void printRight(double x, double y, double width, String text, double size) {
+			size = size / FONTSCALE;
 			y = y - window.height();
 			x += (width - _font.getWidth(text));
 			
