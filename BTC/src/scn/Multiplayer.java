@@ -3,6 +3,7 @@ package scn;
 import java.io.File;
 
 import cls.GameWindow;
+import cls.TransferBar;
 import lib.jog.audio;
 import lib.jog.audio.Sound;
 import lib.jog.graphics;
@@ -20,6 +21,7 @@ class Multiplayer extends Scene {
 		
 	private cls.GameWindow 
 		game1, game2;
+	private TransferBar transfers;
 
 	
 	
@@ -42,10 +44,14 @@ class Multiplayer extends Scene {
 			h = window.height(),
 			spacing = 8;
 		int	gw = (w -3*spacing) /2,
-			gh = h -150;
+			gh = h -150,
+			tw = w -2*spacing,
+			th = h -gh -3*spacing;
+			
 
 		game1 = new GameWindow(spacing, spacing, gw, gh, difficulty);
 		game2 = new GameWindow((w +spacing)/2, spacing, gw, gh, difficulty);
+		transfers = new TransferBar(spacing, gh +2*spacing, tw, th, 5000, difficulty);
 		
 		music.play();
 		game1.setControllable(true);
@@ -65,13 +71,15 @@ class Multiplayer extends Scene {
 
 		
 	@Override
-	public void update(double time_difference) {
-		game1.update(time_difference);
-		game2.update(time_difference);
+	public void update(double timeDifference) {
+		game1.update(timeDifference);
+		game2.update(timeDifference);
+		transfers.update(timeDifference);
 
 		//synchronize scores
 		//talk to network stuff
 		//track gameovers
+		//manage transfers
 
 	}
 
@@ -80,7 +88,7 @@ class Multiplayer extends Scene {
 	public void draw() {
 		game1.draw();
 		game2.draw();
-		
+		transfers.draw();
 	}
 	
 
