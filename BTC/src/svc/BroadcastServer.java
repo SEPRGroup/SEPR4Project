@@ -18,37 +18,41 @@ public class BroadcastServer implements Runnable {
 	public static final int PORT = 10008;
 	public static final String VALIDATION_CONFIRM = "SEPR_PSA_VALIDRESPONSE_12345";
 
+
 	DatagramSocket socket;
 	private boolean alive = false;
 	LobbyInfo info;
-
-
+	public InetAddress ip;
+	public String clientName;
 	public BroadcastServer(LobbyInfo info) {
 		super();
 		this.info = info;
 	}
-	
-	
+
+
 	public void kill(){
 		alive = false;
 	}
-	
-	
+
+
 	@Override
 	public void run() {
-		
+
 		//Keep a socket open to listen to all the UDP traffic that is destined for this port
 		try {
 			socket = new DatagramSocket(PORT, InetAddress.getByName("0.0.0.0"));
 			socket.setBroadcast(true);
 			socket.setSoTimeout(1000);
 		} catch (Exception e) {
-			socket.close();
+			if (socket != null){
+				socket.close();
+			}
 			e.printStackTrace();
 			return;
 		}
 
 		//listen
+		String[] temp = new String[2];
 		try {
 			System.out.println(getClass().getName() + ">>>Ready to receive broadcast packets!");
 			alive = true;
@@ -58,6 +62,8 @@ public class BroadcastServer implements Runnable {
 
 			while (alive) {
 				try {
+					recvBuf = new byte[150000];
+					receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
 					socket.receive(receivePacket); //Receive a packet
 				} catch (SocketTimeoutException ex) {
 					continue;	//timeout; perform check and continue
@@ -65,7 +71,15 @@ public class BroadcastServer implements Runnable {
 
 				//See if the packet holds the right command (message)
 				String message = new String(receivePacket.getData()).trim();
+				String s = message;
+				if(message.contains("@")){
+					s = message;
+					temp = null;
+					temp = message.split("@");
+					message = temp[0];
+				}
 				if (message.equals(BroadcastClient.VALIDATION_REQUEST)) {
+
 					//Packet received
 					System.out.println(getClass().getName() + ">>>Discovery packet received from: " + receivePacket.getAddress().getHostAddress());
 					System.out.println(getClass().getName() + ">>>Packet received; data: " +new String(receivePacket.getData()));
@@ -77,6 +91,9 @@ public class BroadcastServer implements Runnable {
 					} catch (IOException e) {
 						System.out.println(">>>Failed sending packet to: " + sendPacket.getAddress().getHostAddress());
 					}
+				}else if(message.equals(BroadcastClient.JOIN)){
+					ip = receivePacket.getAddress();
+					clientName = temp[1];
 				}
 
 			}
@@ -89,9 +106,10 @@ public class BroadcastServer implements Runnable {
 			System.out.println(getClass().getName() + ">>>Stopped receiving broadcast packets!");
 		}
 	}
-	
+
 	public static void main(String[] args){
-		LobbyInfo test = new LobbyInfo("name","destination",1);
+
+		final LobbyInfo test = new LobbyInfo("name","description",1);
 		BroadcastServer server = new BroadcastServer(test);
 		server.run();
 	}

@@ -2,6 +2,8 @@ package scn.mult;
 
 import static cls.GameWindow.DIFFICULTY_MEDIUM;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -25,11 +27,12 @@ public class FindGame extends Scene {
 	BroadcastClient client;
 	Thread clientThread;
 	private int scene; 
+	private String name;
 	private List<BroadcastResponse> responses = new CopyOnWriteArrayList<BroadcastResponse>();
 	
-	public FindGame(Main main) {
+	public FindGame(Main main, String name) {
 		super(main);
-
+		this.name = name;
 	}
 	@Override
 	public void mousePressed(int key, int x, int y) {
@@ -80,7 +83,7 @@ public class FindGame extends Scene {
 				@Override
 				public void action() { handleJoinClick(i); }	
 			},
-			500, 250 + count*80,30, 12);
+			700, 320 + count*80,30, 12);
 
 			count++;
 		}
@@ -88,6 +91,12 @@ public class FindGame extends Scene {
 	}
 	private void handleJoinClick(int index){
 		System.out.println(index);
+		System.out.println(responses.get(index).responder);
+		
+		client = new BroadcastClient(responses.get(index).responder,name);
+		Thread c = new Thread(client);
+		c.start();
+		
 	}
 
 @Override
@@ -147,11 +156,14 @@ public void draw() {
 	// TODO  Auto-generated method stub
 	drawTable(5,6,(int)(100*window.scale()),(int)(200*window.scale()),(int)(1200*window.scale()),(int)(600*window.scale()));
 	graphics.print("IP",210, 240,3);
+	graphics.print("Name", 380, 240,3);
 	graphics.setColour(graphics.green);
 	int count = 0;
-	
+	String[] fields = new String[5];
 	for( BroadcastResponse r :responses){
+		fields = r.response.split("@");
 		graphics.print(r.responder.toString().replace("/","") , 120, 320 + count*80,2);
+		graphics.print(fields[0] , 360, 320 + count*80,2);
 		count++;
 	}
 	

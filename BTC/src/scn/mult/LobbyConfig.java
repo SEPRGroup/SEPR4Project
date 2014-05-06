@@ -1,12 +1,28 @@
 package scn.mult;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import lib.jog.graphics;
+import lib.jog.input;
 import lib.jog.window;
 import lib.jog.audio.Sound;
 import scn.Scene;
+import svc.BroadcastServer;
+import svc.LobbyInfo;
 
 public class LobbyConfig  extends Scene{
 
 	private lib.ButtonText[] buttons;
+	private String name,clientName = "";
+	private InetAddress clientIP = null;
+	private LobbyInfo User;
+	private String ip;
+	BroadcastServer host;
+	
+	public LobbyConfig(String name){
+		this.name = name;
+	}
 	
 	@Override
 	public void mousePressed(int key, int x, int y) {
@@ -29,50 +45,63 @@ public class LobbyConfig  extends Scene{
 	@Override
 	public void keyReleased(int key) {
 		// TODO Auto-generated method stub
-		
+		switch (key) {
+		case input.KEY_ESCAPE :
+			main.closeScene();
+			break;
+
+		}
 	}
 
 	@Override
 	public void start() {
 		
-		buttons = new lib.ButtonText[2];
-
-		lib.ButtonText.Action host = new lib.ButtonText.Action() {
-			@Override
-			public void action() {
-				
-				main.setScene(new LobbyConfig());
-				
-			}
-		};
-		//buttons[0] = new lib.ButtonText("Host", host, window.width()/4-BUTTON_WIDTH/2, window.height()/2-BUTTON_HEIGHT/2,BUTTON_WIDTH, BUTTON_HEIGHT);
+		User = new LobbyInfo(name,"Some text here",1);
+		try {
+			String[] s = InetAddress.getLocalHost().toString().split("/");
+			ip = s[1];
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		host = new BroadcastServer(User);
 		
-		lib.ButtonText.Action find = new lib.ButtonText.Action() {
-			@Override
-			public void action() {
-				
-				main.setScene(new FindGame(main));
-				
-			}
-		};
-		//buttons[1] = new lib.ButtonText("Find a game", find, window.width()-window.width()/4-BUTTON_WIDTH/2, window.height()/2-BUTTON_HEIGHT/2,BUTTON_WIDTH, BUTTON_HEIGHT);
-	
+		Thread hosting = new Thread(host);
+		hosting.start();
+		
 	}
 
 	@Override
 	public void update(double time_difference) {
 		// TODO Auto-generated method stub
+		if(host.ip != null){
+			clientIP = host.ip;
+			clientName = host.clientName;
+		}else{
+			clientIP = null;
+			clientName =  null;
+		}
 		
 	}
 
 	@Override
 	public void draw() {
 		// TODO Auto-generated method stub
-		
+		drawTable(3,6,(int)(100*window.scale()),(int)(200*window.scale()),(int)(1200*window.scale()),(int)(500*window.scale()));
+		graphics.print("IP",210, 260,3);
+		graphics.print("Name", 380, 240,3);
+		graphics.print(ip,120,340,2);
+		graphics.print(name, 360, 340,2);
+		if(clientIP != null && clientName!=null){
+			graphics.print(clientIP.toString().replace("/", ""),120,440,2);
+			graphics.print(clientName, 360, 440,2);
+		}
+		graphics.line(350, 200, 350, 500);
 	}
 
 	@Override
 	public void close() {
+		host.kill();
 		// TODO Auto-generated method stub
 		
 	}
@@ -82,5 +111,37 @@ public class LobbyConfig  extends Scene{
 		// TODO Auto-generated method stub
 		
 	}
+	public void drawTable(int rows, int columns,int x1, int y1, int x2, int y2){
+		int lineHeight = (y2 - y1) / rows;
+		graphics.setColour(graphics.green);
 
+		//Draw top line of table
+		graphics.line(x1,y1+1,x2,y1+1);
+		graphics.line(x1,y1+2,x2,y1+2);
+		graphics.line(x1,y1+3,x2,y1+3);
+
+		//Draw bottom line of table
+		graphics.line(x1,y2+1,x2,y2+1);
+		graphics.line(x1,y2+2,x2,y2+2);
+		graphics.line(x1,y2+3,x2,y2+3);
+
+		//Draw left line of table
+		graphics.line(x1+1,y1,x1+1,y2);
+		graphics.line(x1+2,y1,x1+2,y2);
+		graphics.line(x1+3,y1,x1+3,y2);
+
+		//Draw right line of table
+		graphics.line(x2-1,y1,x2-1,y2);
+		graphics.line(x2-2,y1,x2-2,y2);
+		graphics.line(x2,y1,x2,y2);
+
+		{
+			int lineY = y1;
+			for (int i = 0; i < rows-1; i++){
+				lineY += lineHeight;
+				graphics.line(x1, lineY, x2 ,  lineY);
+			}
+		}
+
+	}
 }
