@@ -129,17 +129,17 @@ public class DifficultySelect extends Scene {
 		buttons[2] = new lib.ButtonText("Hard", hard, HARD_BUTTON_X, HARD_BUTTON_Y, HARD_BUTTON_WIDTH, HARD_BUTTON_HEIGHT);
 		
 		text_box = new lib.TextBox(128, 96, window.width() - 256, window.height() - 96, 32);
-		text_box.addText("You are a 500 kilogram ferocious Grizzly Bear." + TextBox.DELAY_START + "0.5" + TextBox.DELAY_END + " The Humans are not aware of your hidden identity.");
+		text_box.addText("The time has come." + TextBox.DELAY_START + "0.5" + TextBox.DELAY_END + " You are the chosen one ");
 		text_box.delay(0.5);
-		text_box.addText("You have become an air traffic controller at " + DifficultySelect.place_name + " international in order to provide for your family during the harsh winters ahead.");
+		text_box.addText("You have become an air traffic controller at " + DifficultySelect.place_name + " international airport to fulful your mission.");
 		text_box.delay(0.5);
 		text_box.newline();
-		text_box.addText("Somehow, miraculously, your true nature has not yet been discovered.");
+		text_box.addText("Somehow, miraculously, your true nature has not been discovered. Yet you will experience what you have never thought you would.");
 		text_box.newlines(3);
 		text_box.delay(1);
 		text_box.addText("Guide planes to their destination successfully and you will be rewarded." + TextBox.DELAY_START + "0.5" + TextBox.DELAY_END + 
-						" Fail," + TextBox.DELAY_START + "0.5" + TextBox.DELAY_END + " and the humans may discover your secret identity and put you in a zoo." + 
-						TextBox.DELAY_START + "1" + TextBox.DELAY_END + " Or worse.");
+						" But bear in mind," + TextBox.DELAY_START + "0.5" + TextBox.DELAY_END + " when planes collide no one will remember you" + 
+						TextBox.DELAY_START + "1" + TextBox.DELAY_END + " So, get ready! ");
 	}
 
 	/**
