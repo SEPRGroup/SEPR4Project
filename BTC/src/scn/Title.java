@@ -137,7 +137,7 @@ public class Title extends Scene {
 	@Override
 	public void update(double time_difference) {
 		angle += time_difference; // Increase the angle of the radar sweep
-
+		/*
 		// Check the angle of the radar sweep;
 		// If approaching the BTC title string, play the beep
 		double beepTimer = (angle * 4) + (Math.PI * 4 / 5); 
@@ -145,6 +145,7 @@ public class Title extends Scene {
 		if (beepTimer <= 0.1) {
 			playSound(beep);
 		}
+		*/
 	}
 
 	@Override
