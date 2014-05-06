@@ -44,14 +44,14 @@ public class Airport extends Waypoint {
 		this.x_location = x_location;
 		this.y_location = y_location;
 		this.scale = scale;
-		arrivals_x_location = x_location + (97 -airport.width()/2)*scale;
+		arrivals_x_location = x_location + (90 -airport.width()/2)*scale;
 		arrivals_y_location = y_location + (86 -airport.height()/2)*scale;
 		
 		runway_end_x_location = x_location +(120 -airport.width()/2)*scale;
-		runway_end_y_location = y_location +(69 -airport.height()/2)*scale;
+		runway_end_y_location = y_location +(68 -airport.height()/2)*scale;
 		
 		departures_x_location = x_location +(4 -airport.width()/2)*scale;
-		departures_y_location = y_location +(54 -airport.height()/2)*scale;
+		departures_y_location = y_location +(53 -airport.height()/2)*scale;
 	}
 	
 	private static void loadImage() {
