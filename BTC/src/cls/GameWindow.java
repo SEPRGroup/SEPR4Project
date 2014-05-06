@@ -105,8 +105,8 @@ public class GameWindow implements EventHandler{
 		
 		//create waypoints
 		airports = new Airport[] {
-				new Airport("Mosbear Airport", 600*scale, 200*scale),
-				new Airport("Airport", 600*scale,500*scale)
+				new Airport("Mosbear Airport", 600*scale, 200*scale, scale),
+				new Airport("Airport", 600*scale, 500*scale, scale)
 		};
 		locationWaypoints = new Waypoint[] { 
 				new Waypoint(8, 8, true, "North West Top Leftonia"), // top left
@@ -656,7 +656,7 @@ public class GameWindow implements EventHandler{
 		
 		return new Aircraft(name, 
 				destinationPoint, originPoint, 
-				aircraftImage, RandomNumber.randInclusiveInt(32, 41)*scale, 
+				aircraftImage, scale, RandomNumber.randInclusiveInt(32, 41), 
 				airspaceWaypoints, difficulty);
 	}
 	
@@ -803,7 +803,7 @@ public class GameWindow implements EventHandler{
 	private boolean isOutOfAirspaceBounds(Aircraft a) {
 		Vector pos = a.getPosition();
 		double x = pos.getX(), y = pos.getY();
-		int r = Aircraft.RADIUS;
+		int r = (int)Math.round(Aircraft.RADIUS*scale);
 		return (x < r || x > gameArea.width +r || y < r || y > gameArea.height +r);
 	}
 	
@@ -869,8 +869,8 @@ public class GameWindow implements EventHandler{
 		}
 		return null;
 	}
-	
-	
+
+
 	
 	public double getTime() {
 		return timeElapsed;

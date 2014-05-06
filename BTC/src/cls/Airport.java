@@ -12,6 +12,8 @@ public class Airport extends Waypoint {
 		arrivals_width = 105, arrivals_height = 52,
 		departures_width = 50, departures_height = 36;
 	
+	private double scale;
+	
 	private double
 		x_location, y_location,
 		arrivals_x_location, arrivals_y_location,
@@ -34,22 +36,23 @@ public class Airport extends Waypoint {
 	private final int hangar_size = 3;
 	
 	
-	public Airport(String name, double x_location, double y_location) {
+	public Airport(String name, double x_location, double y_location, double scale) {
 		super(x_location, y_location, true, name);
-		this.x_location = x_location;
-		this.y_location = y_location;
-		arrivals_x_location = x_location + 90;
-		arrivals_y_location = y_location + 83;
-		
-		runway_end_x_location = x_location + 120;
-		runway_end_y_location = y_location - 65;
-		
-		departures_x_location = x_location + 2;
-		departures_y_location = y_location + 50;
-		
 		if (airport == null){
 			loadImage();
 		}
+		this.x_location = x_location;
+		this.y_location = y_location;
+		this.scale = scale;
+		arrivals_x_location = x_location + (97 -airport.width()/2)*scale;
+		arrivals_y_location = y_location + (86 -airport.height()/2)*scale;
+		
+		runway_end_x_location = x_location +(120 -airport.width()/2)*scale;
+		runway_end_y_location = y_location +(69 -airport.height()/2)*scale;
+		
+		departures_x_location = x_location +(4 -airport.width()/2)*scale;
+		departures_y_location = y_location +(54 -airport.height()/2)*scale;
+		System.out.println(airport.width() +", " +airport.height());
 	}
 	
 	private static void loadImage() {
@@ -68,7 +71,7 @@ public class Airport extends Waypoint {
 	public void draw(double current_time) { 
 		// Draw the airport image
 		graphics.setColour(255, 255, 255);
-		graphics.draw(airport, x_location-airport.width()/2, y_location-airport.height()/2);
+		graphics.draw(airport, scale, x_location, y_location, 0,  airport.width()/2, airport.height()/2);
 				
 		int	green_fine = 128,
 			green_danger = 0,
@@ -93,28 +96,28 @@ public class Airport extends Waypoint {
 
 			// Draw border, draw as filled if clicked
 			graphics.setColour(red_now, green_now, 0, 256);
-			graphics.rectangle(is_departures_clicked, departures_x_location-airport.width()/2, departures_y_location-airport.height()/2, departures_width, departures_height);
+			graphics.rectangle(is_departures_clicked, departures_x_location, departures_y_location, departures_width*scale, departures_height*scale);
 
 			// Draw box
 			graphics.setColour(red_now, green_now, 0, 64);
-			graphics.rectangle(true, departures_x_location-airport.width()/2 + 1, departures_y_location-airport.height()/2 + 1, departures_width - 2, departures_height - 2);
+			graphics.rectangle(true, departures_x_location + 1, departures_y_location + 1, departures_width*scale - 2, departures_height*scale - 2);
 			
 			// Print number of aircraft waiting
 			graphics.setColour(255, 255, 255, 128);
-			graphics.print(Integer.toString(aircraft_hangar.size()), departures_x_location-airport.width()/2 + 23, departures_y_location-airport.height()/2 + 15);
+			graphics.print(Integer.toString(aircraft_hangar.size()), departures_x_location + 23*scale, departures_y_location + 15*scale);
 		}
 		graphics.setColour(0, 128, 0, 128);
 		// Draw the arrivals button if at least one plane is waiting (arriving flights)
 		if (aircraft_waiting_to_land.size() > 0) {
 			// Draw border, draw as filled if clicked
-			graphics.rectangle(is_arrivals_clicked, arrivals_x_location-airport.width()/2, arrivals_y_location-airport.height()/2, arrivals_width, arrivals_height);
+			graphics.rectangle(is_arrivals_clicked, arrivals_x_location, arrivals_y_location, arrivals_width*scale, arrivals_height*scale);
 			graphics.setColour(128, 128, 0, 64);			
 			// Draw box
-			graphics.rectangle(true, arrivals_x_location-airport.width()/2 + 1, arrivals_y_location-airport.height()/2 + 1, arrivals_width -2, arrivals_height -2);
+			graphics.rectangle(true, arrivals_x_location + 1, arrivals_y_location + 1, arrivals_width*scale -2, arrivals_height*scale -2);
 			
 			// Print number of aircraft waiting
 			graphics.setColour(255, 255, 255, 128);
-			graphics.print(Integer.toString(aircraft_waiting_to_land.size()), arrivals_x_location-airport.width()/2 + 50, arrivals_y_location-airport.height()/2 + 26);
+			graphics.print(Integer.toString(aircraft_waiting_to_land.size()), arrivals_x_location + 50*scale, arrivals_y_location + 26*scale);
 		}	
 		//graphics.setColour(255, 255, 255, 128);
 		//graphics.print(Integer.toString(1), x_location+120, y_location-65);
@@ -131,13 +134,13 @@ public class Airport extends Waypoint {
 	 */
 	public boolean isWithinArrivals(Vector gamePosition) {
 		return isWithinRect((int)gamePosition.getX(), (int)gamePosition.getY(),
-				(int)(arrivals_x_location-airport.width()/2), (int)(arrivals_y_location-airport.height()/2),
-				(int)arrivals_width, (int)arrivals_height);
+				(int)(arrivals_x_location), (int)(arrivals_y_location),
+				(int)(arrivals_width*scale), (int)(arrivals_height*scale));
 	}
 	
 	// Used for calculating if an aircraft is within the airspace for landing - offset should not be applied
 	public boolean isWithinArrivals(Vector position, boolean apply_offset) {
-		return (apply_offset ? isWithinArrivals(position) : isWithinRect((int)position.getX(), (int)position.getY(),(int)(arrivals_x_location-airport.width()/2), (int)(arrivals_y_location-airport.height()/2), (int)arrivals_width, (int)arrivals_height));
+		return (apply_offset ? isWithinArrivals(position) : isWithinRect((int)position.getX(), (int)position.getY(),(int)(arrivals_x_location), (int)(arrivals_y_location), (int)(arrivals_width*scale), (int)(arrivals_height*scale)));
 	}
 	
 	/**
@@ -147,8 +150,8 @@ public class Airport extends Waypoint {
 	 */
 	public boolean isWithinDepartures(Vector gamePosition) {
 		return isWithinRect((int)gamePosition.getX(), (int)gamePosition.getY(),
-				(int)(departures_x_location-airport.width()/2), (int)(departures_y_location-airport.height()/2), 
-				(int)departures_width, (int)departures_height);
+				(int)(departures_x_location), (int)(departures_y_location), 
+				(int)(departures_width*scale), (int)(departures_height*scale));
 	}
 	
 	public boolean isWithinRect(int test_x, int test_y, int x, int y, int width, int height) {

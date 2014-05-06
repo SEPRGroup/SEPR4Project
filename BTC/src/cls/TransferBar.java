@@ -48,6 +48,7 @@ public class TransferBar {
 		this.height = height;
 		this.distance = distance;
 		this.difficulty = difficulty;
+		
 		wLeftTop = new Waypoint(0, height/4, true, "Left-Top");
 		wLeftBottom = new Waypoint(0, height*3/4, true, "Left-Bottom");
 		wRightTop = new Waypoint(width, height/4, true, "Right-Top");
@@ -165,7 +166,7 @@ public class TransferBar {
 	public void enterLeft(Aircraft a){
 		//generate internal version of Aircraft to show
 		Aircraft b = new Aircraft(a.getName(), 
-				wRightTop, wLeftTop, aircraftImage,
+				wRightTop, wLeftTop, aircraftImage, height / (Aircraft.RADIUS*6),
 				(a.getSpeed()*width)/distance,	//scale speed to match scale of bar
 				wTop, difficulty);	//limit waypoints to force flightplan
 		b.getPosition().setZ( a.getPosition().getZ() );
@@ -178,7 +179,7 @@ public class TransferBar {
 	public void enterRight(Aircraft a){
 		//generate internal version of Aircraft to show
 		Aircraft b = new Aircraft(a.getName(), 
-				wLeftBottom, wRightBottom, aircraftImage,
+				wLeftBottom, wRightBottom, aircraftImage, height / (Aircraft.RADIUS*6),
 				(a.getSpeed()*width)/distance,	//scale speed to match scale of bar
 				wBottom, difficulty);	//limit waypoints to force flightplan
 		b.getPosition().setZ( a.getPosition().getZ() );

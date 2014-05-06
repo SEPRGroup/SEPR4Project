@@ -20,6 +20,8 @@ public class Aircraft {
 	private static int minimum_separation_distance; // Depends on difficulty
 
 	private graphics.Image image; // The plane image
+	private double base_scale;
+	private double base_speed;
 	private double turn_speed; // How much the plane can turn per second - in radians.
 	private String flight_name; // Unique and generated randomly - format is Flight followed by a random number between 100 and 900 e.g Flight 404
 	private double creation_time; // Used to calculate how long an aircraft spent in the airspace
@@ -136,7 +138,7 @@ public class Aircraft {
 	}
 
 	public double getSpeed() {
-		return velocity.magnitude();
+		return base_speed;
 	}
 	
 	public FlightPlan getFlightPlan() {
@@ -205,10 +207,12 @@ public class Aircraft {
 	 * @param sceneWaypoints the waypoints on the map.
 	 * @param difficulty the difficulty the game is set to
 	 */
-	public Aircraft(String name, Waypoint destination_point, Waypoint origin_point, graphics.Image img, double speed, Waypoint[] scene_waypoints, int difficulty) {
+	public Aircraft(String name, Waypoint destination_point, Waypoint origin_point, graphics.Image img, double scale, double speed, Waypoint[] scene_waypoints, int difficulty) {
 		flight_name = name;		
 		flight_plan = new FlightPlan(scene_waypoints, origin_point, destination_point);		
 		image = img;
+		base_scale = scale;
+		base_speed = speed;
 		creation_time = System.currentTimeMillis() / 1000; // System time when aircraft was created in seconds.
 		
 		boolean startAtAirport = flight_plan.getOrigin() instanceof Airport;
@@ -217,7 +221,7 @@ public class Aircraft {
 		current_target = flight_plan.getRoute()[0].getLocation();
 	
 		if (startAtAirport) {
-			position = position.add(new Vector(-80, -50, 0)); // Start at departures
+			position = position.add(new Vector(-80*scale, -58*scale, 0)); // Start at departures
 			position.setZ(0);
 			//point down runway
 			velocity = new Vector(0, 0, 0);
@@ -230,7 +234,7 @@ public class Aircraft {
 			double 
 				x = current_target.getX() - position.getX(),
 				y = current_target.getY() - position.getY();
-			velocity = new Vector(x, y, 0).normalise().scaleBy(speed);
+			velocity = new Vector(x, y, 0).normalise().scaleBy(speed*scale);
 		}
 		
 		if (flight_plan.getDestination() instanceof Airport){
@@ -247,7 +251,7 @@ public class Aircraft {
 			turn_speed = Math.PI / 4;
 			altitude_change_speed = 500;
 			base_score = 60;
-			optimal_time = flight_plan.getTotalDistance() / speed;
+			optimal_time = flight_plan.getTotalDistance() / speed*scale;
 		break;
 
 		case GameWindow.DIFFICULTY_MEDIUM:
@@ -256,7 +260,7 @@ public class Aircraft {
 			turn_speed = Math.PI / 3;
 			altitude_change_speed = 300;
 			base_score = 150;
-			optimal_time = flight_plan.getTotalDistance() / (speed * 2);
+			optimal_time = flight_plan.getTotalDistance() / (speed*scale * 2);
 		break;
 			
 		case GameWindow.DIFFICULTY_HARD:
@@ -267,7 +271,7 @@ public class Aircraft {
 			altitude_change_speed = 200;
 			base_score = 300;
 			addition_to_multiplier = 3;
-			optimal_time = flight_plan.getTotalDistance() / (speed * 3);
+			optimal_time = flight_plan.getTotalDistance() / (speed*scale * 3);
 		break;
 
 		default:
@@ -291,7 +295,7 @@ public class Aircraft {
 	public boolean isAt(Vector point) {
 		double dy = point.getY() - position.getY();
 		double dx = point.getX() - position.getX();
-		return dy*dy + dx*dx < 6*6;
+		return dy*dy + dx*dx < 6*6 * base_scale*base_scale;
 	}
 
 	public boolean isTurningLeft() {
@@ -481,7 +485,7 @@ public class Aircraft {
 		
 		// Draw plane image
 		graphics.setColour(255, 255, 255);
-		graphics.draw(image, scale, position.getX(), position.getY(), getBearing(), image.width()/2, image.height()/2);
+		graphics.draw(image, scale*base_scale, position.getX(), position.getY(), getBearing(), image.width()/2, image.height()/2);
 		
 		// Draw altitude label
 		graphics.setColour(255, 255, 255);
@@ -615,7 +619,7 @@ public class Aircraft {
 		planes_too_near.clear();
 		for (int i = 0; i < aircraftList.size(); i++) {
 			Aircraft plane = aircraftList.get(i);
-			if (plane != this && isWithin(plane, RADIUS)) { // Planes crash
+			if (plane != this && isWithin(plane, (int)Math.round(RADIUS*base_scale))) { // Planes crash
 				has_finished = true;
 				return i;
 			} else if (plane != this && isWithin(plane, minimum_separation_distance)) { // Breaching separation distance
@@ -730,7 +734,7 @@ public class Aircraft {
 	public boolean isCloseToEntry(Vector position) {
 		double x = this.getPosition().getX() - position.getX();
 		double y = this.getPosition().getY() - position.getY();
-		return x*x + y*y <= 300*300;
+		return x*x + y*y <= 300*300 * base_scale*base_scale;
 	}
 
 	public boolean is_takeoff() {
