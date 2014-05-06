@@ -24,7 +24,7 @@ public class Main implements input.EventHandler {
 		new Main();
 	}
 	
-	final private String TITLE = "Bear Traffic Controller: PSA Edition";
+	final private String TITLE = "When Planes Collide";
 	public static final int 
 		TARGET_WIDTH = 1280, TARGET_HEIGHT = 960;
 	
