@@ -22,6 +22,8 @@ import org.newdawn.slick.util.ResourceLoader;
  */
 public abstract class graphics {
 	
+	private final static int FONTSCALE = 8; //Scales all the text in the game down by a constant
+	
 	/**
 	 * <h1>jog.graphics.Font</h1>
 	 * <p>Abstract font class with print methods.</p>
@@ -46,7 +48,6 @@ public abstract class graphics {
 		
 		private String glyphs; // String containing the characters in the same order that the image has them.
 		private Image image;
-		private final static int FONTSCALE = 8; //Scales all the text in the game down by a constant
 		
 		/**
 		 * Constructor for a bitmap font.
