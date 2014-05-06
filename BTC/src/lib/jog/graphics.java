@@ -515,7 +515,7 @@ public abstract class graphics {
 		glPushMatrix();
 	    glTranslated(x, y, 0);
 	    glRotated(r, 0, 0, 1);
-	    glScaled(scale, scale, 1);
+	    glScaled(scale*2, scale*2, 1);
 		glBegin(GL_QUADS);
 			glTexCoord2d(0, 0);
 			glVertex2d(-origin_x/2, -origin_y/2);

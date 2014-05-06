@@ -479,7 +479,7 @@ public class Aircraft {
 	 */
 	public void draw() {
 		
-		double scale = (position.getZ()+20000)/30000; // Planes with lower altitude are smaller
+		double scale = 0.5*(position.getZ()+20000)/30000; // Planes with lower altitude are smaller
 		
 		// Draw plane image
 		graphics.setColour(255, 255, 255);
