@@ -3,6 +3,8 @@ package scn.mult;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import btc.Main;
+
 import lib.jog.graphics;
 import lib.jog.input;
 import lib.jog.window;
@@ -10,6 +12,7 @@ import lib.jog.audio.Sound;
 import scn.Scene;
 import svc.BroadcastServer;
 import svc.LobbyInfo;
+import svc.Server;
 
 public class LobbyConfig  extends Scene{
 
@@ -20,7 +23,7 @@ public class LobbyConfig  extends Scene{
 	private String ip;
 	BroadcastServer host;
 	
-	public LobbyConfig(String name){
+	public LobbyConfig(Main main,String name){
 		this.name = name;
 	}
 	
@@ -77,6 +80,7 @@ public class LobbyConfig  extends Scene{
 		if(host.ip != null){
 			clientIP = host.ip;
 			clientName = host.clientName;
+			Server server = new Server();
 		}else{
 			clientIP = null;
 			clientName =  null;

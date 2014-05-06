@@ -66,7 +66,7 @@ public class HostOrFind extends Scene {
 				if(text.getText().length() == 0){
 					return;
 				}
-				main.setScene(new LobbyConfig(text.getText()));
+				main.setScene(new LobbyConfig(main,text.getText()));
 				
 			}
 		};
