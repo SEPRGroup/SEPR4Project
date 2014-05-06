@@ -2,8 +2,10 @@ package scn;
 
 import java.io.File;
 
+import cls.Aircraft;
 import cls.GameWindow;
 import cls.TransferBar;
+import lib.RandomNumber;
 import lib.jog.audio;
 import lib.jog.audio.Sound;
 import lib.jog.graphics;
@@ -74,12 +76,27 @@ class Multiplayer extends Scene {
 	public void update(double timeDifference) {
 		game1.update(timeDifference);
 		game2.update(timeDifference);
+		
+		{	//manage transfers
+			double rand = Math.random();
+			if (rand < 0.1*timeDifference){
+				java.util.List<Aircraft> c = game1.getAircraftList();
+				transfers.enterLeft(c.get(RandomNumber.randInclusiveInt(0, c.size()-1)));				
+			}
+			else if (rand < 0.2*timeDifference){
+				java.util.List<Aircraft> c = game2.getAircraftList();
+				transfers.enterRight(c.get(RandomNumber.randInclusiveInt(0, c.size()-1)));				
+			}
+		}
+		
 		transfers.update(timeDifference);
+		
 
 		//synchronize scores
 		//talk to network stuff
 		//track gameovers
-		//manage transfers
+		
+
 
 	}
 
