@@ -56,7 +56,7 @@ public class Aircraft {
 	
 	private int 
 		last_altitude,// interval_altitude, // will increase to the current altitude  
-		min_altitude = 10000, max_altitude = 30000; 
+		min_altitude = 25000, max_altitude = 30000; 
 	/**
 	 * Static ints for use where altitude state is to be changed.
 	 */
@@ -623,7 +623,7 @@ public class Aircraft {
 			if (plane != this && isWithin(plane, (int)Math.round(RADIUS*base_scale))) { // Planes crash
 				has_finished = true;
 				return i;
-			} else if (plane != this && isWithin(plane, minimum_separation_distance)) { // Breaching separation distance
+			} else if (plane != this && isWithin(plane, (int)Math.round(minimum_separation_distance*base_scale))) { // Breaching separation distance
 				planes_too_near.add(plane);
 				score.increaseMeterFill(-1); // Punishment for breaching separation rules (applies to all aircraft involved - usually 2)
 				if (!collision_warning_sound_flag) {
