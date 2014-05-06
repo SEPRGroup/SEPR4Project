@@ -16,7 +16,7 @@ public class AircraftTest {
 	@Before
 	public void setUp() {
 		Waypoint[] waypoints = new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), new Waypoint(25, 75, false), new Waypoint(75, 25, false), new Waypoint(50,50, false)};
-		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypoints, 1);
+		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 0, 10.0, waypoints, 1);
 		test_score = new Score(0, 0);
 	}
 	
@@ -59,7 +59,7 @@ public class AircraftTest {
 	@Test
 	public void testGetSpeed() {
 		double speed = (int) (test_aircraft.getSpeed() + 0.5);
-		assertTrue("Speed = 20", speed == 20.0);
+		assertTrue("Speed = 10", speed == 10.0);
 	}
 	
 	@Test
@@ -73,7 +73,7 @@ public class AircraftTest {
 	public void testIsAt() {
 		Waypoint[] waypoints = new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), 
 				new Waypoint(25, 75, false), new Waypoint(75, 25, false), new Waypoint(50,50, false)};
-		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypoints, 1);
+		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, 0, waypoints, 1);
 		
 		//double x = test_aircraft.getPosition().getX();
 		// y = test_aircraft.getPosition().getY();
@@ -94,10 +94,10 @@ public class AircraftTest {
 	@Test		
 	public void testIsCloseToEntry() {
 		Waypoint[] waypointList = new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), new Waypoint(25, 75, false), new Waypoint(675, 125, false), new Waypoint(530,520, false)};
-		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypointList, 1);
+		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 0, 20.0, waypointList, 1);
 		assertTrue(test_aircraft.isCloseToEntry(waypointList[0].getLocation()));			
-		assertTrue(test_aircraft.isCloseToEntry(waypointList[1].getLocation()));
-		assertTrue(test_aircraft.isCloseToEntry(waypointList[2].getLocation()));
+		assertFalse(test_aircraft.isCloseToEntry(waypointList[1].getLocation()));
+		assertFalse(test_aircraft.isCloseToEntry(waypointList[2].getLocation()));
 		assertFalse(test_aircraft.isCloseToEntry(waypointList[3].getLocation()));
 		assertFalse(test_aircraft.isCloseToEntry(waypointList[4].getLocation()));
 	}

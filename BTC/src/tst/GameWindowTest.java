@@ -43,8 +43,8 @@ public class GameWindowTest {
 		double scale = 5 / 1248.0;
 		
 		Airport[] airports = new Airport[] {
-				new Airport("Mosbear Airport", 600*scale, 200*scale),
-				new Airport("Airport", 600*scale,500*scale)
+				new Airport("Mosbear Airport", 600*scale, 200*scale, scale),
+				new Airport("Airport", 600*scale,500*scale, scale)
 		};
 		
 		Waypoint[] locationWaypoints = new Waypoint[] { 
@@ -94,7 +94,7 @@ public class GameWindowTest {
 	@Test
 	public void testTakeOffSequence() {
 		Waypoint[] waypoints = new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), new Waypoint(25, 75, false), new Waypoint(75, 25, false), new Waypoint(50,50, false)};
-		Aircraft testAircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypoints, 1);
+		Aircraft testAircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, 0, waypoints, 1);
 		testGame.takeOffSequence(testAircraft);
 		
 		assertEquals(testAircraft, testGame.getAircraftList().get(0));

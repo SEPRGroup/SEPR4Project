@@ -26,9 +26,9 @@ public class AirportTest {
 			lib.jog.graphics.initialise();
 		} catch (LWJGLException e) {e.printStackTrace();}
 		
-		test_airport = new Airport("",500,600);
+		test_airport = new Airport("",500,600, 0);
 		Waypoint[] waypoint_list = new Waypoint[]{new Waypoint(0, 0, true), new Waypoint(100, 100, true), new Waypoint(25, 75, false), new Waypoint(75, 25, false), new Waypoint(50,50, false)};
-		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, waypoint_list, 1);			
+		test_aircraft = new Aircraft("testAircraft", new Waypoint(100,100, true), new Waypoint(0,0, true), null, 10.0, 0, waypoint_list, 1);			
 	}
 	
 	/**
