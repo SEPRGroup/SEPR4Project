@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 
 import lib.jog.audio;
-import lib.jog.graphics;
 import lib.jog.input;
 import lib.jog.window;
 import cls.Aircraft;

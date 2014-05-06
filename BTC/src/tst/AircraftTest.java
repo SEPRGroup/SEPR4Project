@@ -1,8 +1,6 @@
 package tst;
 
 import static org.junit.Assert.*;
-import lib.jog.window;
-
 import org.junit.Test;
 import org.junit.Before;
 

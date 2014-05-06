@@ -6,8 +6,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.Before;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
-
 import scn.Demo;
 import cls.Aircraft;
 import cls.GameWindow;

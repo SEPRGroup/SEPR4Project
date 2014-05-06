@@ -41,7 +41,6 @@ public class Main implements input.EventHandler {
 	private int fps_counter;
 	private long last_fps_time;
 	
-	private graphics.Image backgroundImage;
 	
 	/**
 	 * Constructor for Main. Initialises the jog library classes, and then

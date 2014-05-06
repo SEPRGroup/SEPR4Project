@@ -1,7 +1,5 @@
 package svc;
 
-import java.text.ParseException;
-
 public class LobbyInfo {
 	public String name;
 	public String description;

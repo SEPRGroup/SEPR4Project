@@ -166,7 +166,7 @@ public class TransferBar {
 		//generate internal version of Aircraft to show
 		Aircraft b = new Aircraft(a.getName(), 
 				wRightTop, wLeftTop, aircraftImage,
-				(a.getSpeed()*width)/(double)distance,	//scale speed to match scale of bar
+				(a.getSpeed()*width)/distance,	//scale speed to match scale of bar
 				wTop, difficulty);	//limit waypoints to force flightplan
 		b.getPosition().setZ( a.getPosition().getZ() );
 		
@@ -179,7 +179,7 @@ public class TransferBar {
 		//generate internal version of Aircraft to show
 		Aircraft b = new Aircraft(a.getName(), 
 				wRightBottom, wLeftBottom, aircraftImage,
-				(a.getSpeed()*width)/(double)distance,	//scale speed to match scale of bar
+				(a.getSpeed()*width)/distance,	//scale speed to match scale of bar
 				wBottom, difficulty);	//limit waypoints to force flightplan
 		b.getPosition().setZ( a.getPosition().getZ() );
 		
