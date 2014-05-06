@@ -9,7 +9,7 @@ public interface NetworkIO {
 	/**connection is active and will function*/
 	public static final int STATUS_ALIVE = 2;
 	/**connection has failed and will not function*/
-	public static final int STATUS_DEAD = 3;
+	public static final int STATUS_FAILED = 3;
 	
 	
 	/**
@@ -18,6 +18,9 @@ public interface NetworkIO {
 	 * @param port the port to connect to
 	 */
 	public void connect(String destination, String port);
+	
+	/** Close the connection */
+	public void close();
 		
 	/** 
 	 * Send the object to connected parties: non-blocking
