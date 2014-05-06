@@ -115,7 +115,7 @@ public class Credits extends Scene {
 		currentHeight += gap;
 		graphics.printCentred("Alex Stewart", 0, currentHeight, 2, window.width()/3);
 		graphics.printCentred("Huw Taylor", window.width()/3, currentHeight, 2, window.width()/3);
-		graphics.printCentred("Stephen Webb)", 2 * window.width()/3, currentHeight, 2, window.width()/3);
+		graphics.printCentred("Stephen Webb", 2 * window.width()/3, currentHeight, 2, window.width()/3);
 		
 		currentHeight += gap * 2;	
 		
