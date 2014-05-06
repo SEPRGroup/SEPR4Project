@@ -41,7 +41,7 @@ public class Aircraft {
 	private double manual_bearing_target = Double.NaN;
 	private int current_route_stage = 0;
 	private int altitude_state; // Whether the plane is climbing or falling
-	private int takeoff_velocity = 32;
+	private int takeoff_velocity;
 	
 
 	private double departure_time; // Used when calculating when a label representing the score a particular plane scored should disappear
@@ -213,6 +213,7 @@ public class Aircraft {
 		image = img;
 		base_scale = scale;
 		base_speed = speed;
+		takeoff_velocity = (int)Math.round(32 * scale);
 		creation_time = System.currentTimeMillis() / 1000; // System time when aircraft was created in seconds.
 		
 		boolean startAtAirport = flight_plan.getOrigin() instanceof Airport;
@@ -430,7 +431,7 @@ public class Aircraft {
 				}
 			}else{
 				double velocity_mag = velocity.magnitude();
-				velocity = velocity.normalise().scaleBy(velocity_mag + 0.05);
+				velocity = velocity.normalise().scaleBy(velocity_mag + 0.07);
 			}
 
 		}
