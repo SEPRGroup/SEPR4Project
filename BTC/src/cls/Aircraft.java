@@ -198,10 +198,8 @@ public class Aircraft {
 	/**
 	 * Constructor for an aircraft.
 	 * @param name the name of the flight.
-	 * @param nameOrigin the name of the location from which the plane hails.
-	 * @param nameDestination the name of the location to which the plane is going.
-	 * @param originPoint the point to initialise the plane.
 	 * @param destinationPoint the end point of the plane's route.
+	 * @param originPoint the point to initialise the plane.
 	 * @param img the image to represent the plane.
 	 * @param speed the speed the plane will travel at.
 	 * @param sceneWaypoints the waypoints on the map.
