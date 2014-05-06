@@ -97,7 +97,7 @@ public class Waypoint implements Serializable{
 	 */
 	public void draw(double x, double y) {
 		if (this.isEntryAndExit()) 
-			graphics.setColour(0, 0, 0);
+			graphics.setColour(150, 150, 255);
 		else
 			graphics.setColour(255, 255, 255);
 		
