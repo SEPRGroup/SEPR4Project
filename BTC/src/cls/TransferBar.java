@@ -85,7 +85,7 @@ public class TransferBar {
 			if (b.isFinished()){
 				Aircraft a = transferStore.remove(i);
 				transfer.remove(i);
-				if (b.getFlightPlan().getOrigin() == wRightTop){
+				if (b.getFlightPlan().getOrigin() == wLeftTop){
 					right.add(a);
 				} else {
 					left.add(a);

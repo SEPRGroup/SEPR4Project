@@ -52,7 +52,6 @@ public class Airport extends Waypoint {
 		
 		departures_x_location = x_location +(4 -airport.width()/2)*scale;
 		departures_y_location = y_location +(54 -airport.height()/2)*scale;
-		System.out.println(airport.width() +", " +airport.height());
 	}
 	
 	private static void loadImage() {
