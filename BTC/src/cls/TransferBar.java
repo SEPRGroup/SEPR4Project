@@ -51,14 +51,14 @@ public class TransferBar {
 		wLeftTop = new Waypoint(0, height/4, true, "Left-Top");
 		wLeftBottom = new Waypoint(0, height*3/4, true, "Left-Bottom");
 		wRightTop = new Waypoint(width, height/4, true, "Right-Top");
-		wRightBottom = new Waypoint(width, height*3/4, true, "Right-Top");
+		wRightBottom = new Waypoint(width, height*3/4, true, "Right-Bottom");
 		wTop = new Waypoint[] { wLeftTop, wRightTop };
 		wBottom = new Waypoint[] { wLeftBottom, wRightBottom };
 		
 		//wind = Math.random()*40 -10;
 		wind = 20;
 		//generate initial clouds
-		for (int i=0; i<20; i++ ){
+		for (int i=0; i<150; i++ ){
 			Image image = clouds[RandomNumber.randInclusiveInt(0, clouds.length-1)];
 			int	w = (int)Math.ceil(image.width()),
 				h = (int)Math.ceil(image.height());
@@ -102,17 +102,17 @@ public class TransferBar {
 			//remove features that are no longer visible
 			if (f.x -f.image.width()*f.scale > width+20){
 				features.remove(i);
-				break;
+				continue;
 			}
 			if (f.x +f.image.width()*f.scale +20 < 0){
 				features.remove(i);
-				break;
+				continue;
 			}
 
 		}
 
-		//generate a new feature ~ every 2 seconds
-		if (Math.random() < 0.5*timeDifference){
+		//generate a new feature ~ every second
+		if (Math.random() < timeDifference){
 			Image image = clouds[RandomNumber.randInclusiveInt(0, clouds.length-1)];
 			int	w = (int)Math.ceil(image.width()),
 				h = (int)Math.ceil(image.height());
@@ -126,7 +126,7 @@ public class TransferBar {
 			Feature f = new Feature(image, scale, scaleDrift,
 					xPos, yPos, yDrift);
 			features.add(f);
-			System.out.println(features.size() +"+\t" +f.toString());
+			//System.out.println(features.size() +"+\t" +f.toString());
 		}
 
 	}
@@ -140,7 +140,7 @@ public class TransferBar {
 		graphics.rectangle(true, 0, 0, width, height);
 		
 		//draw features{
-		graphics.setColour(graphics.white);
+		graphics.setColour(255,255,255, 128);
 		for (Feature f : features){
 			double
 				ox = f.image.width()/2,
@@ -178,7 +178,7 @@ public class TransferBar {
 	public void enterRight(Aircraft a){
 		//generate internal version of Aircraft to show
 		Aircraft b = new Aircraft(a.getName(), 
-				wRightBottom, wLeftBottom, aircraftImage,
+				wLeftBottom, wRightBottom, aircraftImage,
 				(a.getSpeed()*width)/distance,	//scale speed to match scale of bar
 				wBottom, difficulty);	//limit waypoints to force flightplan
 		b.getPosition().setZ( a.getPosition().getZ() );
