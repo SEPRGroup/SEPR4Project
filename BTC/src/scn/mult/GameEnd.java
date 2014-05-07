@@ -46,7 +46,8 @@ public class GameEnd extends Scene{
 	public void keyReleased(int key) {
 		if (key == keyPressed) {
 			main.closeScene(); // Close this screen
-			main.closeScene(); // Close difficulty select
+			main.closeScene(); // Close lobby select
+			main.closeScene(); // Close method select
 		}
 	}
 
