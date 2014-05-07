@@ -127,7 +127,7 @@ public class Multiplayer extends Scene {
 						Aircraft a = tb.pollOut();
 						while (a != null) {
 							System.out.println(a.getName() +" transferred out");
-							transfers.enterLeft(a);
+							transfers.enterRight(a);
 							network.sendObject(new MultiplayerPacket(new AircraftPacket(a)));
 							a = tb.pollOut();
 						};
@@ -140,26 +140,34 @@ public class Multiplayer extends Scene {
 		transfers.update(timeDifference);
 		
 		{	//handle transfers in
-			Aircraft a = transfers.pollLeft();
-			while (a != null) {
-				for (TransferBuffer tb : game1.transfers){
-					if(playerNo == 1){
-						if (tb.name == "North West Top Leftonia"){
-							System.out.println(a.getName() +" transferred in");
-							tb.transferIn(a);
-							break;
-						}
-					}else{
-						if (tb.name == "100 Acre Woods"){
+			if(playerNo == 1){
+				Aircraft a = transfers.pollLeft();
+				while (a != null) {
+					for (TransferBuffer tb : game1.transfers){
+						if (tb.name == "South Sea"){
 							System.out.println(a.getName() +" transferred in");
 							tb.transferIn(a);
 							break;
 						}
 					}
+					a = transfers.pollLeft();
 				}
-				a = transfers.pollLeft();
+				transfers.clearRight();
+
+			}else{
+				Aircraft a = transfers.pollRight();
+				while (a != null) {
+					for (TransferBuffer tb : game1.transfers){
+						if (tb.name == "North West Top Leftonia"){
+							System.out.println(a.getName() +" transferred in");
+							tb.transferIn(a);
+							break;
+						}
+					}
+					a = transfers.pollRight();
+				}
+				transfers.clearLeft();
 			}
-			transfers.clearRight();
 		}
 		
 		{	//handle any network events
@@ -172,7 +180,9 @@ public class Multiplayer extends Scene {
 					AircraftPacket ap = (AircraftPacket) mp.contents;
 					Aircraft air = AircraftPacket.fromPacket(ap, game1.getScale(),difficulty);
 					air.getPosition().setVector(ap.position.getX(),ap.position.getY(),ap.position.getZ());
-					transfers.enterRight(air);
+					if (playerNo == 1)
+						transfers.enterRight(air);
+					else transfers.enterLeft(air);
 					break;
 				case GAMESTATE:
 					AircraftPacket[] airspace = (AircraftPacket[]) mp.contents;
