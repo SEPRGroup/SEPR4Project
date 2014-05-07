@@ -1,5 +1,6 @@
 package scn.mult;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -16,6 +17,7 @@ import svc.Server;
 
 public class LobbyConfig  extends Scene{
 
+	private static graphics.Image backgroundImage;
 	private lib.ButtonText[] buttons;
 	private String name,clientName = "";
 	private InetAddress clientIP = null;
@@ -58,7 +60,8 @@ public class LobbyConfig  extends Scene{
 
 	@Override
 	public void start() {
-		
+
+		backgroundImage = graphics.newImage("gfx" +File.separator + "mainBackgroundBlurred.png");
 		User = new LobbyInfo(name,"Some text here",1);
 		try {
 			String[] s = InetAddress.getLocalHost().toString().split("/");
@@ -91,6 +94,7 @@ public class LobbyConfig  extends Scene{
 	@Override
 	public void draw() {
 		// TODO Auto-generated method stub
+		graphics.draw(backgroundImage, 0, 0, window.scale());
 		drawTable(3,6,(int)(100*window.scale()),(int)(200*window.scale()),(int)(1200*window.scale()),(int)(500*window.scale()));
 		graphics.print("IP",210, 260,3);
 		graphics.print("Name", 380, 240,3);
@@ -117,7 +121,7 @@ public class LobbyConfig  extends Scene{
 	}
 	public void drawTable(int rows, int columns,int x1, int y1, int x2, int y2){
 		int lineHeight = (y2 - y1) / rows;
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 
 		//Draw top line of table
 		graphics.line(x1,y1+1,x2,y1+1);

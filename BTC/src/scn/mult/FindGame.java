@@ -2,6 +2,7 @@ package scn.mult;
 
 import static cls.GameWindow.DIFFICULTY_MEDIUM;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class FindGame extends Scene {
 	private int scene; 
 	private String name;
 	private List<BroadcastResponse> responses = new CopyOnWriteArrayList<BroadcastResponse>();
+	private static graphics.Image backgroundImage;
 	
 	public FindGame(Main main, String name) {
 		super(main);
@@ -65,7 +67,8 @@ public class FindGame extends Scene {
 
 	@Override
 	public void start() {
-
+		
+		backgroundImage = graphics.newImage("gfx" +File.separator + "mainBackgroundBlurred.png");
 		client = new BroadcastClient();
 		clientThread = new Thread(client);
 		clientThread.start();
@@ -120,7 +123,7 @@ public void update(double time_difference) {
 
 public void drawTable(int rows, int columns,int x1, int y1, int x2, int y2){
 	int lineHeight = (y2 - y1) / rows;
-	graphics.setColour(graphics.green);
+	graphics.setColour(graphics.white);
 
 	//Draw top line of table
 	graphics.line(x1,y1+1,x2,y1+1);
@@ -154,10 +157,11 @@ public void drawTable(int rows, int columns,int x1, int y1, int x2, int y2){
 @Override
 public void draw() {
 	// TODO  Auto-generated method stub
+	graphics.draw(backgroundImage, 0, 0, window.scale());
 	drawTable(5,6,(int)(100*window.scale()),(int)(200*window.scale()),(int)(1200*window.scale()),(int)(600*window.scale()));
 	graphics.print("IP",210, 240,3);
 	graphics.print("Name", 380, 240,3);
-	graphics.setColour(graphics.green);
+	graphics.setColour(graphics.white);
 	int count = 0;
 	String[] fields = new String[5];
 	for( BroadcastResponse r :responses){

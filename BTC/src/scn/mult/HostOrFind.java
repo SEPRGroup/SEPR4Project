@@ -2,6 +2,8 @@ package scn.mult;
 
 import static cls.GameWindow.DIFFICULTY_MEDIUM;
 
+import java.io.File;
+
 import scn.Demo;
 import scn.DifficultySelect;
 import scn.Scene;
@@ -17,6 +19,8 @@ public class HostOrFind extends Scene {
 
 	private lib.ButtonText[] buttons;
 	
+
+	private static graphics.Image backgroundImage;
 	private static int BUTTON_WIDTH = 400;
 	private static int BUTTON_HEIGHT = 200;
 	private int nameX;
@@ -57,6 +61,7 @@ public class HostOrFind extends Scene {
 
 	@Override
 	public void start() {
+		backgroundImage = graphics.newImage("gfx" +File.separator + "mainBackgroundBlurred.png");
 		nameX = 800;
 		buttons = new lib.ButtonText[2];
 		text = new TextField(window.width()/2 - 200,300, 400, 30,3);
@@ -94,8 +99,9 @@ public class HostOrFind extends Scene {
 
 	@Override
 	public void draw() {
+		graphics.draw(backgroundImage, 0, 0, window.scale());
 		text.draw();
-		graphics.setColour(graphics.green);
+		graphics.setColour(graphics.white);
 		graphics.printRight("Name: ", 400, 300, 3, 1);
 		graphics.rectangle(false, window.width()/4-BUTTON_WIDTH/2, window.height()/2-BUTTON_HEIGHT/2, BUTTON_WIDTH, BUTTON_HEIGHT);
 		graphics.rectangle(false, window.width()-window.width()/4-BUTTON_WIDTH/2, window.height()/2-BUTTON_HEIGHT/2, BUTTON_WIDTH, BUTTON_HEIGHT);
