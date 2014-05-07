@@ -21,10 +21,10 @@ public class HostOrFind extends Scene {
 	
 
 	private static graphics.Image backgroundImage;
-	private static int BUTTON_WIDTH = 400;
-	private static int BUTTON_HEIGHT = 200;
-	private int nameX;
+	private static int BUTTON_WIDTH = (int)Math.round(400*window.scale());
+	private static int BUTTON_HEIGHT = (int)Math.round(200*window.scale());
 	private TextField text;
+	
 	public HostOrFind(Main main) {
 		super(main);
 	}
@@ -62,9 +62,11 @@ public class HostOrFind extends Scene {
 	@Override
 	public void start() {
 		backgroundImage = graphics.newImage("gfx" +File.separator + "mainBackgroundBlurred.png");
-		nameX = 800;
+		
 		buttons = new lib.ButtonText[2];
-		text = new TextField(window.width()/2 - 200,300, 400, 30,3);
+		int x = window.width()/3;
+		int y = (int)Math.round(300 * window.scale());
+		text = new TextField(x,y, 400, 30,3);
 		lib.ButtonText.Action host = new lib.ButtonText.Action() {
 			@Override
 			public void action() {
@@ -102,7 +104,7 @@ public class HostOrFind extends Scene {
 		graphics.draw(backgroundImage, 0, 0, window.scale());
 		text.draw();
 		graphics.setColour(graphics.white);
-		graphics.printRight("Name: ", 400, 300, 3, 1);
+		graphics.printRight("Name: ", 400 *window.scale(), 300* window.scale(), 3, 1);
 		graphics.rectangle(false, window.width()/4-BUTTON_WIDTH/2, window.height()/2-BUTTON_HEIGHT/2, BUTTON_WIDTH, BUTTON_HEIGHT);
 		graphics.rectangle(false, window.width()-window.width()/4-BUTTON_WIDTH/2, window.height()/2-BUTTON_HEIGHT/2, BUTTON_WIDTH, BUTTON_HEIGHT);
 		for (lib.ButtonText button : buttons) {

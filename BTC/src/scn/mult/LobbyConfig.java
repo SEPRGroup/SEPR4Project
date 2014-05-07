@@ -1,8 +1,15 @@
 package scn.mult;
 
+import static svc.NetworkIO.STATUS_ALIVE;
+import static svc.NetworkIO.STATUS_FAILED;
+import static svc.NetworkIO.STATUS_IDLE;
+import static svc.NetworkIO.STATUS_TRAINING;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+
+import cls.GameWindow;
 
 import btc.Main;
 
@@ -11,9 +18,11 @@ import lib.jog.input;
 import lib.jog.window;
 import lib.jog.audio.Sound;
 import scn.Scene;
+import svc.BroadcastClient;
 import svc.BroadcastServer;
 import svc.LobbyInfo;
 import svc.Server;
+import svc.tcpConnection;
 
 public class LobbyConfig  extends Scene{
 
@@ -24,9 +33,13 @@ public class LobbyConfig  extends Scene{
 	private LobbyInfo User;
 	private String ip;
 	BroadcastServer host;
+	tcpConnection connection = new tcpConnection(false);
+	private int difficulty;
 	
 	public LobbyConfig(Main main,String name){
 		this.name = name;
+		difficulty = GameWindow.DIFFICULTY_MEDIUM;
+		
 	}
 	
 	@Override
@@ -62,7 +75,7 @@ public class LobbyConfig  extends Scene{
 	public void start() {
 
 		backgroundImage = graphics.newImage("gfx" +File.separator + "mainBackgroundBlurred.png");
-		User = new LobbyInfo(name,"Some text here",1);
+		User = new LobbyInfo(name,"Some text here",difficulty);
 		try {
 			String[] s = InetAddress.getLocalHost().toString().split("/");
 			ip = s[1];
@@ -74,6 +87,9 @@ public class LobbyConfig  extends Scene{
 		
 		Thread hosting = new Thread(host);
 		hosting.start();
+		if(host.ip != null){
+			
+		}
 		
 	}
 
@@ -88,23 +104,46 @@ public class LobbyConfig  extends Scene{
 			clientIP = null;
 			clientName =  null;
 		}
-		
+		if(host.ip != null){
+			connection.connect(host.ip.getHostAddress(), tcpConnection.TCP_PORT);
+		}
+		switch (connection.getStatus()){
+		case STATUS_IDLE: break;
+		case STATUS_TRAINING: break;
+		case STATUS_ALIVE:
+			//advance to multiplayer
+			main.setScene(new scn.Multiplayer(main,difficulty,connection));
+			break;
+		case STATUS_FAILED:
+			//reset host variables; enable button
+			host.ip = null;
+			host.clientName = null;
+			
+			if(buttons != null){
+				for (lib.ButtonText button : buttons) {
+					button.setAvailability(true);
+				}
+			}
+			connection = new tcpConnection(false);
+			break;
+		}
 	}
 
 	@Override
 	public void draw() {
 		// TODO Auto-generated method stub
+		
 		graphics.draw(backgroundImage, 0, 0, window.scale());
-		drawTable(3,6,(int)(100*window.scale()),(int)(200*window.scale()),(int)(1200*window.scale()),(int)(500*window.scale()));
-		graphics.print("IP",210, 260,3);
-		graphics.print("Name", 380, 240,3);
-		graphics.print(ip,120,340,2);
-		graphics.print(name, 360, 340,2);
+		drawTable(3,6,(int)Math.round(100*window.scale()),(int)Math.round(200*window.scale()),(int)Math.round(1200*window.scale()),(int)Math.round(500*window.scale()));
+		graphics.print("IP",(int)Math.round(210*window.scale()), (int)Math.round(240*window.scale()),3);
+		graphics.print("Name", (int)Math.round(380*window.scale()), (int)Math.round(240*window.scale()),3);
+		graphics.print(ip,(int)Math.round(120*window.scale()),(int)Math.round(340*window.scale()),2);
+		graphics.print(name, (int)Math.round(360*window.scale()), (int)Math.round(340*window.scale()),2);
 		if(clientIP != null && clientName!=null){
 			graphics.print(clientIP.toString().replace("/", ""),120,440,2);
-			graphics.print(clientName, 360, 440,2);
+			graphics.print(clientName, (int)Math.round(360*window.scale()), (int)Math.round(440*window.scale()),2);
 		}
-		graphics.line(350, 200, 350, 500);
+		graphics.line((int)Math.round(350*window.scale()), (int)Math.round(200*window.scale()), (int)Math.round(350*window.scale()),(int)Math.round(500*window.scale()));
 	}
 
 	@Override

@@ -15,11 +15,14 @@ import scn.Scene;
 import svc.BroadcastClient;
 import svc.BroadcastClient.BroadcastResponse;
 import svc.LobbyInfo;
+import svc.tcpConnection;
 import btc.Main;
 import lib.jog.graphics;
 import lib.jog.input;
 import lib.jog.window;
 import lib.jog.audio.Sound;
+
+import static svc.NetworkIO.*;
 
 public class FindGame extends Scene {
 
@@ -30,7 +33,10 @@ public class FindGame extends Scene {
 	private int scene; 
 	private String name;
 	private List<BroadcastResponse> responses = new CopyOnWriteArrayList<BroadcastResponse>();
+	private List<LobbyInfo> info = new ArrayList<LobbyInfo>();
 	private static graphics.Image backgroundImage;
+	private tcpConnection connection = new tcpConnection(false);
+	private int lobbyIndex;
 	
 	public FindGame(Main main, String name) {
 		super(main);
@@ -99,7 +105,11 @@ public class FindGame extends Scene {
 		client = new BroadcastClient(responses.get(index).responder,name);
 		Thread c = new Thread(client);
 		c.start();
-		
+		connection.connect(responses.get(index).responder.getHostAddress(), tcpConnection.TCP_PORT);
+		for (lib.ButtonText button : buttons) {
+			button.setAvailability(false);
+		}
+		lobbyIndex = index;
 	}
 
 @Override
@@ -108,6 +118,9 @@ public void update(double time_difference) {
 		if(client.pResponses.size() > responses.size()){
 			for(int i = responses.size(); i <client.pResponses.size();i++){
 				responses.add(client.pResponses.get(i));
+				try {
+					info.add(new LobbyInfo(responses.get(i).response));
+				} catch (Exception e) { e.printStackTrace();}
 			}
 			populateButtons();
 		}
@@ -116,9 +129,30 @@ public void update(double time_difference) {
 			clientThread = null;
 			client = null;
 		}
-		
-		
 	}
+	switch (connection.getStatus()){
+	case STATUS_IDLE: break;
+	case STATUS_TRAINING: break;
+	case STATUS_ALIVE:
+		//advance to multiplayer
+		main.setScene(new scn.Multiplayer(main,info.get(lobbyIndex).difficulty,connection));
+		break;
+	case STATUS_FAILED:
+		//rebroadcast; reeanable buttons
+		responses.clear();
+		info.clear();
+		if(buttons != null){
+			for (lib.ButtonText button : buttons) {
+				button.setAvailability(true);
+			}
+		}
+		connection = new tcpConnection(false);
+		client = new BroadcastClient();
+		clientThread = new Thread(client);
+		clientThread.start();
+		break;
+	}
+	
 }
 
 public void drawTable(int rows, int columns,int x1, int y1, int x2, int y2){
@@ -162,13 +196,12 @@ public void draw() {
 	graphics.print("IP",210, 240,3);
 	graphics.print("Name", 380, 240,3);
 	graphics.setColour(graphics.white);
-	int count = 0;
-	String[] fields = new String[5];
-	for( BroadcastResponse r :responses){
-		fields = r.response.split("@");
-		graphics.print(r.responder.toString().replace("/","") , 120, 320 + count*80,2);
-		graphics.print(fields[0] , 360, 320 + count*80,2);
-		count++;
+
+	for( int i = 0; i < info.size(); i ++){
+		BroadcastResponse r = responses.get(i);
+		graphics.print(r.responder.getHostAddress() , 120, 320 + i*80,2);
+		graphics.print(info.get(i).name , 360, 320 + i*80,2);
+	
 	}
 	
 	graphics.line(350, 200, 350, 600);
@@ -176,6 +209,17 @@ public void draw() {
 		for (lib.ButtonText button : buttons) {
 			button.draw();
 		}
+	}
+	
+	switch (connection.getStatus()){
+	case STATUS_IDLE: break;
+	case STATUS_TRAINING:
+		graphics.print("Connecting to " + info.get(lobbyIndex).name
+				+ "...".substring((int)(2- System.currentTimeMillis()/1000 % 3))
+				, 200, 100);
+		break;
+	case STATUS_ALIVE: break;
+	case STATUS_FAILED: break;
 	}
 }
 

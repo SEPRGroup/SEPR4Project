@@ -10,6 +10,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 /** class implementing NetworkIO that guarantees objects are transmitted*/
 public class tcpConnection implements NetworkIO {
 
+	public static final int TCP_PORT = 10007;
 	private int status = NetworkIO.STATUS_IDLE;
 	private Exception lastError = null;
 
@@ -19,21 +20,23 @@ public class tcpConnection implements NetworkIO {
 
 	private ObjectOutputStream writeStream;
 	private ObjectInputStream readStream;
-
+	
+	private boolean host;
+	
 	private ServerSocket readSocket;
 	private Socket writeSocket;
 	
 	
 	
-	public tcpConnection() {
-	
+	public tcpConnection(boolean host) {
+		this.host = host;
 	}
 
 	@Override
 	public void connect(String destination, int port) {
 		if (status == STATUS_IDLE || status == STATUS_FAILED){
 			status = STATUS_TRAINING;
-			new Thread(new Initialize(port));
+			new Thread(new Initialize(port)).start();
 		}
 	}
 
@@ -49,11 +52,16 @@ public class tcpConnection implements NetworkIO {
 			try {
 				readSocket = new ServerSocket(port);
 				System.out.println("Waiting for Client");
-				//Wait for the connection to be made, blocks until the connection has been made
-				writeSocket = readSocket.accept();
+				if(host){
+					//Wait for the connection to be made, blocks until the connection has been made
+					writeSocket = readSocket.accept();
+					System.out.println("accepted");
+				}
 
 				writeStream = new ObjectOutputStream(writeSocket.getOutputStream());
+				System.out.println("output created");
 				readStream = new ObjectInputStream(writeSocket.getInputStream());
+				System.out.println("input created");
 
 				status = STATUS_ALIVE;
 			} catch (IOException e) {
@@ -61,8 +69,8 @@ public class tcpConnection implements NetworkIO {
 				System.err.println("Could not listen on port: "+ port);
 				status = STATUS_FAILED;
 			}
-			new Thread(new Sender());
-			new Thread(new Receiver());
+			new Thread(new Sender()).start();
+			new Thread(new Receiver()).start();
 		}
 	}
 

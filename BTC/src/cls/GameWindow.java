@@ -795,7 +795,7 @@ public class GameWindow implements EventHandler{
 			bHeight = 32,
 			bY = 32,
 			piWidth = 304,
-			alWidth = width > 900 ? 232 : 128,
+			alWidth = width > 920 ? 232 : 128,
 			cWidth = width -(2+airportControlBoxes.length)*spacing -piWidth -alWidth,	//total width available to resizeable controls
 			acWidth = cWidth / (3+airportControlBoxes.length),
 			orWidth = cWidth*3 / (3+airportControlBoxes.length),
