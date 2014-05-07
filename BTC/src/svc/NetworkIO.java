@@ -17,7 +17,7 @@ public interface NetworkIO {
 	 * @param destination the network address to connect to
 	 * @param port the port to connect to
 	 */
-	public void connect(String destination, String port);
+	public void connect(String destination, int port);
 	
 	/** Close the connection */
 	public void close();
