@@ -8,6 +8,7 @@ import svc.NetworkIO;
 
 import cls.Aircraft;
 import cls.GameWindow;
+import cls.ScoreIndicator;
 import cls.TransferBar;
 import cls.Vector;
 import cls.Waypoint;
@@ -42,8 +43,10 @@ public class Multiplayer extends Scene {
 	private cls.GameWindow 
 		game1, game2;
 	private TransferBar transfers;
+	private ScoreIndicator score;
+	
 	private double sinceSync = 0;
-	private int playerNo;
+	private int playerNo;	
 	
 	public Multiplayer(Main main, int difficulty, NetworkIO establishedConnection,int playerNo) {
 		super(main);
@@ -73,6 +76,7 @@ public class Multiplayer extends Scene {
 			tw = w -2*spacing,
 			th = h -gh -3*spacing;
 		//network.]
+		
 		if(playerNo ==1){
 			game1 = new GameWindow(spacing, spacing, gw, gh, difficulty,true);
 			game2 = new GameWindow((w +spacing)/2, spacing, gw, gh, difficulty,false);
@@ -82,6 +86,7 @@ public class Multiplayer extends Scene {
 		}
 		
 		transfers = new TransferBar(spacing, gh +2*spacing, tw, th, 2500, difficulty);
+		score = new ScoreIndicator(window.width()/2, 48, 64);
 		
 		music.play();
 		
@@ -107,6 +112,8 @@ public class Multiplayer extends Scene {
 		
 		if (!game1.isGameOver()) game1.update(timeDifference);
 		if (!game2.isGameOver()) game2.update(timeDifference);
+		score.setScores(game1.getScore(), game2.getScore(), 50000);
+		
 		
 		{	//handle transfers out
 			for (TransferBuffer tb : game1.transfers){
@@ -228,6 +235,7 @@ public class Multiplayer extends Scene {
 		game1.draw();
 		game2.draw();
 		transfers.draw();
+		score.draw();
 	}
 		
 
