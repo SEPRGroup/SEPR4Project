@@ -151,7 +151,7 @@ public class GameWindow implements EventHandler{
 				ordersBox.width, ordersBox.height, 6);
 		altimeter = new cls.Altimeter(altimeterBox.x, altimeterBox.y,
 				altimeterBox.width, altimeterBox.height, orders);
-		{
+		/*{
 			lib.ButtonText.Action manual = new lib.ButtonText.Action() {
 				@Override
 				public void action() {
@@ -163,7 +163,7 @@ public class GameWindow implements EventHandler{
 					manualOverrideBox.x, manualOverrideBox.y,
 					manualOverrideBox.width, manualOverrideBox.height,
 					0, 0);
-		}
+		}*/
 		
 		{	//set up interface
 			transfers = new TransferBuffer[locationWaypoints.length];
@@ -351,12 +351,12 @@ public class GameWindow implements EventHandler{
 						mouseY = input.mouseY() -y -gameArea.y;
 					selectedAircraft.drawCompass(mouseX, mouseY);
 				}
-				// Override Button
+				/*// Override Button
 				graphics.setColour(graphics.black);
 				drawRect(true, manualOverrideBox);
 				graphics.setColour(graphics.white);
 				drawRect(false, manualOverrideBox);
-				manualOverrideButton.draw(gameX, gameY);
+				manualOverrideButton.draw(gameX, gameY);*/
 			}
 			
 			//draw border
@@ -407,7 +407,7 @@ public class GameWindow implements EventHandler{
 	private void deselectAircraft() {
 		if (selectedAircraft != null && selectedAircraft.isManuallyControlled()) {
 			selectedAircraft.toggleManualControl();
-			manualOverrideButton.setText(" Take Control");
+			//manualOverrideButton.setText(" Take Control");
 		}
 		selectedAircraft = null;
 		clickedWaypoint = null; 
@@ -420,7 +420,7 @@ public class GameWindow implements EventHandler{
 	private void toggleManualControl() {
 		if (selectedAircraft != null) {
 			selectedAircraft.toggleManualControl();
-			manualOverrideButton.setText( (selectedAircraft.isManuallyControlled() ? "Remove" : " Take") + " Control");
+			//manualOverrideButton.setText( (selectedAircraft.isManuallyControlled() ? "Remove" : " Take") + " Control");
 		}
 	}
 
@@ -1046,9 +1046,9 @@ public class GameWindow implements EventHandler{
 		
 		switch (key){
 		case input.MOUSE_LEFT: 
-			if (manualOverridePressed(gameX, gameY)) {
+			/*if (manualOverridePressed(gameX, gameY)) {
 				manualOverrideButton.act();
-			} else if (selectedAircraft != null && waypointClicked) {
+			} else*/ if (selectedAircraft != null && waypointClicked) {
 				Waypoint newWaypoint = findClickedWaypoint(gameX, gameY);
 				if (newWaypoint != null) {
 					selectedAircraft.alterPath(selectedPathPoint, newWaypoint);
