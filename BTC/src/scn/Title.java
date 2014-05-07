@@ -117,8 +117,7 @@ public class Title extends Scene {
 			lib.ButtonText.Action exit = new lib.ButtonText.Action() {
 				@Override
 				public void action() {
-					//main.quit();	//{!} temporarily hijacked
-					main.setScene(new Multiplayer(main, cls.GameWindow.DIFFICULTY_MEDIUM));
+					main.quit();
 				}
 			};
 			buttons[4] = new lib.ButtonText("Exit", exit,

@@ -16,7 +16,7 @@ import lib.jog.window;
 import btc.Main;
 
 
-class Multiplayer extends Scene {
+public class Multiplayer extends Scene {
 	private static final int
 		TRANSFER = 1;
 
