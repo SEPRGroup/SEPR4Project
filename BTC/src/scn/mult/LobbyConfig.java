@@ -37,6 +37,7 @@ public class LobbyConfig  extends Scene{
 	private int difficulty;
 	
 	public LobbyConfig(Main main,String name){
+		super(main);
 		this.name = name;
 		difficulty = GameWindow.DIFFICULTY_MEDIUM;
 		
@@ -104,11 +105,13 @@ public class LobbyConfig  extends Scene{
 			clientIP = null;
 			clientName =  null;
 		}
-		if(host.ip != null){
-			connection.connect(host.ip.getHostAddress(), tcpConnection.TCP_PORT);
-		}
+		
 		switch (connection.getStatus()){
-		case STATUS_IDLE: break;
+		case STATUS_IDLE: 
+			if(host.ip != null){
+				connection.connect(host.ip.getHostAddress(), tcpConnection.TCP_PORT);	
+			}
+			break;
 		case STATUS_TRAINING: break;
 		case STATUS_ALIVE:
 			//advance to multiplayer

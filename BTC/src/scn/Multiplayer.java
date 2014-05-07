@@ -1,12 +1,14 @@
 package scn;
 
 import java.io.File;
+import java.io.Serializable;
 
 import svc.NetworkIO;
 
 import cls.Aircraft;
 import cls.GameWindow;
 import cls.TransferBar;
+import cls.Waypoint;
 import cls.GameWindow.TransferBuffer;
 import lib.jog.audio;
 import lib.jog.audio.Sound;
@@ -17,7 +19,7 @@ import btc.Main;
 
 
 public class Multiplayer extends Scene {
-	private static final int
+	static final int
 		TRANSFER = 1;
 
 	
@@ -94,7 +96,7 @@ public class Multiplayer extends Scene {
 					while (a != null) {
 						System.out.println(a.getName() +" transferred out");
 						transfers.enterLeft(a);
-						network.sendObject(new MultiplayerPacket(a));
+						network.sendObject(new MultiplayerPacket(new AircraftPacket(a)));
 						a = tb.pollOut();
 					};
 				}
@@ -126,10 +128,18 @@ public class Multiplayer extends Scene {
 				
 				switch (mp.code){
 				case TRANSFER:
-					Aircraft a = (Aircraft) mp.contents;
-					transfers.enterRight(a);
+					AircraftPacket a = (AircraftPacket) mp.contents;
+					Aircraft air = new Aircraft(a.name,
+							a.destination_point, a.origin_point,
+							null,
+							12.0, a.speed,
+							new Waypoint[]{a.origin_point, a.destination_point},
+							difficulty);
+					air.getPosition().setZ( a.altitude);
+					transfers.enterRight(air);
 					break;
 				}
+				o = network.pollObjects();
 			}
 		}
 		
@@ -183,22 +193,48 @@ public class Multiplayer extends Scene {
 		sound.play();
 		
 	}
+
 	
-	
-	private class MultiplayerPacket {
-		private final int code;
-		private final Object contents;	
-		
-		private MultiplayerPacket(int code, Object contents){
-			this.code = code;
-			this.contents = contents;
-		}
-		
-		private MultiplayerPacket(Aircraft transferAircraft){
-			this.code = TRANSFER;
-			this.contents = transferAircraft;
-		} 
-		
+
+}
+
+class AircraftPacket implements Serializable{
+	/**
+	 * 
+	 */
+	static final long serialVersionUID = 2494803046641211835L;
+	String name;
+	Waypoint destination_point;
+	Waypoint origin_point;
+	double speed;
+	double altitude;
+
+	AircraftPacket(Aircraft aircraft){
+		name = aircraft.getName();
+		destination_point = aircraft.getFlightPlan().getDestination();
+		origin_point = aircraft.getFlightPlan().getOrigin();
+		speed = aircraft.getSpeed();
+		altitude = aircraft.getPosition().getZ();
+
 	}
+
+}
+class MultiplayerPacket implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2463331822414916107L;
+	final int code;
+	final Object contents;	
+
+	MultiplayerPacket(int code, Object contents){
+		this.code = code;
+		this.contents = contents;
+	}
+
+	MultiplayerPacket(AircraftPacket transferAircraft){
+		this.code = Multiplayer.TRANSFER;
+		this.contents = transferAircraft;
+	} 
 
 }
