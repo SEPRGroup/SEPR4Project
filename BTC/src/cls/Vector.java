@@ -24,6 +24,11 @@ public class Vector implements Serializable {
 		this.y = y;
 		this.z = z;
 	}
+	public Vector(Vector v){
+		this.x = v.x;
+		this.y = v.y;
+		this.z = v.z;
+	}
 	
 
 	public double getX() {

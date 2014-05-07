@@ -152,7 +152,6 @@ public class Multiplayer extends Scene {
 					for(int i=0; i<airspace.length; i++){
 						Aircraft a = AircraftPacket.fromPacket(airspace[i], game1.getScale(),difficulty);
 						a.getPosition().setVector(airspace[i].position.getX(), airspace[i].position.getY(), airspace[i].position.getZ());
-						//a.toggleManualControl();
 						as.add(a);
 					}
 					break;
@@ -247,13 +246,15 @@ class AircraftPacket implements Serializable{
 
 	AircraftPacket(Aircraft aircraft){
 		name = aircraft.getName();
-		destination_point = aircraft.getFlightPlan().getDestination();
-		origin_point = aircraft.getFlightPlan().getOrigin();
+		Waypoint o = aircraft.getFlightPlan().getDestination();
+		destination_point = new Waypoint(o.getLocation().getX(),o.getLocation().getY(),true,o.name) ;;
+		o = aircraft.getFlightPlan().getOrigin();
+		origin_point = new Waypoint(o.getLocation().getX(),o.getLocation().getY(),true,o.name) ;
 		speed = aircraft.getSpeed();
-		position = new Vector(aircraft.getPosition().getX(),aircraft.getPosition().getY(),aircraft.getPosition().getZ());
+		position = new Vector(aircraft.getPosition());
 		bearing = aircraft.getBearing();
-		flightPlan = aircraft.getFlightPlan().getRoute().clone();
-
+		//flightPlan = aircraft.getFlightPlan().getRoute().clone();
+		System.out.println();
 	}
 	
 	static Aircraft fromPacket(AircraftPacket ap, double scale, int difficulty){
@@ -261,8 +262,8 @@ class AircraftPacket implements Serializable{
 				ap.destination_point, ap.origin_point,
 				Multiplayer.aircraftImage,
 				scale, ap.speed,
-				ap.flightPlan,
-				difficulty,true);
+				new Waypoint[]{ap.origin_point, ap.destination_point},
+				difficulty);
 		
 		a.initialize(ap.position, ap.bearing);
 		return a;

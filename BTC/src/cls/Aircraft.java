@@ -298,7 +298,7 @@ public class Aircraft {
 	 */
 	public Aircraft(String name, Waypoint destination_point, Waypoint origin_point, graphics.Image img, double scale, double speed, Waypoint[] flightPlan, int difficulty,boolean flightDone) {
 		flight_name = name;		
-		for(int i = 0; i < flight_plan.getRoute().length;i++){
+		for(int i = 0; i <flightPlan.length;i++){
 			flight_plan.alterPath(i, flightPlan[i]);
 		}
 		
