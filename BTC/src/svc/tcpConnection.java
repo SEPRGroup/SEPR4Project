@@ -10,6 +10,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 /** class implementing NetworkIO that guarantees objects are transmitted*/
 public class tcpConnection implements NetworkIO {
 
+	public static final int TCP_PORT = 10007;
 	private int status = NetworkIO.STATUS_IDLE;
 	private Exception lastError = null;
 

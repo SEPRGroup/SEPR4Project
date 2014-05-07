@@ -94,17 +94,18 @@ public class LobbyConfig  extends Scene{
 	@Override
 	public void draw() {
 		// TODO Auto-generated method stub
+		
 		graphics.draw(backgroundImage, 0, 0, window.scale());
-		drawTable(3,6,(int)(100*window.scale()),(int)(200*window.scale()),(int)(1200*window.scale()),(int)(500*window.scale()));
-		graphics.print("IP",210, 260,3);
-		graphics.print("Name", 380, 240,3);
-		graphics.print(ip,120,340,2);
-		graphics.print(name, 360, 340,2);
+		drawTable(3,6,(int)Math.round(100*window.scale()),(int)Math.round(200*window.scale()),(int)Math.round(1200*window.scale()),(int)Math.round(500*window.scale()));
+		graphics.print("IP",(int)Math.round(210*window.scale()), (int)Math.round(240*window.scale()),3);
+		graphics.print("Name", (int)Math.round(380*window.scale()), (int)Math.round(240*window.scale()),3);
+		graphics.print(ip,(int)Math.round(120*window.scale()),(int)Math.round(340*window.scale()),2);
+		graphics.print(name, (int)Math.round(360*window.scale()), (int)Math.round(340*window.scale()),2);
 		if(clientIP != null && clientName!=null){
 			graphics.print(clientIP.toString().replace("/", ""),120,440,2);
-			graphics.print(clientName, 360, 440,2);
+			graphics.print(clientName, (int)Math.round(360*window.scale()), (int)Math.round(440*window.scale()),2);
 		}
-		graphics.line(350, 200, 350, 500);
+		graphics.line((int)Math.round(350*window.scale()), (int)Math.round(200*window.scale()), (int)Math.round(350*window.scale()),(int)Math.round(500*window.scale()));
 	}
 
 	@Override
