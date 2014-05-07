@@ -132,22 +132,24 @@ public void update(double time_difference) {
 	}
 	switch (connection.getStatus()){
 	case STATUS_IDLE: break;
-	case STATUS_TRAINING:
-		//print connecting
-		graphics.print("Connecting to" + info.get(lobbyIndex).name+ "...", 200, 100);
-		break;
+	case STATUS_TRAINING: break;
 	case STATUS_ALIVE:
 		//advance to multiplayer
-		//main.setScene(new scn.Multiplayer(main,info.get(lobbyIndex).difficulty,connection);
+		main.setScene(new scn.Multiplayer(main,info.get(lobbyIndex).difficulty,connection));
 		break;
 	case STATUS_FAILED:
 		//rebroadcast; reeanable buttons
+		responses.clear();
+		info.clear();
 		if(buttons != null){
 			for (lib.ButtonText button : buttons) {
 				button.setAvailability(true);
 			}
 		}
-		connection  = new tcpConnection();
+		connection = new tcpConnection();
+		client = new BroadcastClient();
+		clientThread = new Thread(client);
+		clientThread.start();
 		break;
 	}
 	
@@ -207,6 +209,17 @@ public void draw() {
 		for (lib.ButtonText button : buttons) {
 			button.draw();
 		}
+	}
+	
+	switch (connection.getStatus()){
+	case STATUS_IDLE: break;
+	case STATUS_TRAINING:
+		graphics.print("Connecting to " + info.get(lobbyIndex).name
+				+ "...".substring((int)(2- System.currentTimeMillis()/1000 % 3))
+				, 200, 100);
+		break;
+	case STATUS_ALIVE: break;
+	case STATUS_FAILED: break;
 	}
 }
 
