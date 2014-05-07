@@ -34,7 +34,7 @@ public class tcpConnection implements NetworkIO {
 	public void connect(String destination, int port) {
 		if (status == STATUS_IDLE || status == STATUS_FAILED){
 			status = STATUS_TRAINING;
-			new Thread(new Initialize(port));
+			new Thread(new Initialize(port)).start();
 		}
 	}
 
@@ -62,8 +62,8 @@ public class tcpConnection implements NetworkIO {
 				System.err.println("Could not listen on port: "+ port);
 				status = STATUS_FAILED;
 			}
-			new Thread(new Sender());
-			new Thread(new Receiver());
+			new Thread(new Sender()).start();
+			new Thread(new Receiver()).start();
 		}
 	}
 
