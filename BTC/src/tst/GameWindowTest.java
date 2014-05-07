@@ -26,7 +26,7 @@ public class GameWindowTest {
 			lib.jog.graphics.initialise();
 		} catch (LWJGLException e) {e.printStackTrace();}
 		
-		testGame = new GameWindow(0, 0, 5, 0, 0);
+		testGame = new GameWindow(0, 0, 5, 0, 0, false);
 	}
 
 	@After
@@ -110,14 +110,8 @@ public class GameWindowTest {
 		assertEquals(0, testGame.getScore());
 	}
 
-	// setControllable exactly the same test
-	@Test
-	public void testGetControllable() {
-		testGame.setControllable(true);
-		boolean controllable = testGame.getControllable();
-		
-		assertTrue("Controllable = true", controllable);
-	}
+
+	
 	
 	@Test
 	public void testIsGameOver() {
