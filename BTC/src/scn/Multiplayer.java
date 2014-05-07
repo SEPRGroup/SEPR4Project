@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 
+import scn.mult.GameEnd;
 import svc.NetworkIO;
 
 import cls.Aircraft;
@@ -26,8 +27,9 @@ public class Multiplayer extends Scene {
 	static final int
 		TRANSFER  = 1,
 		GAMESTATE = 2,
-		SCORE = 3;
-	
+		SCORE = 3,
+		GAMEOVER = 4;
+
 	static Image aircraftImage;
 	
 
@@ -110,7 +112,16 @@ public class Multiplayer extends Scene {
 	public void update(double timeDifference) {
 		//gameover checks
 		
-		if (!game1.isGameOver()) game1.update(timeDifference);
+		if (game1.isGameOver()) {
+			network.sendObject(new MultiplayerPacket());
+		}else{ 
+			game1.update(timeDifference);
+			};
+			
+		if(game1.getScore() -game2.getScore() > 50000){
+			network.sendObject(new MultiplayerPacket());
+		}
+		
 		if (!game2.isGameOver()) game2.update(timeDifference);
 		score.setScores(game1.getScore(), game2.getScore(), 50000);
 		
@@ -202,8 +213,11 @@ public class Multiplayer extends Scene {
 					}
 					break;
 				case SCORE:
-					//game2
-					//((Integer) mp.contents).intValue();
+					game2.getScoreObj().setTotalScore(((Integer) mp.contents).intValue());
+					break;
+				case GAMEOVER:
+					main.setScene(new GameEnd(main,game1.getScore(),true));
+					break;
 				}
 				o = network.pollObjects();
 			}
@@ -340,6 +354,11 @@ class MultiplayerPacket implements Serializable{
 	MultiplayerPacket(int score){
 		this.code = Multiplayer.SCORE;
 		this.contents = new Integer(score);
+	}
+	
+	MultiplayerPacket(){
+		this.code = Multiplayer.GAMEOVER;
+		this.contents = null;
 	}
 
 }

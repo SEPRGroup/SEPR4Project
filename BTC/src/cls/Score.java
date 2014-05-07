@@ -61,6 +61,10 @@ public class Score {
 		bar_segment_height = height;
 	}
 	
+	public void setTotalScore(int score){
+		total_score = score;
+		target_score = score;
+	}
 	
 	public int getTotalScore() {
 		if (total_score > MAX_SCORE)

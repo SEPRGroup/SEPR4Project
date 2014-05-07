@@ -123,7 +123,7 @@ public class GameWindow implements EventHandler{
 				new Waypoint(0.10*gameArea.width, 0.07*gameArea.height, false),
 				new Waypoint(0.55*gameArea.width, 0.10*gameArea.height, false),
 				new Waypoint(0.81*gameArea.width, 0.08*gameArea.height, false),
-				new Waypoint(0.39*gameArea.width, 0.21*gameArea.height, false),
+				new Waypoint(0.69*gameArea.width, 0.31*gameArea.height, false),
 				new Waypoint(0.82*gameArea.width, 0.42*gameArea.height, false),
 				new Waypoint(0.20*gameArea.width, 0.42*gameArea.height, false),
 				new Waypoint(0.16*gameArea.width, 0.66*gameArea.height, false),
@@ -422,7 +422,9 @@ public class GameWindow implements EventHandler{
 		altimeter.hide();
 	}
 
-
+	public Score getScoreObj(){
+		return score;
+	}
 	/** Causes a selected aircraft to call methods to toggle manual control */
 	private void toggleManualControl() {
 		if (selectedAircraft != null) {
