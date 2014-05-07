@@ -24,7 +24,8 @@ import btc.Main;
 public class Multiplayer extends Scene {
 	static final int
 		TRANSFER  = 1,
-		GAMESTATE = 2;
+		GAMESTATE = 2,
+		SCORE = 3;
 	
 	static Image aircraftImage;
 	
@@ -42,15 +43,15 @@ public class Multiplayer extends Scene {
 		game1, game2;
 	private TransferBar transfers;
 	private double sinceSync = 0;
-
+	private int playerNo;
 	
-	public Multiplayer(Main main, int difficulty, NetworkIO establishedConnection) {
+	public Multiplayer(Main main, int difficulty, NetworkIO establishedConnection,int playerNo) {
 		super(main);
 		if (aircraftImage == null){
 			aircraftImage = graphics.newImage("gfx" +File.separator +"plane.png");
 		}
-		
 		this.difficulty = difficulty;
+		this.playerNo = playerNo;
 		network = establishedConnection;
 		
 		music = audio.newMusic("sfx" + File.separator + "Gypsy_Shoegazer.ogg");
@@ -71,13 +72,19 @@ public class Multiplayer extends Scene {
 			gh = h -150,
 			tw = w -2*spacing,
 			th = h -gh -3*spacing;
-
-		game1 = new GameWindow(spacing, spacing, gw, gh, difficulty);
-		game2 = new GameWindow((w +spacing)/2, spacing, gw, gh, difficulty);
+		//network.]
+		if(playerNo ==1){
+			game1 = new GameWindow(spacing, spacing, gw, gh, difficulty,true);
+			game2 = new GameWindow((w +spacing)/2, spacing, gw, gh, difficulty,false);
+		}else{
+			game1 = new GameWindow((w +spacing)/2, spacing, gw, gh, difficulty,true);
+			game2 = new GameWindow(spacing, spacing, gw, gh, difficulty,false);
+		}
+		
 		transfers = new TransferBar(spacing, gh +2*spacing, tw, th, 2500, difficulty);
 		
 		music.play();
-		game1.setControllable(true);
+		
 
 	}
 
@@ -103,16 +110,30 @@ public class Multiplayer extends Scene {
 		
 		{	//handle transfers out
 			for (TransferBuffer tb : game1.transfers){
-				if (tb.name == "City of Rightson"){
-					Aircraft a = tb.pollOut();
-					while (a != null) {
-						System.out.println(a.getName() +" transferred out");
-						transfers.enterLeft(a);
-						network.sendObject(new MultiplayerPacket(new AircraftPacket(a)));
-						a = tb.pollOut();
-					};
+				if (playerNo == 1){
+					if (tb.name == "City of Rightson"){
+						Aircraft a = tb.pollOut();
+						while (a != null) {
+							System.out.println(a.getName() +" transferred out");
+							transfers.enterLeft(a);
+							network.sendObject(new MultiplayerPacket(new AircraftPacket(a)));
+							a = tb.pollOut();
+						};
+					}
+					else tb.clearOut();
 				}
-				else tb.clearOut();
+				else {
+					if (tb.name == "100 Acre Woods"){
+						Aircraft a = tb.pollOut();
+						while (a != null) {
+							System.out.println(a.getName() +" transferred out");
+							transfers.enterLeft(a);
+							network.sendObject(new MultiplayerPacket(new AircraftPacket(a)));
+							a = tb.pollOut();
+						};
+					}
+					else tb.clearOut();
+				}
 			}
 		}
 		
@@ -122,10 +143,18 @@ public class Multiplayer extends Scene {
 			Aircraft a = transfers.pollLeft();
 			while (a != null) {
 				for (TransferBuffer tb : game1.transfers){
-					if (tb.name == "South Sea"){
-						System.out.println(a.getName() +" transferred in");
-						tb.transferIn(a);
-						break;
+					if(playerNo == 1){
+						if (tb.name == "North West Top Leftonia"){
+							System.out.println(a.getName() +" transferred in");
+							tb.transferIn(a);
+							break;
+						}
+					}else{
+						if (tb.name == "100 Acre Woods"){
+							System.out.println(a.getName() +" transferred in");
+							tb.transferIn(a);
+							break;
+						}
 					}
 				}
 				a = transfers.pollLeft();
@@ -155,6 +184,9 @@ public class Multiplayer extends Scene {
 						as.add(a);
 					}
 					break;
+				case SCORE:
+					//game2
+					//((Integer) mp.contents).intValue();
 				}
 				o = network.pollObjects();
 			}
@@ -163,7 +195,7 @@ public class Multiplayer extends Scene {
 		{	
 			//synchronize game
 			sinceSync += timeDifference;
-			if(sinceSync > 0.1){
+			if(sinceSync > 1/30.0){
 				System.out.println("Syncing");
 				AircraftPacket[] airspace = new AircraftPacket[game1.getAircraftList().size()];
 				List<Aircraft> as = game1.getAircraftList();
@@ -171,12 +203,13 @@ public class Multiplayer extends Scene {
 					airspace[i] = new AircraftPacket(as.get(i));
 				}
 				network.sendObject(new MultiplayerPacket(airspace));
-				sinceSync -= 0.1;
+				network.sendObject(new MultiplayerPacket(game1.getScore()));
+				sinceSync -= 1/30.0;
 			}	
 		}
 
 		//synchronize scores
-		//talk to network stuff
+	
 	}
 
 	
@@ -224,18 +257,13 @@ public class Multiplayer extends Scene {
 		sound.play();
 		
 	}
-
-	
-
 }
 
 
 
 class AircraftPacket implements Serializable{
-	/**
-	 * 
-	 */
 	static final long serialVersionUID = 2494803046641211835L;
+	
 	String name;
 	Waypoint destination_point;
 	Waypoint origin_point;
@@ -254,7 +282,6 @@ class AircraftPacket implements Serializable{
 		position = new Vector(aircraft.getPosition());
 		bearing = aircraft.getBearing();
 		//flightPlan = aircraft.getFlightPlan().getRoute().clone();
-		System.out.println();
 	}
 	
 	static Aircraft fromPacket(AircraftPacket ap, double scale, int difficulty){
@@ -272,10 +299,8 @@ class AircraftPacket implements Serializable{
 }
 
 class MultiplayerPacket implements Serializable{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2463331822414916107L;
+	
 	final int code;
 	final Object contents;	
 
@@ -292,6 +317,11 @@ class MultiplayerPacket implements Serializable{
 	MultiplayerPacket(AircraftPacket[] transferAircraft){
 		this.code = Multiplayer.GAMESTATE;
 		this.contents = transferAircraft;
-	} 
+	}
+	
+	MultiplayerPacket(int score){
+		this.code = Multiplayer.SCORE;
+		this.contents = new Integer(score);
+	}
 
 }

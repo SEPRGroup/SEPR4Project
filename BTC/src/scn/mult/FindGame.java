@@ -135,7 +135,7 @@ public void update(double time_difference) {
 	case STATUS_TRAINING: break;
 	case STATUS_ALIVE:
 		//advance to multiplayer
-		main.setScene(new scn.Multiplayer(main,info.get(lobbyIndex).difficulty,connection));
+		main.setScene(new scn.Multiplayer(main,info.get(lobbyIndex).difficulty,connection,2));
 		break;
 	case STATUS_FAILED:
 		//rebroadcast; reeanable buttons

@@ -67,6 +67,7 @@ public class Aircraft {
 	
 	public void initialize(Vector position, double bearing){
 		this.position = position;
+		bearing = -bearing +  Math.PI/2;
 		velocity = new Vector(Math.sin(bearing),Math.cos(bearing),0).normalise().scaleBy(base_speed*base_scale);;
 		
 	}
