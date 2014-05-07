@@ -33,7 +33,7 @@ public class LobbyConfig  extends Scene{
 	private LobbyInfo User;
 	private String ip;
 	BroadcastServer host;
-	tcpConnection connection = new tcpConnection(false);
+	tcpConnection connection = new tcpConnection(true);
 	private int difficulty;
 	
 	public LobbyConfig(Main main,String name){
@@ -124,7 +124,7 @@ public class LobbyConfig  extends Scene{
 					button.setAvailability(true);
 				}
 			}
-			connection = new tcpConnection(false);
+			connection = new tcpConnection(true);
 			break;
 		}
 	}

@@ -23,8 +23,9 @@ public class tcpConnection implements NetworkIO {
 	
 	private boolean host;
 	
-	private ServerSocket readSocket;
-	private Socket writeSocket;
+	
+	private ServerSocket serverSocket;
+	private Socket socket;
 	
 	
 	
@@ -36,32 +37,42 @@ public class tcpConnection implements NetworkIO {
 	public void connect(String destination, int port) {
 		if (status == STATUS_IDLE || status == STATUS_FAILED){
 			status = STATUS_TRAINING;
-			new Thread(new Initialize(port)).start();
+			new Thread(new Initialize(port,destination,host)).start();
+		
 		}
 	}
 
 	class Initialize implements Runnable{
 		int port;
+		boolean host;
+		String destination;
 
-		private Initialize(int port){
+		private Initialize(int port,String destination,boolean host){
 			this.port = port;
+			this.host = host;
+			this.destination = destination;
 		}
 
 		@Override
 		public void run() {
 			try {
-				readSocket = new ServerSocket(port);
-				System.out.println("Waiting for Client");
 				if(host){
+					
+					serverSocket = new ServerSocket(port);
+					System.out.println("Waiting for Client");
 					//Wait for the connection to be made, blocks until the connection has been made
-					writeSocket = readSocket.accept();
-					System.out.println("accepted");
+					socket = serverSocket.accept();
+					
+				} else{
+					socket = new Socket(destination,port);
 				}
-
-				writeStream = new ObjectOutputStream(writeSocket.getOutputStream());
+				System.out.println("accepted");
+				writeStream = new ObjectOutputStream(socket.getOutputStream());
 				System.out.println("output created");
-				readStream = new ObjectInputStream(writeSocket.getInputStream());
+				readStream = new ObjectInputStream(socket.getInputStream());
 				System.out.println("input created");
+
+				
 
 				status = STATUS_ALIVE;
 			} catch (IOException e) {
@@ -90,10 +101,10 @@ public class tcpConnection implements NetworkIO {
 			}
 			finally {
 				try {
-					if (readSocket != null) readSocket.close();
+					if (serverSocket != null) serverSocket.close();
 				} catch (IOException e) { e.printStackTrace(); }
 				try {
-					if (writeSocket != null) writeSocket.close();
+					if (socket != null) socket.close();
 				}
 				catch (IOException e){ e.printStackTrace(); }
 			}
@@ -116,10 +127,10 @@ public class tcpConnection implements NetworkIO {
 			}
 			finally {
 				try {
-					if (readSocket != null) readSocket.close();
+					if (serverSocket != null) serverSocket.close();
 				} catch (IOException e) { e.printStackTrace(); }
 				try {
-					if (writeSocket != null) writeSocket.close();
+					if (socket != null) socket.close();
 				}
 				catch (IOException e){ e.printStackTrace(); }
 			}
@@ -145,10 +156,10 @@ public class tcpConnection implements NetworkIO {
 		if(status == STATUS_ALIVE){
 			try {
 				try {
-					if (readSocket != null) readSocket.close();
+					if (serverSocket != null) serverSocket.close();
 				} catch (IOException e) { e.printStackTrace(); }
 				try {
-					if (writeSocket != null) writeSocket.close();
+					if (socket != null) socket.close();
 				}
 				catch (IOException e){ e.printStackTrace(); }
 			} finally{
