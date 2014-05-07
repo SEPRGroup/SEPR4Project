@@ -33,12 +33,13 @@ public class LobbyConfig  extends Scene{
 	private LobbyInfo User;
 	private String ip;
 	BroadcastServer host;
-	tcpConnection connection;
+	tcpConnection connection = new tcpConnection(false);
 	private int difficulty;
 	
 	public LobbyConfig(Main main,String name){
 		this.name = name;
 		difficulty = GameWindow.DIFFICULTY_MEDIUM;
+		
 	}
 	
 	@Override
@@ -123,7 +124,7 @@ public class LobbyConfig  extends Scene{
 					button.setAvailability(true);
 				}
 			}
-			connection = new tcpConnection();
+			connection = new tcpConnection(false);
 			break;
 		}
 	}

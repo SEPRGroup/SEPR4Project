@@ -35,7 +35,7 @@ public class FindGame extends Scene {
 	private List<BroadcastResponse> responses = new CopyOnWriteArrayList<BroadcastResponse>();
 	private List<LobbyInfo> info = new ArrayList<LobbyInfo>();
 	private static graphics.Image backgroundImage;
-	private tcpConnection connection = new tcpConnection();
+	private tcpConnection connection = new tcpConnection(false);
 	private int lobbyIndex;
 	
 	public FindGame(Main main, String name) {
@@ -146,7 +146,7 @@ public void update(double time_difference) {
 				button.setAvailability(true);
 			}
 		}
-		connection = new tcpConnection();
+		connection = new tcpConnection(false);
 		client = new BroadcastClient();
 		clientThread = new Thread(client);
 		clientThread.start();

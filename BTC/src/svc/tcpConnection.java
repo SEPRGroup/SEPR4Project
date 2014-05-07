@@ -20,14 +20,16 @@ public class tcpConnection implements NetworkIO {
 
 	private ObjectOutputStream writeStream;
 	private ObjectInputStream readStream;
-
+	
+	private boolean host;
+	
 	private ServerSocket readSocket;
 	private Socket writeSocket;
 	
 	
 	
-	public tcpConnection() {
-	
+	public tcpConnection(boolean host) {
+		this.host = host;
 	}
 
 	@Override
@@ -50,11 +52,16 @@ public class tcpConnection implements NetworkIO {
 			try {
 				readSocket = new ServerSocket(port);
 				System.out.println("Waiting for Client");
-				//Wait for the connection to be made, blocks until the connection has been made
-				writeSocket = readSocket.accept();
+				if(host){
+					//Wait for the connection to be made, blocks until the connection has been made
+					writeSocket = readSocket.accept();
+					System.out.println("accepted");
+				}
 
 				writeStream = new ObjectOutputStream(writeSocket.getOutputStream());
+				System.out.println("output created");
 				readStream = new ObjectInputStream(writeSocket.getInputStream());
+				System.out.println("input created");
 
 				status = STATUS_ALIVE;
 			} catch (IOException e) {
