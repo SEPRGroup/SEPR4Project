@@ -197,6 +197,15 @@ public class TransferBar {
 	public Aircraft pollRight(){
 		return right.poll();
 	}
+	
+	
+	public void clearLeft(){
+		left.clear();
+	}
+	
+	public void clearRight(){
+		right.clear();
+	}
 
 	
 	private class Feature{

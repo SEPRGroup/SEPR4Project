@@ -2,11 +2,12 @@ package scn;
 
 import java.io.File;
 
+import svc.NetworkIO;
+
 import cls.Aircraft;
 import cls.GameWindow;
 import cls.TransferBar;
 import cls.GameWindow.TransferBuffer;
-import lib.RandomNumber;
 import lib.jog.audio;
 import lib.jog.audio.Sound;
 import lib.jog.graphics;
@@ -14,23 +15,30 @@ import lib.jog.input;
 import lib.jog.window;
 import btc.Main;
 
+
 class Multiplayer extends Scene {
+	private static final int
+		TRANSFER = 1;
+
+	
 	/**Music to play during the game scene*/
 	private audio.Music music;
 	
 	private int
 		oldWidth, oldHeight;
 	private final int difficulty;
+	
+	private NetworkIO network;
 		
 	private cls.GameWindow 
 		game1, game2;
 	private TransferBar transfers;
 
 	
-	
-	public Multiplayer(Main main, int difficulty) {
+	public Multiplayer(Main main, int difficulty, NetworkIO establishedConnection) {
 		super(main);
 		this.difficulty = difficulty;
+		network = establishedConnection;
 		
 		music = audio.newMusic("sfx" + File.separator + "Gypsy_Shoegazer.ogg");
 	}
@@ -50,7 +58,6 @@ class Multiplayer extends Scene {
 			gh = h -150,
 			tw = w -2*spacing,
 			th = h -gh -3*spacing;
-			
 
 		game1 = new GameWindow(spacing, spacing, gw, gh, difficulty);
 		game2 = new GameWindow((w +spacing)/2, spacing, gw, gh, difficulty);
@@ -75,20 +82,10 @@ class Multiplayer extends Scene {
 		
 	@Override
 	public void update(double timeDifference) {
+		//gameover checks
+		
 		game1.update(timeDifference);
 		game2.update(timeDifference);
-		
-		{	//manage transfers
-			double rand = Math.random();
-			/*if (rand < 0.1*timeDifference){
-				java.util.List<Aircraft> c = game1.getAircraftList();
-				transfers.enterLeft(c.get(RandomNumber.randInclusiveInt(0, c.size()-1)));				
-			}
-			else*/ if (rand < 0.05*timeDifference){
-				java.util.List<Aircraft> c = game2.getAircraftList();
-				transfers.enterRight(c.get(RandomNumber.randInclusiveInt(0, c.size()-1)));				
-			}
-		}
 		
 		{	//handle transfers out
 			for (TransferBuffer tb : game1.transfers){
@@ -96,15 +93,17 @@ class Multiplayer extends Scene {
 					Aircraft a = tb.pollOut();
 					while (a != null) {
 						System.out.println(a.getName() +" transferred out");
-						//{!} notify other player
 						transfers.enterLeft(a);
+						network.sendObject(new MultiplayerPacket(a));
 						a = tb.pollOut();
 					};
 				}
 				else tb.clearOut();
 			}
 		}
+		
 		transfers.update(timeDifference);
+		
 		{	//handle transfers in
 			Aircraft a = transfers.pollLeft();
 			while (a != null) {
@@ -117,18 +116,26 @@ class Multiplayer extends Scene {
 				}
 				a = transfers.pollLeft();
 			}
+			transfers.clearRight();
 		}
-
-		/*a = transfers.pollRight();
-		if (a != null) System.out.println("Right:\t" +a.getName());*/
+		
+		{	//handle any network events
+			Object o = network.pollObjects();
+			while (o != null){
+				MultiplayerPacket mp = (MultiplayerPacket) o;
+				
+				switch (mp.code){
+				case TRANSFER:
+					Aircraft a = (Aircraft) mp.contents;
+					transfers.enterRight(a);
+					break;
+				}
+			}
+		}
 		
 
 		//synchronize scores
 		//talk to network stuff
-		//track gameovers
-		
-
-
 	}
 
 	
@@ -138,26 +145,23 @@ class Multiplayer extends Scene {
 		game2.draw();
 		transfers.draw();
 	}
-	
+		
 
 	@Override
 	public void mousePressed(int key, int x, int y) {
 		game1.mousePressed(key, x, y);
-
 	}
 
 	
 	@Override
 	public void mouseReleased(int key, int x, int y) {
 		game1.mouseReleased(key, x, y);
-
 	}
 
 	
 	@Override
 	public void keyPressed(int key) {
 		game1.keyPressed(key);
-
 	}
 
 	
@@ -177,6 +181,24 @@ class Multiplayer extends Scene {
 	public void playSound(Sound sound) {
 		sound.stop();
 		sound.play();
+		
+	}
+	
+	
+	private class MultiplayerPacket {
+		private final int code;
+		private final Object contents;	
+		
+		private MultiplayerPacket(int code, Object contents){
+			this.code = code;
+			this.contents = contents;
+		}
+		
+		private MultiplayerPacket(Aircraft transferAircraft){
+			this.code = TRANSFER;
+			this.contents = transferAircraft;
+		} 
+		
 	}
 
 }
