@@ -439,7 +439,6 @@ public class GameWindow implements EventHandler{
 				Aircraft b = new Aircraft(a.getName(), destination, origin, aircraftImage,
 						scale, a.getSpeed(), airspaceWaypoints, difficulty);
 				a = null;
-				
 				b.getPosition().setZ( b.getPosition().getZ() );
 				//shunt the aircraft into the airspace
 				if (origin instanceof Airport){
@@ -920,7 +919,9 @@ public class GameWindow implements EventHandler{
 	}
 
 
-	
+	public double getScale(){
+		return scale;
+	}
 	public double getTime() {
 		return timeElapsed;
 	}

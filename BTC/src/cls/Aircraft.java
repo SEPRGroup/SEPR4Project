@@ -451,7 +451,7 @@ public class Aircraft {
 	 * Turns the plane by a certain angle (in radians). Positive angles turn the plane clockwise.
 	 * @param angle the angle by which to turn.
 	 */
-	private void turnBy(double angle) {
+	public void turnBy(double angle) {
 		currently_turning_by = angle;
 		double cosA = Math.cos(angle);
 		double sinA = Math.sin(angle);

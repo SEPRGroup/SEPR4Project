@@ -115,4 +115,10 @@ public class Vector implements Serializable {
 			a *= -1;
 		return a;
 	}
+	
+	public void setVector(double x,double y, double z){
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
 }

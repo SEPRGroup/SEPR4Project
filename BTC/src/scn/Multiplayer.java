@@ -2,16 +2,19 @@ package scn;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.List;
 
 import svc.NetworkIO;
 
 import cls.Aircraft;
 import cls.GameWindow;
 import cls.TransferBar;
+import cls.Vector;
 import cls.Waypoint;
 import cls.GameWindow.TransferBuffer;
 import lib.jog.audio;
 import lib.jog.audio.Sound;
+import lib.jog.graphics.Image;
 import lib.jog.graphics;
 import lib.jog.input;
 import lib.jog.window;
@@ -20,9 +23,12 @@ import btc.Main;
 
 public class Multiplayer extends Scene {
 	static final int
-		TRANSFER = 1;
-
+		TRANSFER  = 1,
+		GAMESTATE = 2;
 	
+	static Image aircraftImage;
+	
+
 	/**Music to play during the game scene*/
 	private audio.Music music;
 	
@@ -35,10 +41,15 @@ public class Multiplayer extends Scene {
 	private cls.GameWindow 
 		game1, game2;
 	private TransferBar transfers;
+	private double sinceSync = 0;
 
 	
 	public Multiplayer(Main main, int difficulty, NetworkIO establishedConnection) {
 		super(main);
+		if (aircraftImage == null){
+			aircraftImage = graphics.newImage("gfx" +File.separator +"plane.png");
+		}
+		
 		this.difficulty = difficulty;
 		network = establishedConnection;
 		
@@ -67,6 +78,7 @@ public class Multiplayer extends Scene {
 		
 		music.play();
 		game1.setControllable(true);
+
 	}
 
 
@@ -128,21 +140,41 @@ public class Multiplayer extends Scene {
 				
 				switch (mp.code){
 				case TRANSFER:
-					AircraftPacket a = (AircraftPacket) mp.contents;
-					Aircraft air = new Aircraft(a.name,
-							a.destination_point, a.origin_point,
-							null,
-							12.0, a.speed,
-							new Waypoint[]{a.origin_point, a.destination_point},
-							difficulty);
-					air.getPosition().setZ( a.altitude);
+					AircraftPacket ap = (AircraftPacket) mp.contents;
+					Aircraft air = AircraftPacket.fromPacket(ap, game1.getScale(),difficulty);
+					air.getPosition().setVector(ap.position.getX(),ap.position.getY(),ap.position.getZ());
 					transfers.enterRight(air);
+					break;
+				case GAMESTATE:
+					AircraftPacket[] airspace = (AircraftPacket[]) mp.contents;
+					List<Aircraft> as = game2.getAircraftList();
+					as.clear();
+					for(int i=0; i<airspace.length; i++){
+						Aircraft a = AircraftPacket.fromPacket(airspace[i], game1.getScale(),difficulty);
+						a.getPosition().setVector(airspace[i].position.getX(), airspace[i].position.getY(), airspace[i].position.getZ());
+						
+						as.add(a);
+					}
 					break;
 				}
 				o = network.pollObjects();
 			}
 		}
 		
+		{	
+			//synchronize game
+			sinceSync += timeDifference;
+			if(sinceSync > 0.1){
+				System.out.println("Syncing");
+				AircraftPacket[] airspace = new AircraftPacket[game1.getAircraftList().size()];
+				List<Aircraft> as = game1.getAircraftList();
+				for(int i=0; i<as.size(); i++){
+					airspace[i] = new AircraftPacket(as.get(i));
+				}
+				network.sendObject(new MultiplayerPacket(airspace));
+				sinceSync -= 0.1;
+			}	
+		}
 
 		//synchronize scores
 		//talk to network stuff
@@ -198,6 +230,8 @@ public class Multiplayer extends Scene {
 
 }
 
+
+
 class AircraftPacket implements Serializable{
 	/**
 	 * 
@@ -207,18 +241,33 @@ class AircraftPacket implements Serializable{
 	Waypoint destination_point;
 	Waypoint origin_point;
 	double speed;
-	double altitude;
+	Vector position;
+	double bearing;
 
 	AircraftPacket(Aircraft aircraft){
 		name = aircraft.getName();
 		destination_point = aircraft.getFlightPlan().getDestination();
 		origin_point = aircraft.getFlightPlan().getOrigin();
 		speed = aircraft.getSpeed();
-		altitude = aircraft.getPosition().getZ();
+		position = aircraft.getPosition();
+		bearing = aircraft.getBearing();
 
+	}
+	
+	static Aircraft fromPacket(AircraftPacket ap, double scale, int difficulty){
+		Aircraft a = new Aircraft(ap.name,
+				ap.destination_point, ap.origin_point,
+				Multiplayer.aircraftImage,
+				scale, ap.speed,
+				new Waypoint[]{ap.origin_point, ap.destination_point},
+				difficulty);
+		
+		a.turnBy(ap.bearing);
+		return a;
 	}
 
 }
+
 class MultiplayerPacket implements Serializable{
 	/**
 	 * 
@@ -234,6 +283,11 @@ class MultiplayerPacket implements Serializable{
 
 	MultiplayerPacket(AircraftPacket transferAircraft){
 		this.code = Multiplayer.TRANSFER;
+		this.contents = transferAircraft;
+	}
+	
+	MultiplayerPacket(AircraftPacket[] transferAircraft){
+		this.code = Multiplayer.GAMESTATE;
 		this.contents = transferAircraft;
 	} 
 
