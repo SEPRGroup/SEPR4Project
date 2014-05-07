@@ -22,7 +22,7 @@ public class AirportControlBoxTest {
 			lib.jog.graphics.initialise();
 		} catch (LWJGLException e) {e.printStackTrace();}
 		
-		 testAbc = new AirportControlBox(0, 0, 0, 0, new Airport("test", 0, 0, 0), new GameWindow(0, 0, 0, 0, 0));
+		 testAbc = new AirportControlBox(0, 0, 0, 0, new Airport("test", 0, 0, 0), new GameWindow(0, 0, 0, 0, 0, false));
 	}
 
 	@After
