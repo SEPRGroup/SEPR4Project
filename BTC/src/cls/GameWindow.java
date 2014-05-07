@@ -298,7 +298,7 @@ public class GameWindow implements EventHandler{
 		}
  		
 		checkTransfers();
-		{	//generate Flights
+		if (controllable){	//generate Flights
 			timeSinceFlightGeneration += timeDifference;
 			int interval = getFlightGenerationInterval();
 			if (timeSinceFlightGeneration >= interval) {

@@ -98,8 +98,8 @@ public class Multiplayer extends Scene {
 	public void update(double timeDifference) {
 		//gameover checks
 		
-		game1.update(timeDifference);
-		game2.update(timeDifference);
+		if (!game1.isGameOver()) game1.update(timeDifference);
+		if (!game2.isGameOver()) game2.update(timeDifference);
 		
 		{	//handle transfers out
 			for (TransferBuffer tb : game1.transfers){
@@ -152,7 +152,7 @@ public class Multiplayer extends Scene {
 					for(int i=0; i<airspace.length; i++){
 						Aircraft a = AircraftPacket.fromPacket(airspace[i], game1.getScale(),difficulty);
 						a.getPosition().setVector(airspace[i].position.getX(), airspace[i].position.getY(), airspace[i].position.getZ());
-						
+						//a.toggleManualControl();
 						as.add(a);
 					}
 					break;
@@ -243,14 +243,16 @@ class AircraftPacket implements Serializable{
 	double speed;
 	Vector position;
 	double bearing;
+	Waypoint[] flightPlan;
 
 	AircraftPacket(Aircraft aircraft){
 		name = aircraft.getName();
 		destination_point = aircraft.getFlightPlan().getDestination();
 		origin_point = aircraft.getFlightPlan().getOrigin();
 		speed = aircraft.getSpeed();
-		position = aircraft.getPosition();
+		position = new Vector(aircraft.getPosition().getX(),aircraft.getPosition().getY(),aircraft.getPosition().getZ());
 		bearing = aircraft.getBearing();
+		flightPlan = aircraft.getFlightPlan().getRoute().clone();
 
 	}
 	
@@ -259,10 +261,10 @@ class AircraftPacket implements Serializable{
 				ap.destination_point, ap.origin_point,
 				Multiplayer.aircraftImage,
 				scale, ap.speed,
-				new Waypoint[]{ap.origin_point, ap.destination_point},
-				difficulty);
+				ap.flightPlan,
+				difficulty,true);
 		
-		a.turnBy(ap.bearing);
+		a.initialize(ap.position, ap.bearing);
 		return a;
 	}
 

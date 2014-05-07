@@ -64,6 +64,12 @@ public class Aircraft {
 	public static final int ALTITUDE_FALL = -1;
 	public static final int ALTITUDE_LEVEL = 0;
 	
+	
+	public void initialize(Vector position, double bearing){
+		this.position = position;
+		velocity = new Vector(Math.sin(bearing),Math.cos(bearing),0).normalise().scaleBy(base_speed*base_scale);;
+		
+	}
 	// Getters
 	/**
 	 * Used to get (system) time when an aircraft was created.
@@ -280,7 +286,93 @@ public class Aircraft {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * Constructor for an aircraft.
+	 * @param name the name of the flight.
+	 * @param destinationPoint the end point of the plane's route.
+	 * @param originPoint the point to initialise the plane.
+	 * @param img the image to represent the plane.
+	 * @param speed the speed the plane will travel at.
+	 * @param sceneWaypoints the waypoints on the map.
+	 * @param difficulty the difficulty the game is set to
+	 */
+	public Aircraft(String name, Waypoint destination_point, Waypoint origin_point, graphics.Image img, double scale, double speed, Waypoint[] flightPlan, int difficulty,boolean flightDone) {
+		flight_name = name;		
+		for(int i = 0; i < flight_plan.getRoute().length;i++){
+			flight_plan.alterPath(i, flightPlan[i]);
+		}
+		
+		//flight_plan = new FlightPlan(scene_waypoints, origin_point, destination_point);		
+		image = img;
+		base_scale = scale;
+		base_speed = speed;
+		takeoff_velocity = (int)Math.round(32 * scale);
+		creation_time = System.currentTimeMillis() / 1000; // System time when aircraft was created in seconds.
+		
+		boolean startAtAirport = flight_plan.getOrigin() instanceof Airport;
+		
+		position = origin_point.getLocation();
+		current_target = flight_plan.getRoute()[0].getLocation();
+	
+		if (startAtAirport) {
+			position = position.add(new Vector(-80*scale, -58*scale, 0)); // Start at departures
+			position.setZ(0);
+			//point down runway
+			velocity = new Vector(0, 0, 0);
+		} 
+		else {
+			last_altitude = (RandomNumber.randInclusiveInt(min_altitude, max_altitude)/1000) *1000;
+			position.setZ(last_altitude);
 
+			// Calculate initial velocity (direction)
+			double 
+				x = current_target.getX() - position.getX(),
+				y = current_target.getY() - position.getY();
+			velocity = new Vector(x, y, 0).normalise().scaleBy(speed*scale);
+		}
+		
+		if (flight_plan.getDestination() instanceof Airport){
+			is_waiting_to_land = true;
+		}
+
+		// Speed up plane for higher difficulties
+		switch (difficulty) {
+		// Adjust the aircraft's attributes according to the difficulty of the parent scene
+		// 0 has the easiest attributes (slower aircraft, more forgiving separation rules)
+		// 2 has the hardest attributes (faster aircraft, least forgiving separation rules)
+		case GameWindow.DIFFICULTY_EASY:
+			minimum_separation_distance = 64;
+			turn_speed = Math.PI / 4;
+			altitude_change_speed = 500;
+			base_score = 60;
+			optimal_time = flight_plan.getTotalDistance() / speed*scale;
+		break;
+
+		case GameWindow.DIFFICULTY_MEDIUM:
+			minimum_separation_distance = 96;
+			velocity = velocity.scaleBy(2);
+			turn_speed = Math.PI / 3;
+			altitude_change_speed = 300;
+			base_score = 150;
+			optimal_time = flight_plan.getTotalDistance() / (speed*scale * 2);
+		break;
+			
+		case GameWindow.DIFFICULTY_HARD:
+			minimum_separation_distance = 128;
+			velocity = velocity.scaleBy(3);
+			// At high velocities, the aircraft is allowed to turn faster - this helps keep the aircraft on track.
+			turn_speed = Math.PI / 2;
+			altitude_change_speed = 200;
+			base_score = 300;
+			addition_to_multiplier = 3;
+			optimal_time = flight_plan.getTotalDistance() / (speed*scale * 3);
+		break;
+
+		default:
+			Exception e = new Exception("Invalid Difficulty: " + difficulty + ".");
+			e.printStackTrace();
+		}
+	}
 	/**
 	 * Calculates the angle from the plane's position, to its current target.
 	 * @return the angle in radians to the plane's current target.
