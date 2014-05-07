@@ -107,8 +107,8 @@ public class GameWindow implements EventHandler{
 
 		//create waypoints
 		airports = new Airport[] {
-				new Airport("Mosbear Airport", 600*scale, 200*scale, scale),
-				new Airport("Airport", 600*scale, 500*scale, scale)
+				new Airport("Moscow Airport", 600*scale, 200*scale, scale),
+				new Airport("St Petersburg Airport", 600*scale, 500*scale, scale)
 		};
 		locationWaypoints = new Waypoint[] { 
 				new Waypoint(8, 8, true, "North West Top Leftonia"), // top left
