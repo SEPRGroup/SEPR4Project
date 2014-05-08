@@ -55,7 +55,7 @@ public class Airport extends Waypoint {
 	}
 	
 	private static void loadImage() {
-		airport = graphics.newImage("gfx" +File.separator +"Airport.png");
+		airport = graphics.newImage("gfx/new/Airport.png");
 	}
 	
 	@Override

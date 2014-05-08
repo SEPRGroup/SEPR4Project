@@ -33,7 +33,7 @@ public class TransferBar {
 	
 	public TransferBar(int x, int y, int width, int height, int distance, int difficulty) {
 		if (aircraftImage == null){
-			aircraftImage = graphics.newImage("gfx" +File.separator +"plane.png");
+			aircraftImage = graphics.newImage("gfx/new/plane.png");
 			clouds = new Image[]{
 					graphics.newImage("gfx/clouds/cloud1.png"),
 					graphics.newImage("gfx/clouds/cloud2.png"),

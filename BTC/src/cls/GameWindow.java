@@ -81,8 +81,8 @@ public class GameWindow implements EventHandler{
 
 
 	public static void start(){
-		aircraftImage = graphics.newImage("gfx" +File.separator +"plane.png");
-		backgroundImage = graphics.newImage("gfx" +File.separator + "background_base.png");
+		aircraftImage = graphics.newImage("gfx/new/plane.png");
+		backgroundImage = graphics.newImage("gfx/new/background_base.png");
 	}
 
 

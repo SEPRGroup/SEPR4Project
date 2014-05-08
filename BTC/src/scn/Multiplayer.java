@@ -53,7 +53,7 @@ public class Multiplayer extends Scene {
 	public Multiplayer(Main main, int difficulty, NetworkIO establishedConnection,int playerNo) {
 		super(main);
 		if (aircraftImage == null){
-			aircraftImage = graphics.newImage("gfx" +File.separator +"plane.png");
+			aircraftImage = graphics.newImage("gfx/new/plane.png");
 		}
 		this.difficulty = difficulty;
 		this.playerNo = playerNo;
