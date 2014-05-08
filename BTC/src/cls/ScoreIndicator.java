@@ -1,7 +1,5 @@
 package cls;
 
-import java.io.File;
-
 import lib.jog.graphics;
 import lib.jog.graphics.Image;
 
@@ -17,13 +15,13 @@ public class ScoreIndicator {
 	private int norm1, norm2;
 
 	
-	public ScoreIndicator(double x, double y, double height) {
+	public ScoreIndicator(double x, double yBase, double height) {
 		if (background == null){
 			background = graphics.newImage("gfx/new/pointsBackground.png");
 			arrow = graphics.newImage("gfx/new/pointsArrow.png");
 		}
 		this.x = x;
-		this.y = y;
+		this.y = yBase;
 		this.height = height;
 		this.scale = height*2 / background.width();
 	}
@@ -44,7 +42,7 @@ public class ScoreIndicator {
 			oxb = background.width()/2,
 			oyb = background.height()/2;
 		graphics.setColour(255,255,255);
-		graphics.draw(background, scale, x, y, 0, oxb, oyb);
+		graphics.draw(background, scale, x, y -oyb*scale, 0, oxb, oyb);
 		graphics.draw(arrow, scale, x, y, scoreBalance*Math.PI/2, arrow.width()/2, arrow.height()/2);
 		
 		graphics.setColour(graphics.red);

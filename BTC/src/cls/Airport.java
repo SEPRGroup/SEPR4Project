@@ -1,7 +1,5 @@
 package cls;
 
-import java.io.File;
-
 import lib.jog.graphics;
 
 public class Airport extends Waypoint {
