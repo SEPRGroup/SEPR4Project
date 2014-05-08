@@ -125,8 +125,8 @@ public class Main implements input.EventHandler {
 	 * @param new_scene The scene to set as current scene
 	 */
 	public void setScene(scn.Scene new_scene) {
-		if (current_scene != null) 
-			current_scene.close();
+		/*if (current_scene != null) 
+			current_scene.close();*/
 		current_scene = scene_stack.push(new_scene); // Add new scene to scene stack and set to current scene
 		current_scene.start();
 	}

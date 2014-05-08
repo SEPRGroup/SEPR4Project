@@ -97,6 +97,7 @@ public class DifficultySelect extends Scene {
 			public void action() {
 				switch (scene){
 				case DifficultySelect.CREATE_DEMO:
+					main.closeScene();
 					main.setScene(new Demo(main, DIFFICULTY_EASY));
 					break;
 				}

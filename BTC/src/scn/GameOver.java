@@ -130,7 +130,6 @@ public class GameOver extends Scene {
 	public void keyReleased(int key) {
 		if (key == keyPressed) {
 			main.closeScene(); // Close this screen
-			main.closeScene(); // Close difficulty select
 		}
 	}
 

@@ -46,8 +46,6 @@ public class GameEnd extends Scene{
 	public void keyReleased(int key) {
 		if (key == keyPressed) {
 			main.closeScene(); // Close this screen
-			main.closeScene(); // Close lobby select
-			main.closeScene(); // Close method select
 		}
 	}
 
@@ -67,7 +65,8 @@ public class GameEnd extends Scene{
 
 	@Override
 	public void update(double time_difference) {
-		timer += time_difference;		
+		timer += time_difference;
+		textBox.update(time_difference);
 	}
 
 	@Override

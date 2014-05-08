@@ -115,6 +115,7 @@ public class LobbyConfig  extends Scene{
 		case STATUS_TRAINING: break;
 		case STATUS_ALIVE:
 			//advance to multiplayer
+			main.closeScene();
 			main.setScene(new scn.Multiplayer(main,difficulty,connection,1));
 			break;
 		case STATUS_FAILED:
