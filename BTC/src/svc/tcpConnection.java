@@ -57,12 +57,21 @@ public class tcpConnection implements NetworkIO {
 		public void run() {
 			try {
 				if(host){
-					
-					serverSocket = new ServerSocket(port);
-					System.out.println("Waiting for Client");
-					//Wait for the connection to be made, blocks until the connection has been made
-					socket = serverSocket.accept();
-					
+					do{
+						serverSocket = new ServerSocket(port);
+						System.out.println("Waiting for Client");
+						//Wait for the connection to be made, blocks until the connection has been made
+						socket = serverSocket.accept();
+						System.out.println("Expected: " +destination +"\t Received: " +socket.getInetAddress().getHostName());
+						if (!socket.getInetAddress().getHostName().equals(destination)){
+							//socket is not the client we wanted to accept
+							System.out.println("Expected: " +destination +"\t Rejected: " +socket.getInetAddress().getHostName());
+							socket.close();
+							socket = null;
+						}
+					} while (socket == null);
+					//done listening for clients
+					serverSocket.close();
 				} else{
 					socket = new Socket(destination,port);
 				}
@@ -156,13 +165,20 @@ public class tcpConnection implements NetworkIO {
 		if(status == STATUS_ALIVE){
 			try {
 				try {
-					if (serverSocket != null) serverSocket.close();
+					if (serverSocket != null) socket.close();
+				}  catch (IOException e) { e.printStackTrace(); }
+				try {
+					if (readStream != null) readStream.close();
+				} catch (IOException e) { e.printStackTrace(); }
+				
+				try {
+					if (writeStream != null) socket.close();
 				} catch (IOException e) { e.printStackTrace(); }
 				try {
 					if (socket != null) socket.close();
-				}
-				catch (IOException e){ e.printStackTrace(); }
-			} finally{
+				} catch (IOException e){ e.printStackTrace(); }
+			} 
+			finally{
 				status = STATUS_FAILED;
 			}
 		}

@@ -77,7 +77,6 @@ public class Multiplayer extends Scene {
 			gh = h -150,
 			tw = w -2*spacing,
 			th = h -gh -3*spacing;
-		//network.]
 		
 		if(playerNo ==1){
 			game1 = new GameWindow(spacing, spacing, gw, gh, difficulty,true);
@@ -88,7 +87,7 @@ public class Multiplayer extends Scene {
 		}
 		
 		transfers = new TransferBar(spacing, gh +2*spacing, tw, th, 2500, difficulty);
-		score = new ScoreIndicator(window.width()/2, 48, 64);
+		score = new ScoreIndicator(window.width()/2, 64, 64);
 		
 		music.play();
 		
@@ -114,16 +113,21 @@ public class Multiplayer extends Scene {
 		
 		if (game1.isGameOver()) {
 			network.sendObject(new MultiplayerPacket());
+			//network.close();
+			main.closeScene();
+			main.setScene(new GameEnd(main, game1.getScore(), false));			
 		}else{ 
 			game1.update(timeDifference);
-			};
+		};
 			
 		if(game1.getScore() -game2.getScore() > 50000){
 			network.sendObject(new MultiplayerPacket());
 		}
 		
-		if (!game2.isGameOver()) game2.update(timeDifference);
-		score.setScores(game1.getScore(), game2.getScore(), 50000);
+		
+		if (playerNo == 1)
+			score.setScores(game1.getScore(), game2.getScore(), 50000);
+		else score.setScores(game2.getScore(), game1.getScore(), 50000);
 		
 		
 		{	//handle transfers out
@@ -216,6 +220,8 @@ public class Multiplayer extends Scene {
 					game2.getScoreObj().setTotalScore(((Integer) mp.contents).intValue());
 					break;
 				case GAMEOVER:
+					network.close();
+					main.closeScene();
 					main.setScene(new GameEnd(main,game1.getScore(),true));
 					break;
 				}
@@ -227,7 +233,7 @@ public class Multiplayer extends Scene {
 			//synchronize game
 			sinceSync += timeDifference;
 			if(sinceSync > 1/30.0){
-				System.out.println("Syncing");
+				//System.out.println("Syncing");
 				AircraftPacket[] airspace = new AircraftPacket[game1.getAircraftList().size()];
 				List<Aircraft> as = game1.getAircraftList();
 				for(int i=0; i<as.size(); i++){
@@ -238,8 +244,6 @@ public class Multiplayer extends Scene {
 				sinceSync -= 1/30.0;
 			}	
 		}
-
-		//synchronize scores
 	
 	}
 
@@ -273,11 +277,11 @@ public class Multiplayer extends Scene {
 	
 	@Override
 	public void keyReleased(int key) {
-		switch (key) {
+		/*switch (key) {
 		case input.KEY_ESCAPE :
 			main.closeScene();
 			break;
-		}
+		}*/
 
 		game1.keyReleased(key);
 	}
