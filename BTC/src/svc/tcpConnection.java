@@ -172,7 +172,7 @@ public class tcpConnection implements NetworkIO {
 				} catch (IOException e) { e.printStackTrace(); }
 				
 				try {
-					if (writeStream != null) socket.close();
+					if (writeStream != null) writeStream.close();
 				} catch (IOException e) { e.printStackTrace(); }
 				try {
 					if (socket != null) socket.close();
